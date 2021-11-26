@@ -377,7 +377,8 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
                         _watchers.push( outForwarder );
                         var outForwarder_index = _watchers.length - 1;
                         // forward in from protodeclaration node
-                        if ( !this._fieldWatchers[ field ] ) {
+                        if ( !this._fieldWatchers[ field ] )
+                        {
                             this._fieldWatchers[ field ] = [];
                         }
                         var inForwarder = ( function ( msg )
