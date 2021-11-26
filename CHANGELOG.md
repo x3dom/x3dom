@@ -3,10 +3,11 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * ROUTE into ProtoInstance
   * update download count after ExternProto loading 
   * Plane subdivision update
 * Improvements
-  * allow picking of Points which have pointProperties 
+  * allow picking of Points which have pointProperties
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 
