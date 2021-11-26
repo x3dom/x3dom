@@ -2,6 +2,8 @@
 
 ## Version 1.8.3-dev
 
+* Bugfixes
+  * Plane subdivision update
 * Improvements
   * allow picking of Points which have pointProperties 
 * Features
