@@ -367,12 +367,29 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
                             return;
                         }
                         var nodeField = this._normalizeName( ISNode.nodeField, instanceNode );
+                        // forward out from instance node
                         if ( !instanceNode._fieldWatchers[ nodeField ] )
                         {
                             instanceNode._fieldWatchers[ nodeField ] = [];
                         }
-                        instanceNode._fieldWatchers[ nodeField ].push(
-                            this.postMessage.bind( this, field ) ); // forward
+                        var outForwarder = this.postMessage.bind( this, field );
+                        var _watchers = instanceNode._fieldWatchers[ nodeField ];
+                        _watchers.push( outForwarder );
+                        var outForwarder_index = _watchers.length - 1;
+                        // forward in from protodeclaration node
+                        if ( !this._fieldWatchers[ field ] )
+                        {
+                            this._fieldWatchers[ field ] = [];
+                        }
+                        var inForwarder = ( function ( msg )
+                        { // remove above out fieldwatcher to avoid loop
+                            _watchers.splice( outForwarder_index, 1 );
+                            instanceNode.postMessage( nodeField, msg );
+                            // add back above out fieldwatcher
+                            _watchers.push( outForwarder );
+                            outForwarder_index = _watchers.length - 1; // update
+                        } ).bind( instanceNode );
+                        this._fieldWatchers[ field ].push( inForwarder ); // forward in
                     }, this );
                 },
 
