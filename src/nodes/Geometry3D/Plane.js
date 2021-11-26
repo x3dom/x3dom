@@ -181,6 +181,7 @@ x3dom.registerNodeType(
                         sy = this._vf.size.y;
                     var subx = this._vf.subdivision.x,
                         suby = this._vf.subdivision.y;
+                    var nSign = this._vf.ccw ? 1 : -1;
 
                     var x = 0,
                         y = 0;
