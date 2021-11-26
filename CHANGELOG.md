@@ -2,6 +2,8 @@
 
 ## Version 1.8.3-dev
 
+* Improvements
+  * allow picking of Points which have pointProperties 
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 
