@@ -187,11 +187,13 @@ x3dom.NodeNameSpace.prototype.loadExternProtoAsync = function ( protoDeclaration
                 }
             };
             protoDeclaration.needsLoading = false;
+            that.doc.decrementDownloads();
         } )
         .catch( function ( error )
         {
             x3dom.debug.logError( "ExternProto fetch failed: " + error );
             protoDeclaration.needsLoading = false;
+            that.doc.decrementDownloads();
             return null;
         } );
 };
