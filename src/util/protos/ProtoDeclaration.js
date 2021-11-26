@@ -372,23 +372,23 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
                         {
                             instanceNode._fieldWatchers[ nodeField ] = [];
                         }
-                        var outForwarder = this.postMessage.bind(this, field);
-                        var _watchers = instanceNode._fieldWatchers[nodeField];
-                        _watchers.push(outForwarder);
+                        var outForwarder = this.postMessage.bind( this, field );
+                        var _watchers = instanceNode._fieldWatchers[ nodeField ];
+                        _watchers.push( outForwarder );
                         var outForwarder_index = _watchers.length - 1;
-                       // forward in from protodeclaration node
-                        if (!this._fieldWatchers[field]) {
-                          this._fieldWatchers[field] = [];
+                        // forward in from protodeclaration node
+                        if ( !this._fieldWatchers[ field ] ) {
+                            this._fieldWatchers[ field ] = [];
                         }
-                        var inForwarder = (function (msg)
+                        var inForwarder = ( function ( msg )
                         { // remove above out fieldwatcher to avoid loop
-                            _watchers.splice(outForwarder_index, 1);
-                            instanceNode.postMessage(nodeField, msg);
+                            _watchers.splice( outForwarder_index, 1 );
+                            instanceNode.postMessage( nodeField, msg );
                             // add back above out fieldwatcher
-                            _watchers.push(outForwarder);
+                            _watchers.push( outForwarder );
                             outForwarder_index = _watchers.length - 1; // update
-                        }).bind(instanceNode);
-                        this._fieldWatchers[field].push(inForwarder); // forward in
+                        } ).bind( instanceNode );
+                        this._fieldWatchers[ field ].push( inForwarder ); // forward in
                     }, this );
                 },
 
