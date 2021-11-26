@@ -76,7 +76,7 @@ x3dom.registerNodeType(
 
             addChild : function ( node, containerFieldName )
             {
-                if ( "isProtoInstance" in node )
+                if ( node && "isProtoInstance" in node )
                 {
                     this.addChild( node.typeNode, containerFieldName );
                     if ( node.helperNodes.length > 0 )
