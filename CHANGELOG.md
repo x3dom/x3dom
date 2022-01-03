@@ -6,6 +6,7 @@
   * ROUTE into ProtoInstance
   * update download count after ExternProto loading 
   * Plane subdivision update
+  * allow smooth creaseAngle during coord updates for IFS
 * Improvements
   * allow picking of Points which have pointProperties
 * Features

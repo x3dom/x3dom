@@ -782,11 +782,6 @@ x3dom.registerNodeType(
                     // special coordinate interpolator handler
                     if ( fieldName == "coord" && n )
                     {
-                        if ( needNormals )
-                        {
-                            this._mesh._normals[ 0 ] = [];
-                        }
-
                         for ( i = 0; i < n; i += 3 )
                         {
                             var ind0 = this._mesh._multiIndIndices[ i  ];
@@ -800,20 +795,11 @@ x3dom.registerNodeType(
                             this._mesh._positions[ 0 ].push( pos0.x, pos0.y, pos0.z );
                             this._mesh._positions[ 0 ].push( pos1.x, pos1.y, pos1.z );
                             this._mesh._positions[ 0 ].push( pos2.x, pos2.y, pos2.z );
+                        }
 
-                            if ( needNormals )
-                            {
-                                var a = pos0.subtract( pos1 );
-                                var b = pos1.subtract( pos2 );
-
-                                var norm = a.cross( b ).normalize();
-                                if ( !this._vf.ccw )
-                                {norm = norm.negate();}
-
-                                this._mesh._normals[ 0 ].push( norm.x, norm.y, norm.z );
-                                this._mesh._normals[ 0 ].push( norm.x, norm.y, norm.z );
-                                this._mesh._normals[ 0 ].push( norm.x, norm.y, norm.z );
-                            }
+                        if ( needNormals )
+                        {
+                            this._mesh.calcNormals( this._vf.creaseAngle, this._vf.ccw );
                         }
 
                         this.invalidateVolume();
