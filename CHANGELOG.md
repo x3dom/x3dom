@@ -8,6 +8,7 @@
   * Plane subdivision update
   * allow smooth creaseAngle during coord updates for IFS
 * Improvements
+  * set buffer interpolator default duration to 1 for better compatibility
   * allow picking of Points which have pointProperties
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
