@@ -73,11 +73,11 @@ x3dom.registerNodeType(
              * Specifies the duration
              * @var {x3dom.fields.SFString} duration
              * @memberof x3dom.nodeTypes.X3DInterpolatorNode
-             * @initvalue "0"
+             * @initvalue "1"
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat( ctx, "duration", 0 );
+            this.addField_SFFloat( ctx, "duration", 1 );
 
             this.addField_MFNode( "views", x3dom.nodeTypes.BufferView );
             this.addField_MFNode( "accessors", x3dom.nodeTypes.BufferAccessor );
