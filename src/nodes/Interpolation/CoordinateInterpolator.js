@@ -77,6 +77,35 @@ x3dom.registerNodeType(
                         this.postMessage( "value_changed", value );
                     }
                 }
+            },
+
+            keyValueFromAccessor : function ( array )
+            {
+                var keyValue = new x3dom.fields.MFVec3f();
+                array.forEach( function ( val, i )
+                {
+                    if ( i % 3 == 2 )
+                    {
+                        keyValue.push( new x3dom.fields.SFVec3f(
+                            array[ i - 2 ],
+                            array[ i - 1 ],
+                            val
+                        ) );
+                    }
+                } );
+                var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
+                var len = keyValue.length / key;
+                var vf_keyValue = [];
+                for ( var i = 0; i < key; i++ )
+                {
+                    var val = new x3dom.fields.MFVec3f();
+                    for ( var j = 0; j < len; j++ )
+                    {
+                        val.push( keyValue[ i * len + j ] );
+                    }
+                    vf_keyValue.push( val );
+                }
+                return vf_keyValue;
             }
         }
     )
