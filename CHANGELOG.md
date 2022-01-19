@@ -7,8 +7,11 @@
   * update download count after ExternProto loading 
   * Plane subdivision update
   * allow smooth creaseAngle during coord updates for IFS
+  * NormalInterpolator: array of MFVec3f
 * Improvements
+  * allow buffer option for Coordinate/Normal/ColorInterpolators
   * set buffer interpolator default duration to 1 for better compatibility
+  * #sourceCode for JSON encoding
   * allow picking of Points which have pointProperties
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
