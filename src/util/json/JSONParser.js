@@ -156,7 +156,7 @@ x3dom.JSONParser.prototype.ConvertObject = function ( key, object, element, cont
                 element.appendChild( child );
             }
         }
-        else if ( key === "#sourceText" )
+        else if ( key === "#sourceText" || key === "#sourceCode" )
         {
             this.CDATACreateFunction( document, element, object[ key ].join( "\r\n" ) + "\r\n" );
         }
