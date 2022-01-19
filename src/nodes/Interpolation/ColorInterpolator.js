@@ -109,6 +109,25 @@ x3dom.registerNodeType(
                     } );
                     this._keyValue = this._vf.keyValue.copy();
                 }
+            },
+
+            keyValueFromAccessor : function ( array )
+            {
+                var keyValue = new x3dom.fields.MFColor();
+                array.forEach( function ( val, i )
+                {
+                    if ( i % 3 == 2 )
+                    {
+                        keyValue.push( new x3dom.fields.SFColor(
+                            array[ i - 2 ],
+                            array[ i - 1 ],
+                            val
+                        ) );
+                    }
+                } );
+                this._vf.keyValue = keyValue;
+                this.fieldChanged( "keyValue" );
+                return keyValue;
             }
         }
     )

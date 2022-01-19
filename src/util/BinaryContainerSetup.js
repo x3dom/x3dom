@@ -1699,6 +1699,7 @@ x3dom.BinaryContainerLoader.setupBufferInterpolator = function ( interpolator )
             {
                 case "SAMPLER_INPUT":
                     key = getKeys( interpolator, accessor, arraybuffer );
+                    interpolator._vf.key = key; // needed by getKeyValues
                     break;
                 case "SAMPLER_OUTPUT":
                     keyValue = getKeyValues( interpolator, accessor, arraybuffer );
@@ -1726,7 +1727,6 @@ x3dom.BinaryContainerLoader.setupBufferInterpolator = function ( interpolator )
             keyValue = stepValue;
         }
 
-        interpolator._vf.key = key;
         interpolator._vf.keyValue = keyValue;
     };
 
