@@ -224,7 +224,7 @@ function X3DJoint ()
         {
             for ( var cs in CollidableShapes )
             {
-                if ( !CollidableShapes[ cs ].T_setup && CollidableShapes[ cs ].Transform._x3domNode._DEF == a._x3domNode._DEF )
+                if ( !CollidableShapes[ cs ].T_setup && CollidableShapes[ cs ].Transform._x3domNode && CollidableShapes[ cs ].Transform._x3domNode._DEF == a._x3domNode._DEF )
                 {
                     CollidableShapes[ cs ].T_setup = true;
                     CollidableShapes[ cs ].inlineInternalTransform = null;
@@ -1396,7 +1396,7 @@ function X3DJoint ()
             {
                 for ( var cs in CollidableShapes )
                 {
-                    if ( CollidableShapes[ cs ].Transform._x3domNode._DEF == interactiveTransforms[ t ]._x3domNode._DEF )
+                    if ( CollidableShapes[ cs ].Transform._x3domNode && CollidableShapes[ cs ].Transform._x3domNode._DEF == interactiveTransforms[ t ]._x3domNode._DEF )
                     {
                         if ( !CollidableShapes[ cs ].RigidBody._vf.fixed )
                         {
