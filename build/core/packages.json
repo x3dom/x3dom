@@ -434,10 +434,7 @@
             "UniversalJoint.js",
             "SingleAxisHingeJoint.js",
             "DoubleAxisHingeJoint.js"
-        ]
-    },
-    "AMMO":
-    {
+        ],
         "lib/":
         [
             "ammo.js"
