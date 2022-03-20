@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * game mode init 
   * ROUTE into ProtoInstance
   * update download count after ExternProto loading 
   * Plane subdivision update
