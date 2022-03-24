@@ -15,6 +15,7 @@
   * set buffer interpolator default duration to 1 for better compatibility
   * #sourceCode for JSON encoding
   * allow picking of Points which have pointProperties
+  * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 

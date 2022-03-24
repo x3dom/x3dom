@@ -124,11 +124,11 @@ async function build()
 
     console.log( "> Write x3dom-physics.debug.js ..." );
 
-    fs.writeFileSync( DIST_FOLDER + "x3dom-physics.debug.js", HEADER + versions[ "PHYSICS" ] + versions[ "AMMO" ] );
+    fs.writeFileSync( DIST_FOLDER + "x3dom-physics.debug.js", HEADER + versions[ "PHYSICS" ] );
 
     console.log( "> Write x3dom-physics.js ..." );
 
-    fs.writeFileSync( DIST_FOLDER + "x3dom-physics.js", HEADER + versions[ "PHYSICS_MIN" ] + versions[ "AMMO" ]  );
+    fs.writeFileSync( DIST_FOLDER + "x3dom-physics.js", HEADER + versions[ "PHYSICS_MIN" ] );
 
     console.log( "> Write VERSION ..." );
 
