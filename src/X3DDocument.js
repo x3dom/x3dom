@@ -779,12 +779,16 @@ x3dom.X3DDocument.prototype.onNodeRemoved =  function ( removedNode, target )
         var parent = parentNode._x3domNode;
         var child = domNode._x3domNode;
 
-        var pickInfo = child.findX3DDoc()._viewarea._pickingInfo;
-        // quite coarse; perhaps better to check _after_ removal if these still exist
-        pickInfo.firstObj  = null;
-        pickInfo.lastObj = null;
-        pickInfo.lastClickObj = null;
-        pickInfo.pickObj = null;
+        var doc = child.findX3DDoc();
+        if ( doc )
+        {
+            var pickInfo = doc._viewarea._pickingInfo;
+            // quite coarse; perhaps better to check _after_ removal if these still exist
+            pickInfo.firstObj  = null;
+            pickInfo.lastObj = null;
+            pickInfo.lastClickObj = null;
+            pickInfo.pickObj = null;
+        }
 
         if ( parent && child )
         {
