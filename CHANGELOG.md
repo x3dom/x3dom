@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * allow 0,0,0 as first color in ColorInterpolator
   * game mode init 
   * ROUTE into ProtoInstance
   * update download count after ExternProto loading 
