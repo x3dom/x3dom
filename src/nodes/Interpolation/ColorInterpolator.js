@@ -50,7 +50,7 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool( ctx, "RGB", false );
 
-            this._lastValue = new x3dom.fields.SFColor(-1, -1, -1);
+            this._lastValue = new x3dom.fields.SFColor( -1, -1, -1 );
             this.fieldChanged( "keyValue" );
         },
         {
