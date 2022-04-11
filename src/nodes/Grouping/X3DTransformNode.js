@@ -168,11 +168,14 @@ x3dom.registerNodeType(
                 //if (this._parentNodes.length == 0) {
                 var doc = this.findX3DDoc();
 
-                for ( i = 0, n = doc._nodeBag.trans.length; i < n; i++ )
+                if ( doc )
                 {
-                    if ( doc._nodeBag.trans[ i ] === this )
+                    for ( i = 0, n = doc._nodeBag.trans.length; i < n; i++ )
                     {
-                        doc._nodeBag.trans.splice( i, 1 );
+                        if ( doc._nodeBag.trans[ i ] === this )
+                        {
+                            doc._nodeBag.trans.splice( i, 1 );
+                        }
                     }
                 }
                 //}

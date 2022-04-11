@@ -315,7 +315,7 @@ x3dom.registerNodeType(
 
             findX3DDoc : function ()
             {
-                return this._nameSpace.doc;
+                return this._nameSpace ? this._nameSpace.doc : null;
             },
 
             doIntersect : function ( line )
