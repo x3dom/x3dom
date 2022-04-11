@@ -344,11 +344,14 @@ x3dom.registerNodeType(
                 {
                     var doc = this.findX3DDoc();
 
-                    for ( var i = 0, n = doc._nodeBag.timer.length; i < n; i++ )
+                    if ( doc )
                     {
-                        if ( doc._nodeBag.timer[ i ] === this )
+                        for ( var i = 0, n = doc._nodeBag.timer.length; i < n; i++ )
                         {
-                            doc._nodeBag.timer.splice( i, 1 );
+                            if ( doc._nodeBag.timer[ i ] === this )
+                            {
+                                doc._nodeBag.timer.splice( i, 1 );
+                            }
                         }
                     }
                 }

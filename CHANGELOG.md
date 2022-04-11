@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * allow 0,0,0 as first color in ColorInterpolator
   * game mode init 
   * ROUTE into ProtoInstance
   * update download count after ExternProto loading 
@@ -16,6 +17,7 @@
   * #sourceCode for JSON encoding
   * allow picking of Points which have pointProperties
   * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
+  * verify doc is available (not null), before manipulations
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 

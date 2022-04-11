@@ -66,11 +66,14 @@ x3dom.registerNodeType(
                 {
                     var doc = this.findX3DDoc();
 
-                    for ( var i = 0, n = doc._nodeBag.followers.length; i < n; i++ )
+                    if ( doc )
                     {
-                        if ( doc._nodeBag.followers[ i ] === this )
+                        for ( var i = 0, n = doc._nodeBag.followers.length; i < n; i++ )
                         {
-                            doc._nodeBag.followers.splice( i, 1 );
+                            if ( doc._nodeBag.followers[ i ] === this )
+                            {
+                                doc._nodeBag.followers.splice( i, 1 );
+                            }
                         }
                     }
                 }
