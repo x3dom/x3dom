@@ -1995,7 +1995,10 @@ x3dom.gfx_webgl = ( function ()
             // TODO: ParticleSet for picking
 
             var pointProperties = s_app ? s_app._cf.pointProperties.node : null;
-            pointProperties = pointProperties && x3dom.isa( s_geo, x3dom.nodeTypes.PointSet );
+            pointProperties = pointProperties && (
+                x3dom.isa( s_geo, x3dom.nodeTypes.PointSet ) ||
+                x3dom.isa( s_geo, x3dom.nodeTypes.BinaryGeometry )
+            );
 
             if ( pointProperties )
             {
@@ -2819,7 +2822,10 @@ x3dom.gfx_webgl = ( function ()
         }
 
         var pointProperties = s_app ? s_app._cf.pointProperties.node : null;
-        pointProperties = pointProperties && x3dom.isa( s_geo, x3dom.nodeTypes.PointSet );
+        pointProperties = pointProperties && (
+            x3dom.isa( s_geo, x3dom.nodeTypes.PointSet ) ||
+            x3dom.isa( s_geo, x3dom.nodeTypes.BinaryGeometry )
+        );
 
         if ( pointProperties )
         {
