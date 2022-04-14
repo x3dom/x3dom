@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <Scene DEF='scene'>
+    <Viewpoint centerOfRotation='0 800 1000' orientation='1 0 0 -0.2' position='0 1400 800'/>
+    <NavigationInfo speed='1'/>
+    <DirectionalLight/>
+    <Background groundColor='1 1 1' skyColor='1 1 1'/>
+    <Transform>
+      <Shape DEF='SP_0'>
+      
+                <Appearance sorttype="auto" alphaclipthreshold="0.1">
+                        <!--<Material _diffuseColor="0.4 0.4 0" _emissiveColor="0.5 0.4 0"></Material>-->
+                        <PointProperties pointsizemaxvalue="20" pointsizeminvalue=".1" pointsizescalefactor="6000" attenuation=".8 0 0" containerfield="pointProperties">
+                        </PointProperties>
+                </Appearance>
+
+        <BinaryGeometry DEF='BG_0' vertexCount='2488' primType='"POINTS"' position='-0.982780456543 -20.7901687622 35.5759773254' size='134.422286987 247.645553589 141.473007202' index='A_sacp/BG_0_indexBinary.bin' coord='A_sacp/BG_0_coordNormalBinary.bin+8' color='A_sacp/BG_0_colorBinary.bin+4' coordType='Uint16' colorType='Uint8' normalAsSphericalCoordinates='true'/>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

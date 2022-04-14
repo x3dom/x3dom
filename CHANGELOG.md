@@ -11,6 +11,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * enable PointProperties for BinaryGeometry
   * SpotLight beamWidth default update
   * allow buffer option for Coordinate/Normal/ColorInterpolators
   * set buffer interpolator default duration to 1 for better compatibility
