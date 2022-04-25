@@ -418,6 +418,10 @@
     },
     "PHYSICS":
     {
+        "src/":
+        [
+            "Clock.js"
+        ],     
         "src/nodes/RigidBodyPhysics/":
         [
             "RigidBodyPhysics.js",
