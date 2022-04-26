@@ -418,7 +418,7 @@
     },
     "PHYSICS":
     {
-        "src/":
+        "src/util/":
         [
             "Clock.js"
         ],     

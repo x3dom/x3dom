@@ -15,7 +15,7 @@ x3dom.Clock = class Clock
 
     start ()
     {
-        this.startTime = Date.now();
+        this.startTime = now();
 
         this.oldTime = this.startTime;
         this.elapsedTime = 0;
@@ -39,7 +39,7 @@ x3dom.Clock = class Clock
     {
         let diff = 0;
 
-        if ( this.autoStart && ! this.running )
+        if ( this.autoStart && !this.running )
         {
             this.start();
             return 0;
@@ -47,7 +47,7 @@ x3dom.Clock = class Clock
 
         if ( this.running )
         {
-            const newTime = Date.now();
+            const newTime = now();
 
             diff = ( newTime - this.oldTime ) / 1000;
             this.oldTime = newTime;
@@ -58,3 +58,8 @@ x3dom.Clock = class Clock
         return diff;
     }
 };
+
+function now ()
+{
+    return ( typeof performance === "undefined" ? Date : performance ).now();
+}
