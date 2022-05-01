@@ -3,6 +3,8 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * delete Bindables on Inline removal 
+  * more robust DDS header length check
   * allow 0,0,0 as first color in ColorInterpolator
   * game mode init 
   * ROUTE into ProtoInstance
@@ -11,6 +13,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * check back-ups in url field for ImageTexture, Inline 
   * enable PointProperties for BinaryGeometry
   * SpotLight beamWidth default update
   * allow buffer option for Coordinate/Normal/ColorInterpolators
