@@ -82,6 +82,7 @@ x3dom.Utils.createTexture2D = function ( gl, doc, src, bgnd, crossOrigin, scale,
     gl.bindTexture( gl.TEXTURE_2D, null );
 
     texture.ready = false;
+    var urlIndex = 0;
 
     if ( src == null || src == "" )
     {return texture;}
@@ -107,38 +108,50 @@ x3dom.Utils.createTexture2D = function ( gl, doc, src, bgnd, crossOrigin, scale,
         }
     }
 
-    if ( tex && tex.getOrigChannelCount() === 0 )
+    var requestImageWithChannelCount = function ()
     {
-        var xhr = new XMLHttpRequest();
-        xhr.open( "GET", src );
-
-        xhr.onloadstart = function ()
+        if ( tex && tex.getOrigChannelCount() === 0 )
         {
-            xhr.responseType = "arraybuffer";
-        };
+            var xhr = new XMLHttpRequest();
+            xhr.open( "GET", src );
 
-        xhr.onload = function ()
-        {
-            var mimeType  = xhr.getResponseHeader( "Content-Type" ),
-                imageData = new Uint8Array( xhr.response ),
-                channelcount = x3dom.Utils.detectChannelCount( imageData, mimeType );
-
-            if ( channelcount )
+            xhr.onloadstart = function ()
             {
-                tex.setOrigChannelCount( channelcount );
-            }
+                xhr.responseType = "arraybuffer";
+            };
 
-            image.src = x3dom.Utils.arrayBufferToObjectURL( imageData, mimeType );
-        };
+            xhr.onload = function ()
+            {
+                var mimeType  = xhr.getResponseHeader( "Content-Type" ),
+                    imageData = new Uint8Array( xhr.response ),
+                    channelcount = x3dom.Utils.detectChannelCount( imageData, mimeType );
 
-        x3dom.RequestManager.addRequest( xhr );
-    }
-    else
-    {
-        image.src = src;
-    }
+                if ( channelcount )
+                {
+                    tex.setOrigChannelCount( channelcount );
+                }
 
-    doc.incrementDownloads();
+                image.src = x3dom.Utils.arrayBufferToObjectURL( imageData, mimeType );
+            };
+
+            xhr.onerror = function ()
+            {
+                x3dom.debug.logError( "[Utils|createTexture2D] Can't http request: " + src );
+                // always try to load, to trigger image.onerror if unsuccessful
+                image.src = src;
+            };
+
+            x3dom.RequestManager.addRequest( xhr );
+        }
+        else
+        {
+            image.src = src;
+        }
+
+        doc.incrementDownloads();
+    };
+
+    requestImageWithChannelCount();
 
     image.onload = function ()
     {
@@ -184,6 +197,12 @@ x3dom.Utils.createTexture2D = function ( gl, doc, src, bgnd, crossOrigin, scale,
         {
             x3dom.debug.logError( "[Utils|createTexture2D] Can't load Image: " + src );
             doc.decrementDownloads();
+            urlIndex++;
+            if ( tex && urlIndex < tex._vf.url.length )
+            {
+                src = tex._nameSpace.getURL( tex._vf.url[ urlIndex ] );
+                requestImageWithChannelCount();
+            }
         } );
     };
 
