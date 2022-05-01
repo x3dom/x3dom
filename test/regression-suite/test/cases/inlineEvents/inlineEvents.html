@@ -14,19 +14,22 @@
 		document.getElementById('test__color4').setAttribute('diffuseColor', '0.7 1 0');
 	}
 	
-	var changeColor = function() {	
-		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 1');
+	var changeColor = function(event) {
+		window.setTimeout( function () {
+		    document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 1');
+		    console.log('load event: ', event);
+		}, 2000);
 		//alert('load');
 	}
 	var showError = function(event) {	
-		console.log('the ERROR ' + event.error);
+		console.log('error event: ', event);
 	}
 	var init = function() {	
-		document.getElementById('inline1').addEventListener('load',changeColor, false );
-		document.getElementById('inline1').setAttribute('url', "./inlineTest.x3d");
+		document.getElementById('inline1').addEventListener('load', changeColor, false );
+		document.getElementById('inline1').setAttribute('url', '"skipme.x3d" "./inlineTest.x3d"');
 		
 		document.getElementById('inline2').addEventListener('error',showError, false );
-		document.getElementById('inline2').setAttribute('url', "./error.x3d");
+		document.getElementById('inline2').setAttribute('url', '"checkme.x3d" "./error.x3d"');
 	}
 	
 </script>

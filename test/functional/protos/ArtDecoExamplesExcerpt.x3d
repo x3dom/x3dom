@@ -50,7 +50,7 @@
       <DirectionalLight direction='0.0 1.0 -0.5' intensity='0.5'/>
       <Anchor description='Back to front view' url='"#Front"'>
         <Transform translation='0.0 0.0 -0.5'>
-          <Inline crossOrigin='anonymous' url='"https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/gridBack.x3d" "../../Basic/UniversalMediaMaterials/gridBack.wrl" "https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/gridBack.wrl"'/>
+          <Inline crossOrigin='anonymous' url='"https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/gridBack.x3d" "gridBack.x3d" "../../Basic/UniversalMediaMaterials/gridBack.wrl" "https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/gridBack.wrl"'/>
         </Transform>
       </Anchor>
       <Viewpoint DEF='View00' description='ArtDeco00' position='-3.75 3.75 3.0'/>
