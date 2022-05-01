@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * ensure correct children order after ExternProto instancing
   * delete Bindables on Inline removal 
   * more robust DDS header length check
   * allow 0,0,0 as first color in ColorInterpolator
@@ -13,7 +14,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
-  * check back-ups in url field for ImageTexture, Inline, Anchor
+  * check back-ups in url field for ImageTexture, Inline, Anchor and ExternProto
   * enable PointProperties for BinaryGeometry
   * SpotLight beamWidth default update
   * allow buffer option for Coordinate/Normal/ColorInterpolators
