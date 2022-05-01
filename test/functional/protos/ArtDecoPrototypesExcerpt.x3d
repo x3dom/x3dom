@@ -34,7 +34,7 @@
         <Material ambientIntensity='1.0' diffuseColor='0.536861 0.0529 0.245479' shininess='0.832432' specularColor='0.805292 0.765198 0.747416'/>
       </ProtoBody>
     </ProtoDeclare>
-    <!--Anchor description='ArtDecoPrototypeExample' parameter='"target=_blank"' url='"ArtDecoExamplesExcerpt.x3d" "http://X3dGraphics.com/examples/X3dForWebAuthors/Chapter14Prototypes/ArtDecoPrototypesExcerpt.x3d"'-->
+    <Anchor description='ArtDecoPrototypeExample' parameter='"target=_blank"' url='"ArtDecoExamplesExcerpt.x3d" "http://X3dGraphics.com/examples/X3dForWebAuthors/Chapter14Prototypes/ArtDecoPrototypesExcerpt.x3d"'>
       <Shape>
         <Appearance>
           <!-- replace Material node with a corresponding Prototype -->
@@ -44,6 +44,6 @@
           <FontStyle justify='"MIDDLE" "MIDDLE"' size='0.8'/>
         </Text>
       </Shape>
-    <!--/Anchor-->
+    </Anchor>
   </Scene>
 </X3D>

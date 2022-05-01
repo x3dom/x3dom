@@ -13,7 +13,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
-  * check back-ups in url field for ImageTexture, Inline 
+  * check back-ups in url field for ImageTexture, Inline, Anchor
   * enable PointProperties for BinaryGeometry
   * SpotLight beamWidth default update
   * allow buffer option for Coordinate/Normal/ColorInterpolators
