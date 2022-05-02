@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "https://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='CircleFishLodExample.x3d' name='title'/>
+    <meta content='This is a circle fish using the CircleFishLod prototype.' name='description'/>
+    <meta content='Ildeniz Duman' name='creator'/>
+    <meta content='Scott Tufts' name='translator'/>
+    <meta content='1 May 1998' name='created'/>
+    <meta content='11 December 2001' name='translated'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='coordinates and orientations still have problems' name='warning'/>
+    <meta content='https://X3dGraphics.com/examples/X3dForWebAuthors/KelpForestExhibit/CircleFishLodExample.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='CircleFishLodExample.x3d'/>
+    <ExternProtoDeclare name='CircleFishLod' url='"CircleFishLodPrototype.x3d#CircleFishLod" "https://X3dGraphics.com/examples/X3dForWebAuthors/KelpForestExhibit/CircleFishLodPrototype.x3d#CircleFishLod" "CircleFishLodPrototype.wrl#CircleFishLod" "https://X3dGraphics.com/examples/X3dForWebAuthors/KelpForestExhibit/CircleFishLodPrototype.wrl#CircleFishLod"'>
+      <field accessType='inputOutput' name='skinTextureUrl' type='MFString'/>
+      <field accessType='inputOutput' name='fishScale' type='SFVec3f'/>
+      <field accessType='inputOutput' name='fishColor' type='SFColor'/>
+      <field accessType='inputOutput' name='finColor' type='SFColor'/>
+      <field accessType='inputOutput' name='positionKey' type='MFFloat'/>
+      <field accessType='inputOutput' name='positionKeyValue' type='MFVec3f'/>
+      <field accessType='inputOutput' name='orientationKey' type='MFFloat'/>
+      <field accessType='inputOutput' name='orientationKeyValue' type='MFRotation'/>
+      <field accessType='inputOutput' name='orbitTime' type='SFTime'/>
+    </ExternProtoDeclare>
+    <Viewpoint description='Circle Fish LOD' position='0 0 8'/>
+    <!-- These values for testing purposes -->
+    <Transform>
+      <ProtoInstance name='CircleFishLod'>
+        <!-- fieldValue tags revise default values -->
+        <fieldValue name='skinTextureUrl' value='"blue.jpg" "brtsky.jpg" "https://X3dGraphics.com/examples/X3dForWebAuthors/KelpForestExhibit/blue.jpg"'/>
+        <fieldValue name='fishScale' value='1 0.5 1'/>
+        <fieldValue name='finColor' value='0 0 1'/>
+      </ProtoInstance>
+    </Transform>
+    <Transform scale='0.2 0.2 0.2'>
+      <Inline url='"../../Savage/Tools/Authoring/GridXZ_20x20Fixed.x3d" "GridXZ_20x20Fixed.x3d"
+                   "https://savage.nps.edu/Savage/Tools/Authoring/GridXZ_20x20Fixed.x3d" "../../Savage/Tools/Authoring/GridXZ_20x20Fixed.wrl" "https://savage.nps.edu/Savage/Tools/Authoring/GridXZ_20x20Fixed.wrl"'/>
+    </Transform>
+  </Scene>
+</X3D>
