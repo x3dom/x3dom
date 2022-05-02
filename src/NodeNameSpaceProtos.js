@@ -124,78 +124,144 @@ x3dom.NodeNameSpace.prototype.loadExternProtoAsync = function ( protoDeclaration
     protoDeclaration.instanceQueue.push( {
         "protoInstanceDom" : protoInstanceDom,
         "domNode"          : domNode,
-        "parentDom"        : parentDom
+        "parentDom"        : parentDom,
+        "targetChildIndex" : parentDom._x3domNode._childNodes.length + protoDeclaration.instanceQueue.length //since load is delayed
     } );
     domNode._x3dom = protoInstanceDom;
     var that = this;
-    var url = this.getURL( protoDeclaration.url [ 0 ] );
-    fetch( url )
-        .then( function ( response ) { return response.text(); } )
-        .then( function ( text )
-        {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString( text, "application/xml" );
-            var scene = doc.querySelector( "X3D" );
-            if ( scene == null )
+    var urlIndex = 0;
+    function fetchExternProto ()
+    {
+        var url = that.getURL( protoDeclaration.url [ urlIndex ] );
+        that.doc.incrementDownloads();
+        fetch( url )
+            .then( function ( response )
             {
-                doc = parser.parseFromString( responseText, "text/html" );
-                scene = doc.querySelector( "X3D" );
-            }
-            //find hash
-            var hash = url.includes( "#" ) ? url.split( "#" ).slice( -1 )[ 0 ] : "";
-            var selector = hash == "" ? "ProtoDeclare" : "ProtoDeclare[name='" + hash + "']";
-            var declareNode = scene.querySelector( selector );
-            //transfer name
-            declareNode.setAttribute( "name", protoDeclaration.name );
-            //remove current placeholder declaration
-            var currentIndex = that.protos.findIndex( function ( d )
-            {
-                return d == protoDeclaration;
-            } );
-            that.protos.splice( currentIndex, 1 );
-            that.protoDeclare( declareNode ); //add declaration as internal
-            //TODO check actual fields against fields in protoDeclaration
-            //warn if not matching but proceed ?
-            //that.protos[that.protos.length-1].fields ==? protoDeclaration.fields
-
-            //add instance(s) in order
-            var instance;
-            while ( instance = protoDeclaration.instanceQueue.shift() ) //process in correct sequence
-            {
-                that.doc.mutationObserver.disconnect();//do not record mutation
-                if ( instance.domNode !== instance.protoInstanceDom ) //check for short syntax
+                if ( ! response.ok )
                 {
-                    instance.domNode.insertAdjacentElement( "afterend", instance.protoInstanceDom ); // do not use appendChild since scene parent may be already transferred
+                    throw new Error( "Network response was not OK: " + response.status );
                 }
-                that.doc.mutationObserver.observe( that.doc._scene._xmlNode, { attributes: true, attributeOldValue: true, childList: true, subtree: true } );
-                that.doc.onNodeAdded( instance.protoInstanceDom, instance.parentDom );
-
-                that.lateRoutes.forEach( function ( route )
+                return response.text();
+            } )
+            .then( function ( text )
+            {
+                var parser = new DOMParser();
+                var doc = parser.parseFromString( text, "application/xml" );
+                var scene = doc.querySelector( "X3D" );
+                if ( scene == null )
                 {
-                    var fromNode = that.defMap[ route.fnDEF ];
-                    var toNode = that.defMap[ route.tnDEF ];
-                    if ( ( fromNode && toNode ) )
-                    {
-                        x3dom.debug.logInfo( "fixed ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF );
-                        fromNode.setupRoute( route.fnAtt, toNode, route.tnAtt );
-                        route.route._nodeNameSpace = that;
-                    }
+                    doc = parser.parseFromString( text, "text/html" );
+                    scene = doc.querySelector( "X3D" );
+                }
+                //find hash
+                var hash = url.includes( "#" ) ? url.split( "#" ).slice( -1 )[ 0 ] : "";
+                var selector = hash == "" ? "ProtoDeclare" : "ProtoDeclare[name='" + hash + "']";
+                var declareNode = scene.querySelector( selector );
+                //transfer name
+                declareNode.setAttribute( "name", protoDeclaration.name );
+
+                that.confNameSpace = new x3dom.NodeNameSpace( protoDeclaration.name, that.doc ); // instance name space
+                that.confNameSpace.setBaseURL( that.baseURL + protoDeclaration.name );
+                //that.addSpace( that.confNameSpace );
+                that.confNameSpace.setupTree( scene.querySelector( "Scene" ), scene );
+
+                //transfer proto definitions from other externprotos to namespace if any
+                that.confNameSpace.protos.forEach( function ( confProtoDeclaration )
+                {
+                    that.protos.push( confProtoDeclaration );
                 } );
-                if ( that.superInlineNode && that.superInlineNode._nameSpace )
+
+                //remove current placeholder declaration
+                var currentIndex = that.protos.findIndex( function ( d )
                 {
-                    that.superInlineNode._nameSpace.importNodes( that );
+                    return d == protoDeclaration;
+                } );
+                that.protos.splice( currentIndex, 1 );
+                that.protoDeclare( declareNode ); //add declaration as internal
+                //TODO check actual fields against fields in protoDeclaration
+                //warn if not matching but proceed ?
+                //that.protos[that.protos.length-1].fields ==? protoDeclaration.fields
+
+                //add instance(s) in order
+                var instance;
+                while ( instance = protoDeclaration.instanceQueue.shift() ) //process in correct sequence
+                {
+                    var parentDom = instance.parentDom;
+                    var parentNode = parentDom._x3domNode;
+                    var instanceDom = instance.protoInstanceDom;
+                    var targetIndex = instance.targetChildIndex;
+                    that.doc.mutationObserver.disconnect();//do not record mutation
+                    if ( instance.domNode !== instanceDom ) //check for short syntax
+                    {
+                        instance.domNode.insertAdjacentElement( "afterend", instanceDom ); // do not use appendChild since scene parent may be already transferred
+                    }
+                    that.doc.mutationObserver.observe( that.doc._scene._xmlNode, { attributes: true, attributeOldValue: true, childList: true, subtree: true } );
+                    that.doc.onNodeAdded( instanceDom, parentDom );
+                    var childNodes = parentNode._childNodes;
+                    var childIndex = childNodes.length - 1;
+                    if ( targetIndex !== childIndex )
+                    {
+                        //rearrange childNodes
+                        var swapper = childNodes[ targetIndex ];
+                        var instanceNode = childNodes[ childIndex ];
+                        childNodes[ targetIndex ] = instanceNode;
+                        childNodes[ childIndex ] = swapper;
+                        //also containerfield array
+                        var fieldName = parentDom.getAttribute( "containerField" );
+                        var children = ( fieldName in parentNode._cf ) && parentNode._cf[ fieldName ];
+                        if ( !children )
+                        {
+                            for ( var fieldName in parentNode._cf )
+                            {
+                                var field = parentNode._cf[ fieldName ];
+                                if ( x3dom.isa( instanceNode, field.type ) )
+                                {
+                                    children = field;
+                                    break;
+                                }
+                            }
+                        }
+                        children[ targetIndex ] = instanceNode;
+                        children[ childIndex ] = swapper;
+                    }
+
+                    that.lateRoutes.forEach( function ( route )
+                    {
+                        var fromNode = that.defMap[ route.fnDEF ];
+                        var toNode = that.defMap[ route.tnDEF ];
+                        if ( ( fromNode && toNode ) )
+                        {
+                            x3dom.debug.logInfo( "fixed ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF );
+                            fromNode.setupRoute( route.fnAtt, toNode, route.tnAtt );
+                            route.route._nodeNameSpace = that;
+                        }
+                    } );
+                    if ( that.superInlineNode && that.superInlineNode._nameSpace )
+                    {
+                        that.superInlineNode._nameSpace.importNodes( that );
+                    }
+                };
+                protoDeclaration.needsLoading = false;
+                that.doc.decrementDownloads();
+            } )
+            .catch( function ( error )
+            {
+                x3dom.debug.logWarning( url + ": ExternProto fetch failed: " + error );
+                that.doc.decrementDownloads();
+                urlIndex++;
+                if ( urlIndex < protoDeclaration.url.length )
+                {
+                    fetchExternProto();
                 }
-            };
-            protoDeclaration.needsLoading = false;
-            that.doc.decrementDownloads();
-        } )
-        .catch( function ( error )
-        {
-            x3dom.debug.logError( "ExternProto fetch failed: " + error );
-            protoDeclaration.needsLoading = false;
-            that.doc.decrementDownloads();
-            return null;
-        } );
+                else
+                {
+                    x3dom.debug.logError( "ExternProto fetch failed for all urls." );
+                    protoDeclaration.needsLoading = false;
+                    return null;
+                }
+            } );
+    };
+    fetchExternProto();
 };
 
 /**

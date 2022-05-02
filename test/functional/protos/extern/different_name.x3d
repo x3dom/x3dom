@@ -20,7 +20,7 @@
   </head>
   <Scene>
     <WorldInfo title='different_name.x3d'/>
-    <ExternProtoDeclare name='BallProto' url='"different_name_proto.x3d#Second_proto" "https://www.web3d.org/x3d/content/examples/ConformanceNist/Miscellaneous/EXTERNPROTO/different_name_proto.x3d#Second_proto" "different_name_proto.wrl#Second_proto" "https://www.web3d.org/x3d/content/examples/ConformanceNist/Miscellaneous/EXTERNPROTO/different_name_proto.wrl#Second_proto"'/>
+    <ExternProtoDeclare name='BallProto' url='"skip_me.x3d" "different_name_proto.x3d#Second_proto" "https://www.web3d.org/x3d/content/examples/ConformanceNist/Miscellaneous/EXTERNPROTO/different_name_proto.x3d#Second_proto" "different_name_proto.wrl#Second_proto" "https://www.web3d.org/x3d/content/examples/ConformanceNist/Miscellaneous/EXTERNPROTO/different_name_proto.wrl#Second_proto"'/>
     <Group>
       <Group>
         <NavigationInfo type='"EXAMINE" "WALK" "FLY" "ANY"'/>
