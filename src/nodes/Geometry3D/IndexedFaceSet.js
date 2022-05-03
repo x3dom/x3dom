@@ -545,6 +545,7 @@ x3dom.registerNodeType(
                         var linklist = new x3dom.DoublyLinkedList();
                         var data = {};
                         cnt = 0; faceCnt = 0;
+                        this._mesh._multiIndIndices = [];
 
                         for ( i = 0; i < indexes.length; ++i )
                         {
@@ -554,7 +555,7 @@ x3dom.registerNodeType(
 
                                 for ( j = 0; j < multi_index_data.indices.length; j++ )
                                 {
-                                    this._mesh._indices[ 0 ].push( cnt );
+                                    this._mesh._multiIndIndices.push( multi_index_data.indices[ j ] );
                                     cnt++;
 
                                     this._mesh._positions[ 0 ].push( multi_index_data.point[ j ].x,
