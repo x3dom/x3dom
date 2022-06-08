@@ -15,6 +15,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * replace eval() with safe JSON.parse()
   * check back-ups in url field for ImageTexture, Inline, Anchor and ExternProto
   * enable PointProperties for BinaryGeometry
   * SpotLight beamWidth default update
