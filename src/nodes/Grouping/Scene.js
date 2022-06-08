@@ -108,7 +108,7 @@ x3dom.registerNodeType(
 
                 xhr.onload = function ()
                 {
-                    that._shadowIdMap = eval( "(" + xhr.response + ")" );
+                    that._shadowIdMap = JSON.parse( xhr.response );
 
                     if ( !that._shadowIdMap || !that._shadowIdMap.mapping )
                     {
