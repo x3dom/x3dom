@@ -111,10 +111,7 @@ x3dom.registerNodeType(
 
                     ctx.xmlNode.setAttribute( fieldName, this._cf.fields.nodes[ i ]._vf.value );
 
-                    var funcName = "this.addField_" + this._cf.fields.nodes[ i ]._vf.type + "(ctx, name);";
-                    var func = new Function( "ctx", "name", funcName );
-
-                    func.call( this, ctx, fieldName );
+                    this[ "addField_" + this._cf.fields.nodes[ i ]._vf.type ]( ctx, fieldName );
 
                     if ( needNode )
                     {
