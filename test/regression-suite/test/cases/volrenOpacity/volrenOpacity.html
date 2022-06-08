@@ -12,6 +12,7 @@
           
           var img = new Image();
           img.src = './transfer.png';
+          img.crossOrigin = 'anonymous';
           
           img.onload = function() {
               ctx.drawImage(img, 0, 0);
