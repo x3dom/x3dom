@@ -173,8 +173,9 @@ x3dom.registerNodeType(
                         this._xmlNode.hasAttribute( "on" + eventType ) ||
                         this._listeners[ eventType ] ) )
                 {
+                    var xmlNode = this._xmlNode;
                     var event = {
-                        target          : this._xmlNode,
+                        target          : xmlNode,
                         type            : eventType,
                         error           : ( eventType == "error" ) ? "XMLHttpRequest Error" : "",
                         cancelBubble    : false,
@@ -183,17 +184,17 @@ x3dom.registerNodeType(
 
                     try
                     {
-                        var attrib = this._xmlNode[ "on" + eventType ];
+                        var attrib = xmlNode[ "on" + eventType ];
 
                         if ( typeof( attrib ) === "function" )
                         {
-                            attrib.call( this._xmlNode, event );
+                            attrib.call( xmlNode, event );
                         }
-                        else
+                        else if ( xmlNode.hasAttribute( "on" + eventType ) )
                         {
-                            var funcStr = this._xmlNode.getAttribute( "on" + eventType );
+                            var funcStr = xmlNode.getAttribute( "on" + eventType );
                             var func = new Function( "event", funcStr );
-                            func.call( this._xmlNode, event );
+                            func.call( xmlNode, event );
                         }
 
                         var list = this._listeners[ eventType ];
@@ -201,7 +202,7 @@ x3dom.registerNodeType(
                         {
                             for ( var i = 0; i < list.length; i++ )
                             {
-                                list[ i ].call( this._xmlNode, event );
+                                list[ i ].call( xmlNode, event );
                             }
                         }
                     }
