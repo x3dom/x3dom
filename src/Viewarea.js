@@ -1137,17 +1137,18 @@ x3dom.Viewarea.prototype.callEvtHandler = function ( node, eventType, event )
 
     try
     {
-        var attrib = node._xmlNode[ eventType ];
+        var xmlNode = node._xmlNode;
+        var attrib = xmlNode[ eventType ];
 
         if ( typeof( attrib ) === "function" )
         {
-            attrib.call( node._xmlNode, event );
+            attrib.call( xmlNode, event );
         }
-        else
+        else if ( xmlNode.hasAttribute( eventType ) )
         {
-            var funcStr = node._xmlNode.getAttribute( eventType );
+            var funcStr = xmlNode.getAttribute( eventType );
             var func = new Function( "event", funcStr );
-            func.call( node._xmlNode, event );
+            func.call( xmlNode, event );
         }
 
         var list = node._listeners[ event.type ];
@@ -1155,7 +1156,7 @@ x3dom.Viewarea.prototype.callEvtHandler = function ( node, eventType, event )
         {
             for ( var it = 0; it < list.length; it++ )
             {
-                list[ it ].call( node._xmlNode, event );
+                list[ it ].call( xmlNode, event );
             }
         }
     }
