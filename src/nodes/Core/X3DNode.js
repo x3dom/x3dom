@@ -609,7 +609,7 @@ x3dom.registerNodeType(
                 var node = this;
                 var xmlNode = node._xmlNode;
 
-                if ( !xmlNode )
+                if ( !node._xmlNode )
                 {
                     return event.cancelBubble;
                 }
