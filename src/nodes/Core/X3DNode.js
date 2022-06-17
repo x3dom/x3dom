@@ -607,14 +607,15 @@ x3dom.registerNodeType(
             callEvtHandler : function ( eventType, event )
             {
                 var node = this;
+                var xmlNode = node._xmlNode;
 
-                if ( !node._xmlNode )
+                if ( !xmlNode )
                 {
                     return event.cancelBubble;
                 }
 
-                if ( !node._xmlNode.getAttribute( eventType ) &&
-                   !node._xmlNode[ eventType ] &&
+                if ( !xmlNode.getAttribute( eventType ) &&
+                   !xmlNode[ eventType ] &&
                    !node._listeners[ event.type ] )
                 {
                     return event.cancelBubble;
@@ -622,18 +623,18 @@ x3dom.registerNodeType(
 
                 try
                 {
-                    var attrib = node._xmlNode[ eventType ];
-                    event.target = node._xmlNode;
+                    var attrib = xmlNode[ eventType ];
+                    event.target = xmlNode;
 
                     if ( typeof( attrib ) === "function" )
                     {
                         attrib.call( node._xmlNode, event );
                     }
-                    else
+                    else if ( xmlNode.hasAttribute( eventType ) )
                     {
-                        var funcStr = node._xmlNode.getAttribute( eventType );
+                        var funcStr = xmlNode.getAttribute( eventType );
                         var func = new Function( "event", funcStr );
-                        func.call( node._xmlNode, event );
+                        func.call( xmlNode, event );
                     }
 
                     var list = node._listeners[ event.type ];
@@ -641,7 +642,7 @@ x3dom.registerNodeType(
                     {
                         for ( var it = 0; it < list.length; it++ )
                         {
-                            list[ it ].call( node._xmlNode, event );
+                            list[ it ].call( xmlNode, event );
                         }
                     }
                 }
