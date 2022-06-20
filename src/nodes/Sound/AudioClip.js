@@ -90,7 +90,6 @@ x3dom.registerNodeType(
 
                 this._startAudio = function ()
                 {
-                    that._audio.loop = that._vf.loop ? "loop" : "";
                     if ( that._vf.enabled === true )
                     {
                         that._audio.play()
@@ -165,6 +164,7 @@ x3dom.registerNodeType(
                         src.setAttribute( "src", audioUrl );
                         this._audio.appendChild( src );
                     }
+                    this._audio.load();
                 }
             },
 
