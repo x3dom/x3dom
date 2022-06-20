@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * support url field change for AudioClip
   * better indices for textured IFS with creases 
   * ensure correct children order after ExternProto instancing
   * delete Bindables on Inline removal 
