@@ -210,9 +210,13 @@ x3dom.registerNodeType(
                     {
                         case "game": //perhaps needed for 'walk' as well ?
                             if ( viewarea )
-                            {viewarea.initMouseState();}
-                            else
-                            {this._nameSpace.doc._viewarea.initMouseState();}
+                            {
+                                viewarea.initMouseState();
+                            }
+                            else if ( this._nameSpace.doc._viewarea )
+                            {
+                                this._nameSpace.doc._viewarea.initMouseState();
+                            }
                             break;
                         case "helicopter":
                             this._heliUpdated = false;

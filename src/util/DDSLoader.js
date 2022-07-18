@@ -37,7 +37,7 @@ x3dom.DDSLoader.load = function ( src )
 
 x3dom.DDSLoader._read = function ( source )
 {
-    if ( source === undefined || source.byteLength < 128 )
+    if ( source === undefined || source.byteLength < 128 + 5 * 4 )
     {
         return;
     }

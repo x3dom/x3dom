@@ -59,8 +59,77 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFString( ctx, "description", "" );
+
+            this.urlIndex = 0;
         },
         {
+            nodeChanged : function ()
+            {
+                this.updateUrlIndex();
+            },
+
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "url" )
+                {
+                    this.updateUrlIndex();
+                }
+            },
+
+            updateUrlIndex : function ()
+            {
+                //check if url ends with .x3d#, or .json# .lastIndexOf('.')
+                //otherwise assume #viewpoint or html, eg. ok
+                this.urlIndex = 0;
+                that = this;
+                function fetchOrConfirmUrl ()
+                {
+                    var doc = that._nameSpace.doc;
+                    var url = that._vf.url[ that.urlIndex ];
+                    var lastDotIndex = url.lastIndexOf( "." );
+                    var suffix = url.substr( lastDotIndex ).toLowerCase();
+                    if ( !url.startsWith( "javascript" ) &&
+                        ( suffix.includes( "x3d" ) || suffix.includes( "json" ) || suffix.includes( "html" ) ) )
+                    {
+                        doc.incrementDownloads();
+                        fetch( that._nameSpace.getURL( url ) )
+                            .then( function ( response )
+                            {
+                                if ( ! response.ok )
+                                {
+                                    throw new Error( "Network response was not OK: " + response.status );
+                                }
+                                return response.text();
+                            } )
+                            .then( function ( text )
+                            {
+                                doc.decrementDownloads();
+                                return text;
+                            } )
+                            .catch( function ( error )
+                            {
+                                x3dom.debug.logWarning( url + ": Anchor fetch failed: " + error );
+                                doc.decrementDownloads();
+                                that.urlIndex++;
+                                if ( that.urlIndex < that._vf.url.length )
+                                {
+                                    fetchOrConfirmUrl();
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError( "Anchor fetch failed for all x3d urls." );
+                                    return null;
+                                }
+                            } );
+                    }
+                    else
+                    {
+                        return url;
+                    }
+                }
+                fetchOrConfirmUrl();
+            },
+
             doIntersect : function ( line )
             {
                 var isect = false;
@@ -76,13 +145,13 @@ x3dom.registerNodeType(
 
             handleTouch : function ()
             {
-                var url = this._vf.url.length ? this._vf.url[ 0 ] : "";
+                var url = this._vf.url.length ? this._vf.url[ this.urlIndex ] : "";
                 var aPos = url.search( "#" );
                 var anchor = "";
                 if ( aPos >= 0 )
                 {anchor = url.slice( aPos + 1 );}
 
-                var param = this._vf.parameter.length ? this._vf.parameter[ 0 ] : "";
+                var param = this._vf.parameter.length > this.urlIndex ? this._vf.parameter[ this.urlIndex ] : "";
                 var tPos = param.search( "target=" );
                 var target = "";
                 if ( tPos >= 0 )
@@ -104,6 +173,12 @@ x3dom.registerNodeType(
                     {
                         x3dom.debug.logWarning( "Anchor #viewpoint=" + anchor + " not in DEF list." );
                     }
+                    return;
+                }
+
+                if ( url.includes( ".x3d" ) || url.includes( ".json" ) )
+                {
+                    this.getRuntime().loadURL( this._nameSpace.getURL( url ) );
                     return;
                 }
 

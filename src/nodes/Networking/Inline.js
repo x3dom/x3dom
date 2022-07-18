@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * The description field specifies a textual description.
              * This may be used by browser-specific user interfaces that wish to present users with more detailed information.
              * @var {x3dom.fields.SFString} description
-             * @memberof x3dom.nodeTypes.Anchor
+             * @memberof x3dom.nodeTypes.Inline
              * @initvalue []
              * @field x3d
              * @instance
@@ -93,6 +93,7 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "mapDEFToID", false );
 
             this.initDone = false;
+            this.urlIndex = 0;
             this.count = 0;
             this.numRetries = x3dom.nodeTypes.Inline.MaximumRetries;
 
@@ -126,6 +127,7 @@ x3dom.registerNodeType(
                             }
                         }
                     }
+                    this.urlIndex = 0;
                     this.loadInline();
                 }
                 else if ( fieldName == "render" )
@@ -140,6 +142,7 @@ x3dom.registerNodeType(
                 if ( !this.initDone )
                 {
                     this.initDone = true;
+                    this.urlIndex = 0;
                     this.loadInline();
                 }
             },
@@ -170,8 +173,9 @@ x3dom.registerNodeType(
                         this._xmlNode.hasAttribute( "on" + eventType ) ||
                         this._listeners[ eventType ] ) )
                 {
+                    var xmlNode = this._xmlNode;
                     var event = {
-                        target          : this._xmlNode,
+                        target          : xmlNode,
                         type            : eventType,
                         error           : ( eventType == "error" ) ? "XMLHttpRequest Error" : "",
                         cancelBubble    : false,
@@ -180,17 +184,17 @@ x3dom.registerNodeType(
 
                     try
                     {
-                        var attrib = this._xmlNode[ "on" + eventType ];
+                        var attrib = xmlNode[ "on" + eventType ];
 
                         if ( typeof( attrib ) === "function" )
                         {
-                            attrib.call( this._xmlNode, event );
+                            attrib.call( xmlNode, event );
                         }
-                        else
+                        else if ( xmlNode.hasAttribute( "on" + eventType ) )
                         {
-                            var funcStr = this._xmlNode.getAttribute( "on" + eventType );
+                            var funcStr = xmlNode.getAttribute( "on" + eventType );
                             var func = new Function( "event", funcStr );
-                            func.call( this._xmlNode, event );
+                            func.call( xmlNode, event );
                         }
 
                         var list = this._listeners[ eventType ];
@@ -198,7 +202,7 @@ x3dom.registerNodeType(
                         {
                             for ( var i = 0; i < list.length; i++ )
                             {
-                                list[ i ].call( this._xmlNode, event );
+                                list[ i ].call( xmlNode, event );
                             }
                         }
                     }
@@ -231,13 +235,14 @@ x3dom.registerNodeType(
                 }
 
                 //Try to detect the contentType from suffix
-                if ( this._vf.url.length && this._vf.url[ 0 ].length )
+                if ( this._vf.url.length && this._vf.url[ this.urlIndex ].length )
                 {
-                    var lastPointIndex = this._vf.url[ 0 ].lastIndexOf( "." );
+                    var url = this._vf.url[ this.urlIndex ];
+                    var lastPointIndex = url.lastIndexOf( "." );
 
                     if ( lastPointIndex != -1 )
                     {
-                        var suffix = this._vf.url[ 0 ].substr( lastPointIndex ).toLowerCase();
+                        var suffix = url.substr( lastPointIndex ).toLowerCase();
 
                         switch ( suffix )
                         {
@@ -254,7 +259,7 @@ x3dom.registerNodeType(
             {
                 if ( !this._vf.load )
                 {
-                    x3dom.debug.logInfo( "Inline: load field prevented loading of " + this._vf.url[ 0 ] );
+                    x3dom.debug.logInfo( "Inline: load field prevented loading of " + this._vf.url[ this.urlIndex ] );
                     return;
                 }
 
@@ -316,7 +321,7 @@ x3dom.registerNodeType(
                             that._nameSpace.doc.needRender = true;
                             that._nameSpace.doc.decrementDownloads();
                             that._nameSpace.doc.needRender = true;
-                            x3dom.debug.logInfo( "Inline: added " + that._vf.url[ 0 ] + " to scene." );
+                            x3dom.debug.logInfo( "Inline: added " + that._vf.url[ that.urlIndex ] + " to scene." );
                         }, 1000 );
                     }
                     that._nameSpace.importNodes( newScene._nameSpace );
@@ -373,7 +378,7 @@ x3dom.registerNodeType(
                         }
                         else if ( xhr.status == 200 || xhr.status == 0 )
                         {
-                            x3dom.debug.logInfo( "Inline: downloading " + that._vf.url[ 0 ] + " done." );
+                            x3dom.debug.logInfo( "Inline: downloading " + that._vf.url[ that.urlIndex ] + " done." );
 
                             if ( contentType == undefined )
                             {
@@ -398,12 +403,7 @@ x3dom.registerNodeType(
                                 }
                                 else
                                 {
-                                    x3dom.debug.logError( "Invalide XHR Response" );
-
-                                    that.fireEvents( "error" );
-
-                                    that._nameSpace.doc.decrementDownloads();;
-                                    that.count = 0;
+                                    that.nextUrlOrError( "Invalid XHR response for glTF" );
                                 }
                             }
                             else if ( contentType == that.ContentType.X3DJ )
@@ -424,19 +424,12 @@ x3dom.registerNodeType(
                                     }
                                     else
                                     {
-                                        that.fireEvents( "error" );
-                                        that._nameSpace.doc.decrementDownloads();
-                                        that.count = 0;
+                                        that.nextUrlOrError( "Invalid XML parsing of JSON" );
                                     }
                                 }
                                 else
                                 {
-                                    x3dom.debug.logError( "Invalide XHR Response" );
-
-                                    that.fireEvents( "error" );
-
-                                    that._nameSpace.doc.decrementDownloads();
-                                    that.count = 0;
+                                    that.nextUrlOrError( "Invalid XHR response for JSON" );
                                 }
                             }
                             else if ( contentType == that.ContentType.X3D )
@@ -461,27 +454,20 @@ x3dom.registerNodeType(
                                 }
                                 else
                                 {
-                                    that.fireEvents( "error" );
-                                    that._nameSpace.doc.decrementDownloads();
-                                    that.count = 0;
+                                    that.nextUrlOrError( "Invalid xml parsing for X3D" );
                                 }
                             }
                         }
                         else
                         {
-                            x3dom.debug.logError( "XHR status: " + xhr.status + " - XMLHttpRequest requires web server running!" );
-
-                            that.fireEvents( "error" );
-
-                            that._nameSpace.doc.decrementDownloads();
-                            that.count = 0;
+                            that.nextUrlOrError( that._vf.url[ that.urlIndex ] + " status: " + xhr.status + " - XMLHttpRequest requires web server running!" );
                         }
                     }
                 };
 
-                if ( this._vf.url.length && this._vf.url[ 0 ].length )
+                if ( this._vf.url.length && this._vf.url[ this.urlIndex ].length )
                 {
-                    var xhrURI = this._nameSpace.getURL( this._vf.url[ 0 ] );
+                    var xhrURI = this._nameSpace.getURL( this._vf.url[ this.urlIndex ] );
 
                     xhr.open( "GET", xhrURI, true );
                     xhr.setRequestHeader( "Accept", "model/x3d+xml; q=1.0, model/gltf+json; q=0.5, model/gltf-binary; q=0.5" );
@@ -516,10 +502,24 @@ x3dom.registerNodeType(
                     }
                     catch ( ex )
                     {
-                        this.fireEvents( "error" );
-                        x3dom.debug.logError( this._vf.url[ 0 ] + ": " + ex );
-                        this._nameSpace.doc.decrementDownloads();
+                        that.nextUrlOrError( this._vf.url[ this.urlIndex ] + ": " + ex );
                     }
+                }
+            },
+
+            nextUrlOrError : function ( errorMsg )
+            {
+                x3dom.debug.logWarning( errorMsg );
+                this._nameSpace.doc.decrementDownloads();
+                this.urlIndex++;
+                if ( this.urlIndex < this._vf.url.length )
+                {
+                    this.loadInline();
+                }
+                else
+                {
+                    this.fireEvents( "error" );
+                    this.count = 0;
                 }
             },
 

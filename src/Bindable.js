@@ -224,7 +224,13 @@ x3dom.BindableStack.prototype.getActive = function ()
         this._bindBag[ 0 ].activate();
     }
 
-    return this._bindStack[ this._bindStack.length - 1 ];
+    var active = this._bindStack[ this._bindStack.length - 1 ];
+    if ( active._nameSpace == null )
+    {
+        this.pop();
+        active = this.getActive();
+    }
+    return active;
 };
 
 /**

@@ -3,18 +3,30 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * support url field change for AudioClip
+  * better indices for textured IFS with creases 
+  * ensure correct children order after ExternProto instancing
+  * delete Bindables on Inline removal 
+  * more robust DDS header length check
+  * allow 0,0,0 as first color in ColorInterpolator
+  * game mode init 
   * ROUTE into ProtoInstance
   * update download count after ExternProto loading 
   * Plane subdivision update
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * replace new Function() with safe constructed method for shader fields 
+  * replace eval() with safe JSON.parse()
+  * check back-ups in url field for ImageTexture, Inline, Anchor and ExternProto
+  * enable PointProperties for BinaryGeometry
   * SpotLight beamWidth default update
   * allow buffer option for Coordinate/Normal/ColorInterpolators
   * set buffer interpolator default duration to 1 for better compatibility
   * #sourceCode for JSON encoding
   * allow picking of Points which have pointProperties
   * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
+  * verify doc is available (not null), before manipulations
 * Features
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 
