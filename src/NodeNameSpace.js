@@ -299,6 +299,18 @@ x3dom.releaseFieldRef = function ( fieldName )
 };
 
 /**
+ * attach X3DOM's custom field interface functions
+ * @param {Dom} domNode - the dom node to which functions are attached
+ */
+x3dom.attachFieldAccess = function ( domNode )
+{
+    domNode.requestFieldRef = x3dom.requestFieldRef;
+    domNode.releaseFieldRef = x3dom.releaseFieldRef;
+    domNode.getFieldValue = x3dom.getFieldValue;
+    domNode.setFieldValue = x3dom.setFieldValue;
+};
+
+/**
  * NodeNameSpace Setup Tree
  *
  * @param domNode
@@ -400,6 +412,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
             if ( n )
             {
                 domNode._x3domNode = n;
+                x3dom.attachFieldAccess( domNode );
             }
             return n;
         }
@@ -498,11 +511,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
                 return null;
             }
 
-            // attach X3DOM's custom field interface functions
-            domNode.requestFieldRef = x3dom.requestFieldRef;
-            domNode.releaseFieldRef = x3dom.releaseFieldRef;
-            domNode.getFieldValue = x3dom.getFieldValue;
-            domNode.setFieldValue = x3dom.setFieldValue;
+            x3dom.attachFieldAccess( domNode );
 
             // find the NodeType for the given dom-node
             var nodeType = x3dom.nodeTypesLC[ domNode.localName.toLowerCase() ];
