@@ -109,8 +109,9 @@ x3dom.registerNodeType(
                     {
                         this._video.removeChild( this._video.firstChild );
                     }
-                    document.body.removeChild( this._video );
+                    //document.body.removeChild( this._video );
                     this._video = null;
+                    clearInterval( this._intervalID );
                 }
             }
         }
