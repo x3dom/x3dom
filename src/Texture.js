@@ -428,9 +428,15 @@ x3dom.Texture.prototype.updateTexture = function ()
                 tex._video = document.createElement( "video" );
                 tex._video.setAttribute( "preload", "auto" );
                 tex._video.setAttribute( "muted", "muted" );
-                p.appendChild( tex._video );
-                tex._video.style.visibility = "hidden";
-                tex._video.style.display = "none";
+                tex._video.setAttribute( "autoplay", "" );
+                tex._video.setAttribute( "playsinline", "" );
+                tex._video.crossOrigin = "anonymous";
+                tex._video.retryInterval = 1000;
+                tex._video.retryGrowth = 0.2;
+                // p.appendChild( tex._video );
+                // tex._video.style.visibility = "hidden";
+                // tex._video.style.display = "none";
+                tex._video.load();
             }
 
             for ( var i = 0; i < tex._vf.url.length; i++ )
@@ -458,7 +464,17 @@ x3dom.Texture.prototype.updateTexture = function ()
 
         var startVideo = function ()
         {
-            tex._video.play();
+            tex._video.play()
+                .then( function fulfilled ()
+                {
+                    tex._intervalID = setInterval( updateMovie, 16 );
+                } )
+                .catch( function rejected ( err )
+                {
+                    x3dom.debug.logInfo( "retrying: " + err );
+                    setTimeout( startVideo, tex._video.retryInterval );
+                    tex._video.retryInterval *= 1.0 + tex._video.retryGrowth;
+                } );
             tex._intervalID = setInterval( updateMovie, 16 );
         };
 
