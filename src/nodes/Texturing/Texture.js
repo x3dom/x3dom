@@ -39,7 +39,7 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "hideChildren", true );
 
             this._video = null;
-            this._intervalID = 0;
+            this._intervalID = null;
             this._canvas = null;
         },
         {
@@ -112,6 +112,7 @@ x3dom.registerNodeType(
                     //document.body.removeChild( this._video );
                     this._video = null;
                     clearInterval( this._intervalID );
+                    this._intervalID = null;
                 }
             }
         }

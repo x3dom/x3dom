@@ -467,6 +467,11 @@ x3dom.Texture.prototype.updateTexture = function ()
             tex._video.play()
                 .then( function fulfilled ()
                 {
+                    if ( tex._intervalID )
+                    {
+                        clearInterval( tex._intervalID );
+                        tex._intervalID = null;
+                    }
                     tex._intervalID = setInterval( updateMovie, 16 );
                 } )
                 .catch( function rejected ( err )
@@ -480,6 +485,7 @@ x3dom.Texture.prototype.updateTexture = function ()
         var videoDone = function ()
         {
             clearInterval( tex._intervalID );
+            tex._intervalID = null;
             if ( tex._vf.loop === true )
             {
                 tex._video.play();
