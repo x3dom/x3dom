@@ -1218,7 +1218,7 @@ function X3DJoint ()
                         }
                         if ( object1 && object2 )
                         {
-                            var newUniversalJoint = new Ammo.btUniversalConstraint( object1, object2,
+                            var newUniversalJoint = new btUniversalConstraint( object1, object2,
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.anchorPoint.x, JointShapes[ js ].Joint._vf.anchorPoint.y, JointShapes[ js ].Joint._vf.anchorPoint.z ),
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.axis1.x, JointShapes[ js ].Joint._vf.axis1.y, JointShapes[ js ].Joint._vf.axis1.z ),
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.axis2.x, JointShapes[ js ].Joint._vf.axis2.y, JointShapes[ js ].Joint._vf.axis2.z ) );
@@ -1249,7 +1249,7 @@ function X3DJoint ()
                         }
                         if ( object1 && object2 )
                         {
-                            var newGearJoint = new Ammo.btGeneric6DofConstraint(    object1, object2, object1.getWorldTransform(), object2.getWorldTransform(), true );
+                            var newGearJoint = new btGeneric6DofConstraint(    object1, object2, object1.getWorldTransform(), object2.getWorldTransform(), true );
                             /*
                              For each axis, if
                              lower limit = upper limit, The axis is locked
@@ -1324,7 +1324,7 @@ function X3DJoint ()
                         }
                         if ( object1 && object2 )
                         {
-                            var newSingleHingeJoint = new Ammo.btHingeConstraint( object1, object2,
+                            var newSingleHingeJoint = new btHingeConstraint( object1, object2,
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.anchorPoint.x, JointShapes[ js ].Joint._vf.anchorPoint.y, JointShapes[ js ].Joint._vf.anchorPoint.z ),
                                 new Ammo.btVector3( -JointShapes[ js ].Joint._vf.anchorPoint.x, -JointShapes[ js ].Joint._vf.anchorPoint.y, -JointShapes[ js ].Joint._vf.anchorPoint.z ),
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.axis.x, JointShapes[ js ].Joint._vf.axis.y, JointShapes[ js ].Joint._vf.axis.z ),
@@ -1350,7 +1350,7 @@ function X3DJoint ()
                         }
                         if ( object1 && object2 )
                         {
-                            var newDoubleHingeJoint = new Ammo.btHingeConstraint( object1, object2,
+                            var newDoubleHingeJoint = new btHingeConstraint( object1, object2,
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.anchorPoint.x, JointShapes[ js ].Joint._vf.anchorPoint.y, JointShapes[ js ].Joint._vf.anchorPoint.z ),
                                 new Ammo.btVector3( -JointShapes[ js ].Joint._vf.anchorPoint.x, -JointShapes[ js ].Joint._vf.anchorPoint.y, -JointShapes[ js ].Joint._vf.anchorPoint.z ),
                                 new Ammo.btVector3( JointShapes[ js ].Joint._vf.axis1.x, JointShapes[ js ].Joint._vf.axis1.y, JointShapes[ js ].Joint._vf.axis1.z ),
