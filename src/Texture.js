@@ -469,7 +469,7 @@ x3dom.Texture.prototype.updateTexture = function ()
                 {
                     if ( tex._intervalID )
                     {
-                        x3dom.debug.logInfo( "The video has already started." );
+                        x3dom.debug.logInfo( "The video has already started, startVideo is called repeatedly." );
                         clearInterval( tex._intervalID );
                         tex._intervalID = null;
                     }
