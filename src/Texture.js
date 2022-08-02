@@ -433,6 +433,7 @@ x3dom.Texture.prototype.updateTexture = function ()
                 tex._video.crossOrigin = "anonymous";
                 tex._video.retryInterval = 1000;
                 tex._video.retryGrowth = 0.2;
+                tex._video.retryTimeoutID = null;
                 // p.appendChild( tex._video );
                 // tex._video.style.visibility = "hidden";
                 // tex._video.style.display = "none";
@@ -464,6 +465,13 @@ x3dom.Texture.prototype.updateTexture = function ()
 
         var startVideo = function ()
         {
+            if ( !( tex._video instanceof HTMLMediaElement ) )
+            {
+                x3dom.debug.logInfo( "No video exists." );
+                return;
+            }
+            //x3dom.debug.logInfo( "clearRetryTimeoutID:" + tex._video.retryTimeoutID );
+            tex._video.retryTimeoutID = null;
             tex._video.play()
                 .then( function fulfilled ()
                 {
@@ -478,7 +486,8 @@ x3dom.Texture.prototype.updateTexture = function ()
                 .catch( function rejected ( err )
                 {
                     x3dom.debug.logInfo( "retrying: " + err );
-                    setTimeout( startVideo, tex._video.retryInterval );
+                    tex._video.retryTimeoutID = setTimeout( startVideo, tex._video.retryInterval );
+                    //x3dom.debug.logInfo( "setRetryTimeoutID:" + tex._video.retryTimeoutID );
                     tex._video.retryInterval *= 1.0 + tex._video.retryGrowth;
                 } );
         };

@@ -110,6 +110,8 @@ x3dom.registerNodeType(
                         this._video.removeChild( this._video.firstChild );
                     }
                     //document.body.removeChild( this._video );
+                    clearTimeout( this._video.retryTimeoutID );
+                    this._video.retryTimeoutID = null;
                     this._video = null;
                     clearInterval( this._intervalID );
                     this._intervalID = null;
