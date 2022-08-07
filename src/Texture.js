@@ -431,8 +431,6 @@ x3dom.Texture.prototype.updateTexture = function ()
                 tex._video.setAttribute( "autoplay", "" );
                 tex._video.setAttribute( "playsinline", "" );
                 tex._video.crossOrigin = "anonymous";
-                tex._video.retryInterval = 1000;
-                tex._video.retryGrowth = 0.2;
                 // p.appendChild( tex._video );
                 // tex._video.style.visibility = "hidden";
                 // tex._video.style.display = "none";
@@ -464,28 +462,56 @@ x3dom.Texture.prototype.updateTexture = function ()
 
         var startVideo = function ()
         {
+            //x3dom.debug.logInfo( "startVideo" );
+            window.removeEventListener( "mousedown", startVideo );
+            window.removeEventListener( "keydown", startVideo );
+            if ( !( tex._video instanceof HTMLMediaElement ) )
+            {
+                x3dom.debug.logInfo( "No video exists." );
+                return;
+            }
             tex._video.play()
                 .then( function fulfilled ()
                 {
+                    if ( tex._intervalID )
+                    {
+                        x3dom.debug.logInfo( "The video has already started, startVideo() is called repeatedly." );
+                        clearInterval( tex._intervalID );
+                        tex._intervalID = null;
+                    }
                     tex._intervalID = setInterval( updateMovie, 16 );
                 } )
                 .catch( function rejected ( err )
                 {
-                    x3dom.debug.logInfo( "retrying: " + err );
-                    setTimeout( startVideo, tex._video.retryInterval );
-                    tex._video.retryInterval *= 1.0 + tex._video.retryGrowth;
+                    x3dom.debug.logInfo( "Waiting for interaction: " + err );
+                    window.addEventListener( "mousedown", startVideo );
+                    window.addEventListener( "keydown", startVideo );
                 } );
+        };
+
+        var pauseVideo = function ()
+        {
+            //x3dom.debug.logInfo( "pauseVideo" );
+            window.removeEventListener( "mousedown", startVideo );
+            window.removeEventListener( "keydown", startVideo );
+            tex._video.pause();
+            clearInterval( tex._intervalID );
+            tex._intervalID = null;
         };
 
         var videoDone = function ()
         {
             clearInterval( tex._intervalID );
+            tex._intervalID = null;
             if ( tex._vf.loop === true )
             {
                 tex._video.play();
                 tex._intervalID = setInterval( updateMovie, 16 );
             }
         };
+
+        tex._video.startVideo = startVideo;
+        tex._video.pauseVideo = pauseVideo;
 
         // Start listening for the canplaythrough event, so we do not
         // start playing the video until we can do so without stuttering
