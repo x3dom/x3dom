@@ -346,15 +346,10 @@ x3dom.registerNodeType(
 
                     if ( doc )
                     {
-                        for ( var i = 0, n = doc._nodeBag.timer.length; i < n; i++ )
-                        {
-                            if ( doc._nodeBag.timer[ i ] === this )
-                            {
-                                doc._nodeBag.timer.splice( i, 1 );
-                            }
-                        }
+                        this.cleanNodeBag( doc._nodeBag.timer );  //X3DNode.cleanNodeBag()
                     }
                 }
+                x3dom.nodeTypes.X3DSensorNode.prototype.parentRemoved.call( this, parent );
             },
 
             _getCycleAt : function ( time )

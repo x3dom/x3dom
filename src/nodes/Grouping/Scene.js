@@ -122,6 +122,25 @@ x3dom.registerNodeType(
                                 " instead of " + that._shadowIdMap.ids.length + "!" );
                     }
                 };
+            },
+
+            //Root scene may have no parent, call parentRemoved() directly to clean up.
+            parentRemoved : function ( parent )
+            {
+                var doc = this.findX3DDoc();
+                x3dom.nodeTypes.X3DGroupingNode.prototype.parentRemoved.call( this, parent );
+                if ( this._parentNodes.length == 0 )
+                {
+                    if ( this._webgl )
+                    {
+                        this._webgl = null;
+                        // TODO; explicitly delete all gl objects
+                    }
+                    if ( doc && doc._scene === this )
+                    {
+                        doc.onSceneRemoved();
+                    }
+                }
             }
         }
     )

@@ -98,17 +98,21 @@ x3dom.registerNodeType(
 
             onRemove : function ()
             {
-                x3dom.nodeTypes.ClipPlane.count--;
+                if ( this._parentNodes.length === 0 )
+                {
+                    x3dom.nodeTypes.ClipPlane.count--;
+                }
             },
 
             parentAdded : function ( parent )
             {
-            },
+            }
 
-            parentRemoved : function ( parent )
+            /*parentRemoved : function ( parent )
             {
                 //TODO
-            }
+                x3dom.nodeTypes.X3DChildNode.prototype.parentRemoved.call( this, parent );
+            }*/
         }
     )
 );

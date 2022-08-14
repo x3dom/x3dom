@@ -223,6 +223,7 @@ x3dom.registerNodeType(
                         } );
                     }
                 } );
+                x3dom.nodeTypes.X3DAppearanceChildNode.prototype.parentRemoved.call( this, parent );
             },
 
             fieldChanged : function ( fieldName )

@@ -3908,7 +3908,7 @@ x3dom.gfx_webgl = ( function ()
                     if ( this._webgl.fbo.dtex )
                     {gl.deleteTexture( this._webgl.fbo.dtex );}
                     if ( this._webgl.fbo.rbo )
-                    {gl.deleteFramebuffer( this._webgl.fbo.rbo );}
+                    {gl.deleteRenderbuffer( this._webgl.fbo.rbo );}
                     gl.bindFramebuffer( gl.FRAMEBUFFER, null );
                     gl.deleteFramebuffer( this._webgl.fbo.fbo );
                     this._webgl.fbo.rbo = null;
