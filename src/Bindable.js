@@ -293,7 +293,6 @@ x3dom.BindableBag.prototype.setRefNode = function ( node )
 /**
  * BindableBag Clear Ref Node
  *
- * @param node
  */
 x3dom.BindableBag.prototype.clearRefNode = function ()
 {
