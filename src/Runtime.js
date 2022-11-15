@@ -1472,30 +1472,21 @@ x3dom.Runtime.prototype.onAnimationFinished = function ()
 
 x3dom.Runtime.prototype.enterVR = function ()
 {
-    if ( this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting )
-    {
-        this.canvas.vrDisplay.requestPresent( [ { source: this.canvas.canvas } ] ).then( function ()
-        {
-            this.canvas.doc.needRender = true;
-        }.bind( this ) );
-    }
+    this.canvas.enterVR();
 };
 
 x3dom.Runtime.prototype.exitVR = function ()
 {
-    if ( this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting )
-    {
-        this.canvas.vrDisplay.exitPresent();
-    }
+    this.canvas.exitVR();
 };
 
 x3dom.Runtime.prototype.toggleVR = function ()
 {
-    if ( this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting )
+    if ( !this.canvas.xrSession )
     {
         this.enterVR();
     }
-    else if ( this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting )
+    else if ( this.canvas.xrSession )
     {
         this.exitVR();
     }

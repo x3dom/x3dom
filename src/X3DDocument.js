@@ -160,17 +160,17 @@ x3dom.X3DDocument.prototype.advanceTime = function ( t )
     }
 };
 
-x3dom.X3DDocument.prototype.render = function ( ctx, vrFrameData, vrDisplay )
+x3dom.X3DDocument.prototype.render = function ( ctx, frameData )
 {
     if ( !ctx || !this._viewarea )
     {
         return;
     }
 
-    this._viewarea.setVRFrameData( vrFrameData );
-    this._viewarea.updateGamepads( vrDisplay );
+    this._viewarea.setVRFrameData( ctx, frameData );
+    this._viewarea.updateGamepads( frameData );
 
-    ctx.renderScene( this._viewarea );
+    ctx.renderScene( this._viewarea, frameData );
 };
 
 x3dom.X3DDocument.prototype.onPick = function ( ctx, x, y )

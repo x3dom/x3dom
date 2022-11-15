@@ -166,51 +166,23 @@ x3dom.Viewarea = function ( document, scene )
     this.arc = null;
 };
 
-x3dom.Viewarea.prototype.setVRFrameData = function ( vrFrameData )
+x3dom.Viewarea.prototype.setVRFrameData = function ( gl, vrFrameData )
 {
     this.vrFrameData = vrFrameData;
 
     if ( this.vrFrameData )
     {
-        this.vrLeftViewMatrix.setFromArray( this.vrFrameData.leftViewMatrix ),
+        this.vrLeftViewMatrix.setFromArray( this.vrFrameData.leftViewMatrix );
         this.vrRightViewMatrix.setFromArray( this.vrFrameData.rightViewMatrix );
+
+        this.vrLeftProjMatrix.setFromArray( this.vrFrameData.leftProjectionMatrix );
+        this.vrRightProjMatrix.setFromArray( this.vrFrameData.rightProjectionMatrix );
     }
 };
 
-x3dom.Viewarea.prototype.updateGamepads = function ( vrDisplay )
+x3dom.Viewarea.prototype.updateGamepads = function ( vrFrameData )
 {
-    this.vrControllerManager.update( this, vrDisplay );
-
-    // var allGamepads = navigator.getGamepads();
-    // var gamepads = [];
-
-    // for(var i = 0; i < allGamepads.length; i++ )
-    // {
-    //     if(allGamepads[i] && allGamepads[i].displayId != undefined && allGamepads[i].displayId == vrDisplay.displayId)
-    //     {
-    //         gamepads.push(allGamepads[i]);
-    //     }
-    // }
-
-    // if(gamepads.length)
-    // {
-    //     var axes = gamepads[0].axes;
-
-    //     var dx = axes[0];
-    //     var dy = axes[1];
-
-    //     var d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-    //     d = ((d < x3dom.fields.Eps) ? 1 : d) * 5;
-
-    //     var viewDir = this.vrLeftViewMatrix.e2();
-    //     var rightDir = this.vrLeftViewMatrix.e0();
-
-    //     viewDir = new x3dom.fields.SFVec3f(-viewDir.x, -viewDir.y, viewDir.z).multiply(d*(dy)/this._height);
-    //     rightDir = new x3dom.fields.SFVec3f(-rightDir.x, -rightDir.y, rightDir.z).multiply((d*dx/this._width));
-
-    //     this._movement = this._movement.add(rightDir).add(viewDir);
-    //     this._transMat = x3dom.fields.SFMatrix4f.translation(this._movement);
-    // }
+    this.vrControllerManager.update( this, vrFrameData );
 };
 
 /**
@@ -796,7 +768,7 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function ()
 {
     if ( this.vrFrameData )
     {
-        return this.vrLeftProjMatrix.setFromArray( this.vrFrameData.leftProjectionMatrix );
+        return this.vrLeftProjMatrix;
     }
     else
     {
@@ -814,8 +786,7 @@ x3dom.Viewarea.prototype.getProjectionMatrices = function ()
 {
     if ( this.vrFrameData )
     {
-        return [ this.vrLeftProjMatrix.setFromArray( this.vrFrameData.leftProjectionMatrix ),
-            this.vrRightProjMatrix.setFromArray( this.vrFrameData.rightProjectionMatrix ) ];
+        return [ this.vrLeftProjMatrix, this.vrRightProjMatrix ];
     }
     else
     {

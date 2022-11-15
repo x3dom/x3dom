@@ -47,9 +47,9 @@ x3dom.X3DCanvas = function ( x3dElem, canvasIdx )
 
     this.doc = null;
 
-    this.vrDisplay = null;
-    this.vrDisplayPromise = null;
-    this.vrFrameData = null;
+    this.isSessionSupportedPromise = null;
+    this.xrSession = null;
+    this.xrReferenceSpace = null;
     this.supportsPassiveEvents = false;
 
     this.devicePixelRatio = window.devicePixelRatio || 1;
@@ -409,34 +409,6 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function ()
         this.parent.doc.needRender = true;
     };
 
-    this.onVrDisplayPresentChange = function ( evt )
-    {
-        if ( this.vrDisplay && this.vrDisplay.isPresenting )
-        {
-            var leftEye = this.vrDisplay.getEyeParameters( "left" );
-            var rightEye = this.vrDisplay.getEyeParameters( "right" );
-
-            this._oldCanvasWidth  = this.canvas.width;
-            this._oldCanvasHeight = this.canvas.height;
-
-            this.canvas.width = Math.max( leftEye.renderWidth, rightEye.renderWidth ) * 2;
-            this.canvas.height = Math.max( leftEye.renderHeight, rightEye.renderHeight );
-
-            this.gl.VRMode = 2;
-            this.doc.needRender = true;
-        }
-        else if ( this.vrDisplay && !this.vrDisplay.isPresenting )
-        {
-            this.canvas.width  = this._oldCanvasWidth;
-            this.canvas.height = this._oldCanvasHeight;
-
-            this.vrFrameData = null;
-
-            this.gl.VRMode = 1;
-            this.doc.needRender = true;
-        }
-    };
-
     if ( this.canvas !== null && this.gl !== null && this.hasRuntime )
     {
         // event handler for mouse interaction
@@ -466,9 +438,6 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function ()
             x3dom.debug.logError( "recover WebGL state and resources on context lost NYI" );
             event.preventDefault();
         }, false );
-
-        // VR Events
-        window.addEventListener( "vrdisplaypresentchange", this.onVrDisplayPresentChange.bind( this ), false );
 
         // Mouse Events
         this.canvas.addEventListener( "mousedown", this.onMouseDown, false );
@@ -1178,9 +1147,9 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function ( x3dElem )
 /**
  * Watches for a resize of the canvas and sets the current dimensions
  */
-x3dom.X3DCanvas.prototype._watchForResize = function ()
+x3dom.X3DCanvas.prototype._watchForResize = function ( )
 {
-    if ( this.vrDisplay && this.vrDisplay.isPresenting )
+    if ( this.xrSession )
     {
         return;
     }
@@ -1234,10 +1203,10 @@ x3dom.X3DCanvas.prototype._createVRDiv = function ()
     var vrDiv = document.createElement( "div" );
     vrDiv.setAttribute( "class", "x3dom-vr" );
 
-    vrDiv.onclick = function ()
+    vrDiv.onclick = ( e ) =>
     {
         this.x3dElem.runtime.toggleVR();
-    }.bind( this );
+    };
 
     vrDiv.oncontextmenu = function ( evt )
     {
@@ -1245,6 +1214,8 @@ x3dom.X3DCanvas.prototype._createVRDiv = function ()
         evt.stopPropagation();
         return false;
     };
+
+    vrDiv.title = "Toggle VR";
 
     return vrDiv;
 };
@@ -1268,7 +1239,7 @@ x3dom.X3DCanvas.prototype.mousePosition = function ( evt )
 
 /** Is called in the main loop after every frame
  */
-x3dom.X3DCanvas.prototype.tick = function ( timestamp )
+x3dom.X3DCanvas.prototype.tick = function ( timestamp, xrFrame )
 {
     var that = this;
 
@@ -1299,7 +1270,7 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp )
         }
     }
 
-    if ( this.doc.needRender )
+    if ( this.doc.needRender || xrFrame )
     {
         // calc average frames per second
         if ( diff >= 1000 )
@@ -1322,23 +1293,12 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp )
 
         runtime.enterFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
 
-        if ( this.vrDisplay && this.vrDisplay.isPresenting )
-        {
-            if ( !this.vrFrameData )
-            {
-                this.vrFrameData = new VRFrameData();
-            }
-
-            this.vrDisplay.getFrameData( this.vrFrameData );
-        }
-        else
+        if ( !xrFrame )
         {
             this.doc.needRender = false;
         }
 
-        // picking might require another pass
-
-        this.doc.render( this.gl, this.vrFrameData, this.vrDisplay );
+        this.doc.render( this.gl, this.getVRFrameData( xrFrame ) );
 
         if ( !this.doc._scene._vf.doPickPass )
         {
@@ -1346,11 +1306,6 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp )
         }
 
         runtime.exitFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
-
-        if ( this.vrDisplay && this.vrDisplay.isPresenting )
-        {
-            this.vrDisplay.submitFrame();
-        }
     }
 
     if ( this.progressDiv )
@@ -1407,7 +1362,28 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp )
     this.doc.previousDownloadCount = this.doc.downloadCount;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+x3dom.X3DCanvas.prototype.mainloop = function ( timestamp, xrFrame )
+{
+    if ( this.doc && this.x3dElem.runtime )
+    {
+        this._watchForResize();
+
+        this.tick( timestamp, xrFrame );
+
+        if ( this.xrSession )
+        {
+            this.xrSession.requestAnimationFrame( this.mainloop );
+        }
+        else
+        {
+            window.requestAnimFrame( this.mainloop );
+        }
+    }
+};
+
+//------------------------------------------------------------------------------
 
 /** Loads the given @p uri.
  * @param uri can be a uri or an X3D node
@@ -1417,80 +1393,36 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp )
 x3dom.X3DCanvas.prototype.load = function ( uri, sceneElemPos, settings )
 {
     this.doc = new x3dom.X3DDocument( this.canvas, this.gl, settings );
-    var x3dCanvas = this;
 
-    this.doc.onload = function ()
+    this.doc.onload = () =>
     {
-        //x3dom.debug.logInfo("loaded '" + uri + "'");
+        this.mainloop = this.mainloop.bind( this );
 
-        if ( x3dCanvas.hasRuntime )
+        this.checkForVRSupport();
+
+        if ( this.hasRuntime )
         {
-            // requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
-            ( function mainloop ( timestamp )
-            {
-                if ( x3dCanvas.doc && x3dCanvas.x3dElem.runtime )
-                {
-                    x3dCanvas._watchForResize();
-                    x3dCanvas.tick( timestamp );
-
-                    if ( navigator.getVRDisplays && x3dCanvas.vrDisplay === null )
-                    {
-                        if ( !x3dCanvas.vrDisplayPromise )
-                        {
-                            x3dCanvas.vrDisplayPromise = navigator.getVRDisplays();
-                        }
-
-                        x3dCanvas.vrDisplayPromise.then( function ( displays )
-                        {
-                            if ( displays[ 0 ] )
-                            {
-                                x3dCanvas.vrDisplay = displays[ 0 ];
-
-                                x3dCanvas.vrDisplay.requestAnimationFrame( mainloop, x3dCanvas );
-
-                                x3dCanvas.vrDiv.style.display = "block";
-                            }
-                            else
-                            {
-                                x3dCanvas.vrDisplay = undefined;
-                                window.requestAnimFrame( mainloop, x3dCanvas );
-                            }
-                        } ).catch( function ( error )
-                        {
-                            x3dCanvas.vrDisplay = undefined;
-                            window.requestAnimFrame( mainloop, x3dCanvas );
-                        } );
-                    }
-                    else if ( navigator.getVRDisplays && x3dCanvas.vrDisplay )
-                    {
-                        x3dCanvas.vrDisplay.requestAnimationFrame( mainloop, x3dCanvas );
-                    }
-                    else
-                    {
-                        window.requestAnimFrame( mainloop, x3dCanvas );
-                    }
-                }
-            } )();
+            this.mainloop();
         }
         else
         {
-            x3dCanvas.tick();
+            this.tick();
         }
     };
 
-    this.x3dElem.render = function ()
+    this.x3dElem.render = () =>
     {
-        if ( x3dCanvas.hasRuntime )
+        if ( this.hasRuntime )
         {
-            x3dCanvas.doc.needRender = true;
+            this.doc.needRender = true;
         }
         else
         {
-            x3dCanvas.doc.render( x3dCanvas.gl );
+            this.doc.render( x3dCanvas.gl );
         }
     };
 
-    this.x3dElem.context = x3dCanvas.gl.ctx3d;
+    this.x3dElem.context = this.gl.ctx3d;
 
     this.doc.onerror = function ()
     {
@@ -1498,4 +1430,144 @@ x3dom.X3DCanvas.prototype.load = function ( uri, sceneElemPos, settings )
     };
 
     this.doc.load( uri, sceneElemPos );
+};
+
+//------------------------------------------------------------------------------
+
+x3dom.X3DCanvas.prototype.checkForVRSupport = function ()
+{
+    if ( !navigator.xr )
+    {
+        return;
+    }
+
+    navigator.xr.isSessionSupported( "immersive-vr" ).then( ( isSupported ) =>
+    {
+        if ( isSupported )
+        {
+            this.vrDiv.style.display = "block";
+        }
+    } );
+};
+
+x3dom.X3DCanvas.prototype.enterVR = function ()
+{
+    if ( this.xrSession )
+    {
+        return;
+    }
+
+    this.gl.ctx3d.makeXRCompatible().then( () =>
+    {
+        navigator.xr.requestSession( "immersive-vr", { requiredFeatures: [ "local-floor" ] } ).then( ( session ) =>
+        {
+            session.requestReferenceSpace( "local-floor" ).then( ( space ) =>
+            {
+                const xrLayer = new XRWebGLLayer( session, this.gl.ctx3d );
+                session.updateRenderState( { baseLayer: xrLayer } );
+
+                this._oldCanvasWidth  = this.canvas.width;
+                this._oldCanvasHeight = this.canvas.height;
+
+                this.canvas.width  = xrLayer.framebufferWidth;
+                this.canvas.height = xrLayer.framebufferHeight;
+
+                this.gl.VRMode = 2;
+                this.xrReferenceSpace = space;
+                this.xrSession = session;
+                this.doc.needRender = true;
+
+                this.xrSession.addEventListener( "end", () =>
+                {
+                    this.exitVR();
+                } );
+
+                session.requestAnimationFrame( this.mainloop );
+            } );
+        } );
+    } );
+};
+
+//------------------------------------------------------------------------------
+
+x3dom.X3DCanvas.prototype.exitVR = function ()
+{
+    if ( !this.xrSession )
+    {
+        return;
+    }
+
+    this.xrSession.end();
+    this.xrSession = undefined;
+    this.xrReferenceSpace = undefined;
+    this.canvas.width  = this._oldCanvasWidth;
+    this.canvas.height = this._oldCanvasHeight;
+    this.gl.VRMode = 1;
+    this.doc.needRender = true;
+    window.requestAnimationFrame( this.mainloop );
+};
+
+//------------------------------------------------------------------------------
+
+x3dom.X3DCanvas.prototype.getVRFrameData = function ( xrFrame )
+{
+    if ( !xrFrame )
+    {
+        return;
+    }
+
+    const pose = xrFrame.getViewerPose( this.xrReferenceSpace );
+
+    if ( !pose )
+    {
+        return;
+    }
+
+    const vrFrameData = {
+        framebuffer : xrFrame.session.renderState.baseLayer.framebuffer,
+        controllers : {}
+    };
+
+    for ( const view of pose.views )
+    {
+        if ( view.eye === "left" )
+        {
+            vrFrameData.leftViewMatrix = view.transform.inverse.matrix;
+            vrFrameData.leftProjectionMatrix = view.projectionMatrix;
+        }
+        else if ( view.eye === "right" )
+        {
+            vrFrameData.rightViewMatrix = view.transform.inverse.matrix;
+            vrFrameData.rightProjectionMatrix = view.projectionMatrix;
+        }
+    }
+
+    for ( const inputSource of xrFrame.session.inputSources )
+    {
+        // Show the input source if it has a grip space
+        if ( inputSource.gripSpace )
+        {
+            const inputPose = xrFrame.getPose( inputSource.gripSpace, this.xrReferenceSpace );
+
+            vrFrameData.controllers[ inputSource.handedness ] = {
+                gamepad : inputSource.gamepad,
+                type    : inputSource.profiles[ 0 ],
+                pose    : {
+                    position : [
+                        inputPose.transform.position.x,
+                        inputPose.transform.position.y,
+                        inputPose.transform.position.z
+                    ],
+                    orientation : [
+                        inputPose.transform.orientation.x,
+                        inputPose.transform.orientation.y,
+                        inputPose.transform.orientation.z,
+                        inputPose.transform.orientation.w
+                    ]
+                }
+            };
+        }
+    }
+
+    return vrFrameData;
 };

@@ -4,94 +4,34 @@ x3dom.VRControllerManager = function ()
     this.leftTransform  = undefined;
     this.rightInline    = undefined;
     this.rightTransform = undefined;
+    this.wasPresenting  = false;
+    this.modelsAdded    = false;
 
-    this.leftGamepadIdx  = undefined;
-    this.rightGamepadIdx = undefined;
-    this.vrDisplay       = undefined;
-    this.wasPresenting   = false;
-
-    this.controllers = {
-        "HTC Vive MV" : {
+    this._controllers = {
+        "htc-vive" : {
             left        : "https://x3dom.org/download/assets/vr/vive.glb",
             right       : "https://x3dom.org/download/assets/vr/vive.glb",
             scaleFactor : new x3dom.fields.SFVec3f( 40, 40, 40 ),
             offset      : new x3dom.fields.SFVec3f(),
             axesScale   : [ 1, 1 ]
         },
-        "Oculus Oculus Rift CV1" : {
+        "oculus-touch" : {
             left        : "https://x3dom.org/download/assets/vr/oculus-touch-left.glb",
             right       : "https://x3dom.org/download/assets/vr/oculus-touch-right.glb",
             scaleFactor : new x3dom.fields.SFVec3f( 39.5, 39.5, 39.5 ),
             offset      : new x3dom.fields.SFVec3f(),
             axesScale   : [ 1, 1 ]
         },
-        "Oculus Go" : {
+        "oculus-go" : {
             left        : "https://x3dom.org/download/assets/vr/oculus-go.glb",
             right       : "https://x3dom.org/download/assets/vr/oculus-go.glb",
             scaleFactor : new x3dom.fields.SFVec3f( 1, 1, 1 ),
             offset      : new x3dom.fields.SFVec3f( 0.2, -0.3, -0.3 ),
-            axesScale   : [ 1, -1 ]
-        },
-        "Emulated HTC Vive DVT" : {
-            left        : "https://x3dom.org/download/assets/vr/vive.glb",
-            right       : "https://x3dom.org/download/assets/vr/vive.glb",
-            scaleFactor : new x3dom.fields.SFVec3f( 40, 40, 40 ),
-            offset      : new x3dom.fields.SFVec3f(),
-            axesScale   : [ 1, 1 ]
-        },
-        "WindowsMR DELL VISOR VR118" : {
-            left        : "https://x3dom.org/download/assets/vr/microsoft-left.glb",
-            right       : "https://x3dom.org/download/assets/vr/microsoft-right.glb",
-            scaleFactor : new x3dom.fields.SFVec3f( 40, 40, 40 ),
-            offset      : new x3dom.fields.SFVec3f(),
-            axesScale   : [ 1, 1 ]
+            axesScale   : [ -1, 1 ]
         }
     };
 
     this._addInlines();
-    this._addGamePadListeners();
-};
-
-x3dom.VRControllerManager.prototype._addGamePadListeners = function ()
-{
-    window.addEventListener( "gamepadconnected", this._onGamePadConnected.bind( this ) );
-    window.addEventListener( "gamepaddisconnected", this._onGamePadDisconnected.bind( this ) );
-};
-
-x3dom.VRControllerManager.prototype._onGamePadConnected = function ( e )
-{
-    var gamepad = e.gamepad;
-
-    navigator.getVRDisplays().then( function ( displays )
-    {
-        var display = displays[ 0 ];
-
-        if ( display && gamepad.displayId == display.displayId )
-        {
-            var controller = this.controllers[ display.displayName ];
-
-            if ( !controller )
-            {
-                return;
-            }
-
-            if ( gamepad.hand == "left" )
-            {
-                this.leftGamepadIdx = gamepad.index;
-                this.leftInline.setAttribute( "url", controller.left );
-            }
-            else if ( gamepad.hand == "right" )
-            {
-                this.rightGamepadIdx = gamepad.index;
-                this.rightInline.setAttribute( "url", controller.right, controller.scaleFactor );
-            }
-        }
-    }.bind( this ) );
-};
-
-x3dom.VRControllerManager.prototype._onGamePadDisconnected = function ( e )
-{
-    console.log( e );
 };
 
 x3dom.VRControllerManager.prototype._addInlines = function ()
@@ -116,7 +56,72 @@ x3dom.VRControllerManager.prototype._addInlines = function ()
         x3dScene.appendChild( this.rightTransform );
     }
 };
-x3dom.VRControllerManager.prototype.fit = function ( viewarea, vrDisplay )
+
+x3dom.VRControllerManager.prototype._addControllerModels = function ( controllers )
+{
+    if ( this.modelsAdded )
+    {
+        return;
+    }
+
+    if ( controllers.left )
+    {
+        const url = this._getControllerModelURL( controllers.left.type, "left" );
+
+        this.leftInline.setAttribute( "url", url );
+    }
+
+    if ( controllers.right )
+    {
+        const url = this._getControllerModelURL( controllers.right.type, "right" );
+
+        this.rightInline.setAttribute( "url", url );
+    }
+
+    this.modelsAdded = true;
+};
+
+x3dom.VRControllerManager.prototype._getControllerAxesScale = function ( type )
+{
+    if ( this._controllers[ type ] === undefined )
+    {
+        return [ 1, 1 ];
+    }
+
+    return this._controllers[ type ].axesScale;
+};
+
+x3dom.VRControllerManager.prototype._getControllerModelURL = function ( type, side )
+{
+    if ( this._controllers[ type ] === undefined )
+    {
+        return "";
+    }
+
+    return this._controllers[ type ][ side ];
+};
+
+x3dom.VRControllerManager.prototype._getControllerOffset = function ( type )
+{
+    if ( this._controllers[ type ] === undefined )
+    {
+        return [ 0, 0, 0 ];
+    }
+
+    return this._controllers[ type ].offset;
+};
+
+x3dom.VRControllerManager.prototype._getControllerScaleFactor = function ( type )
+{
+    if ( this._controllers[ type ] === undefined )
+    {
+        return [ 1, 1, 1 ];
+    }
+
+    return this._controllers[ type ].scaleFactor;
+};
+
+x3dom.VRControllerManager.prototype.fit = function ( viewarea )
 {
     var min = viewarea._scene._lastMin;
     var max = viewarea._scene._lastMax;
@@ -134,9 +139,9 @@ x3dom.VRControllerManager.prototype.fit = function ( viewarea, vrDisplay )
     viewarea._movement = viewDir.multiply( -dist );
 };
 
-x3dom.VRControllerManager.prototype.update = function ( viewarea, vrDisplay )
+x3dom.VRControllerManager.prototype.update = function ( viewarea, vrFrameData )
 {
-    if ( !vrDisplay || ( vrDisplay && !vrDisplay.isPresenting ) )
+    if ( !vrFrameData )
     {
         if ( this.wasPresenting )
         {
@@ -148,50 +153,36 @@ x3dom.VRControllerManager.prototype.update = function ( viewarea, vrDisplay )
 
         return;
     }
-    else
-    {
-        if ( !this.wasPresenting )
-        {
-            this.leftInline.setAttribute( "render", "true" );
-            this.rightInline.setAttribute( "render", "true" );
 
-            this.fit( viewarea, vrDisplay );
-        }
+    if ( !this.wasPresenting )
+    {
+        this.leftInline.setAttribute( "render", "true" );
+        this.rightInline.setAttribute( "render", "true" );
+
+        this.fit( viewarea );
 
         this.wasPresenting = true;
     }
 
-    var gamepads = navigator.getGamepads();
-    var controller = {};
-
-    if ( this.leftGamepadIdx != undefined && gamepads[ this.leftGamepadIdx ] )
-    {
-        var gamepad = gamepads[ this.leftGamepadIdx ];
-        controller.left = gamepad;
-    }
-
-    if ( this.rightGamepadIdx != undefined && gamepads[ this.rightGamepadIdx ] )
-    {
-        var gamepad = gamepads[ this.rightGamepadIdx ];
-        controller.right = gamepad;
-    }
-
-    this.onUpdate( viewarea, vrDisplay, controller );
+    this._addControllerModels( vrFrameData.controllers );
+    this._updateMatrices( viewarea, vrFrameData.controllers );
+    this._updateControllerModels( viewarea, vrFrameData.controllers );
 };
 
-x3dom.VRControllerManager.prototype.onUpdate = function ( viewarea, vrDisplay, controllers )
+x3dom.VRControllerManager.prototype._updateMatrices = function ( viewarea, controllers )
 {
     var transMat = new x3dom.fields.SFMatrix4f();
     var rotMat = new x3dom.fields.SFMatrix4f();
     var axes = [ 0, 0 ];
-    var axesScale = this.controllers[ vrDisplay.displayName ].axesScale;
 
     if ( controllers.left )
     {
-        axes[ 0 ] += controllers.left.axes[ 0 ] * axesScale[ 0 ];
-        axes[ 1 ] += controllers.left.axes[ 1 ] * axesScale[ 1 ];
+        var axesScale = this._getControllerAxesScale( controllers.left.type );
 
-        if ( controllers.left.buttons[ 1 ].pressed )
+        axes[ 0 ] += controllers.left.gamepad.axes[ 0 ] * axesScale[ 0 ];
+        axes[ 1 ] += controllers.left.gamepad.axes[ 1 ] * axesScale[ 1 ];
+
+        if ( controllers.left.gamepad.buttons[ 0 ].pressed )
         {
             this.fit( viewarea );
         }
@@ -199,10 +190,12 @@ x3dom.VRControllerManager.prototype.onUpdate = function ( viewarea, vrDisplay, c
 
     if ( controllers.right )
     {
-        axes[ 0 ] += controllers.right.axes[ 0 ] * axesScale[ 0 ];
-        axes[ 1 ] += controllers.right.axes[ 1 ] * axesScale[ 1 ];
+        var axesScale = this._getControllerAxesScale( controllers.right.type );
 
-        if ( controllers.right.buttons[ 1 ].pressed )
+        axes[ 0 ] += controllers.right.gamepad.axes[ 0 ] * axesScale[ 0 ];
+        axes[ 1 ] += controllers.right.gamepad.axes[ 1 ] * axesScale[ 1 ];
+
+        if ( controllers.right.gamepad.buttons[ 0 ].pressed )
         {
             this.fit( viewarea );
         }
@@ -229,30 +222,17 @@ x3dom.VRControllerManager.prototype.onUpdate = function ( viewarea, vrDisplay, c
     //Enable default Mouse Navigation
     // viewarea.vrLeftViewMatrix  = viewarea.vrLeftViewMatrix.mult(viewarea._transMat).mult(viewarea._rotMat);
     // viewarea.vrRightViewMatrix = viewarea.vrRightViewMatrix.mult(viewarea._transMat).mult(viewarea._rotMat);
-
-    this._updateControllerModels( viewarea, vrDisplay, controllers );
 };
 
-x3dom.VRControllerManager.prototype._updateControllerModels = function ( viewarea, vrDisplay, controllers )
+x3dom.VRControllerManager.prototype._updateControllerModels = function ( viewarea, controllers )
 {
-    if ( !vrDisplay || ( vrDisplay && !vrDisplay.isPresenting ) )
-    {
-        this.leftInline.setAttribute( "render", "false" );
-        this.rightInline.setAttribute( "render", "false" );
-        return;
-    }
-    else
-    {
-        this.leftInline.setAttribute( "render", "true" );
-        this.rightInline.setAttribute( "render", "true" );
-    }
-
     if ( controllers.left )
     {
-        var pose = controllers.left.pose;
+        var pose     = controllers.left.pose;
+        var offset   = this._getControllerOffset( controllers.left.type );
         var rotation = ( pose.orientation ) ? x3dom.fields.Quaternion.fromArray( pose.orientation ) : new x3dom.fields.Quaternion();
-        var position = ( pose.position ) ? x3dom.fields.SFVec3f.fromArray( pose.position ) : this.controllers[ vrDisplay.displayName ].offset;
-        var scale    = this.controllers[ vrDisplay.displayName ].scaleFactor;
+        var position = ( pose.position ) ? x3dom.fields.SFVec3f.fromArray( pose.position ) : offset;
+        var scale    = this._getControllerScaleFactor( controllers.left.type );
 
         position = position.subtract( viewarea._movement );
 
@@ -263,10 +243,11 @@ x3dom.VRControllerManager.prototype._updateControllerModels = function ( vieware
 
     if ( controllers.right )
     {
-        var pose = controllers.right.pose;
+        var pose     = controllers.right.pose;
+        var offset   = this._getControllerOffset( controllers.right.type );
         var rotation = ( pose.orientation ) ? x3dom.fields.Quaternion.fromArray( pose.orientation ) : new x3dom.fields.Quaternion();
-        var position = ( pose.position ) ? x3dom.fields.SFVec3f.fromArray( pose.position ) : this.controllers[ vrDisplay.displayName ].offset;
-        var scale    = this.controllers[ vrDisplay.displayName ].scaleFactor;
+        var position = ( pose.position ) ? x3dom.fields.SFVec3f.fromArray( pose.position ) : offset;
+        var scale    = this._getControllerScaleFactor( controllers.right.type );
 
         position = position.subtract( viewarea._movement );
 

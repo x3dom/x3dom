@@ -32,7 +32,6 @@ x3dom.gfx_webgl = ( function ()
         this.cache = new x3dom.Cache();
         this.stateManager = new x3dom.StateManager( ctx3d );
         this.VRMode = 1;
-        this.vrFrameData = null;
 
         this.BUFFER_IDX =
             {
@@ -4235,6 +4234,7 @@ x3dom.gfx_webgl = ( function ()
         // rendering
         x3dom.Utils.startMeasure( "render" );
 
+        this.stateManager.bindFramebuffer( gl.FRAMEBUFFER, vrFrameData ? vrFrameData.framebuffer : null );
         this.stateManager.viewport( 0, 0, this.canvas.width, this.canvas.height );
 
         // calls gl.clear etc. (bgnd stuff)
