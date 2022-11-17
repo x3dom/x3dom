@@ -49,6 +49,7 @@ x3dom.X3DCanvas = function ( x3dElem, canvasIdx )
 
     this.isSessionSupportedPromise = null;
     this.xrSession = null;
+    this.xrSessionAlreadyEnded = false;
     this.xrReferenceSpace = null;
     this.supportsPassiveEvents = false;
 
@@ -1479,6 +1480,7 @@ x3dom.X3DCanvas.prototype.enterVR = function ()
 
                 this.xrSession.addEventListener( "end", () =>
                 {
+                    this.xrSessionAlreadyEnded = true;
                     this.exitVR();
                 } );
 
@@ -1497,7 +1499,12 @@ x3dom.X3DCanvas.prototype.exitVR = function ()
         return;
     }
 
-    this.xrSession.end();
+    if (!this.xrSessionAlreadyEnded)
+    {
+        this.xrSession.end();
+        this.xrSessionAlreadyEnded = false;
+    }
+
     this.xrSession = undefined;
     this.xrReferenceSpace = undefined;
     this.canvas.width  = this._oldCanvasWidth;
