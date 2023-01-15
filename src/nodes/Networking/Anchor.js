@@ -85,7 +85,7 @@ x3dom.registerNodeType(
                 function fetchOrConfirmUrl ()
                 {
                     var doc = that._nameSpace.doc;
-                    var url = that._vf.url[ that.urlIndex ];
+                    var url = that._vf.url[ that.urlIndex ] || "";
                     var lastDotIndex = url.lastIndexOf( "." );
                     var suffix = url.substr( lastDotIndex ).toLowerCase();
                     if ( !url.startsWith( "javascript" ) &&
@@ -160,7 +160,11 @@ x3dom.registerNodeType(
                 // TODO: implement #Viewpoint bind
                 // http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/networking.html#Anchor
 
-                x3dom.debug.logInfo( "Anchor url=" + url + ", target=" + target + ", #viewpoint=" + anchor );
+                x3dom.debug.logInfo( "Anchor " + this._vf.description + " url=" + url + ", target=" + target + ", #viewpoint=" + anchor );
+
+                if (this._vf.url.length == 0) {
+                    return;
+                }
 
                 if ( anchor.length > 0 && url == "#" + anchor )
                 {
