@@ -162,7 +162,8 @@ x3dom.registerNodeType(
 
                 x3dom.debug.logInfo( "Anchor " + this._vf.description + " url=" + url + ", target=" + target + ", #viewpoint=" + anchor );
 
-                if (this._vf.url.length == 0) {
+                if ( this._vf.url.length == 0 )
+                {
                     return;
                 }
 
