@@ -17,6 +17,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * Anchor: allow empty urls and log description 
   * allow field access functions for USE nodes
   * replace new Function() with safe constructed method for shader fields 
   * replace eval() with safe JSON.parse()
