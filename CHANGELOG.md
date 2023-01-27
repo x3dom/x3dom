@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * MovieTexture: autostart, ios and removal
   * support url field change for AudioClip
   * better indices for textured IFS with creases 
   * ensure correct children order after ExternProto instancing
@@ -16,6 +17,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * Anchor: allow empty urls and log description 
   * allow field access functions for USE nodes
   * replace new Function() with safe constructed method for shader fields 
   * replace eval() with safe JSON.parse()

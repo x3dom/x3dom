@@ -39,7 +39,7 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "hideChildren", true );
 
             this._video = null;
-            this._intervalID = 0;
+            this._intervalID = null;
             this._canvas = null;
         },
         {
@@ -104,12 +104,20 @@ x3dom.registerNodeType(
             {
                 if ( this._video )
                 {
-                    this._video.pause();
+                    this._video.pauseVideo();
                     while ( this._video.hasChildNodes() )
                     {
                         this._video.removeChild( this._video.firstChild );
                     }
-                    document.body.removeChild( this._video );
+                    //document.body.removeChild( this._video );
+                    if ( this._video.startVideo )
+                    {
+                        this._video.startVideo = null;
+                    }
+                    if ( this._video.pauseVideo )
+                    {
+                        this._video.pauseVideo = null;
+                    }
                     this._video = null;
                 }
             }
