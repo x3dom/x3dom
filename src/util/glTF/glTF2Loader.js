@@ -7,6 +7,11 @@ x3dom.glTF2Loader = function ( nameSpace )
 {
     this._nameSpace = nameSpace;
     this._definitions = {};
+    this._supportedExtensions = [
+        "KHR_materials_pbrSpecularGlossiness",
+        "KHR_materials_unlit",
+        "KHR_texture_transform"
+    ];
 };
 
 /**
@@ -29,6 +34,14 @@ x3dom.glTF2Loader.prototype.load = function ( input, binary )
     //generate worldinfo from asset properties and extras
     this._generateX3DWorldInfo( scene, x3dScene );
 
+    //check if unsupported extension are required
+    if ( this._unsupportedExtensionsRequired() )
+    {
+        x3dom.debug.logWarning( "Cannot render glTF." );
+        x3dom.debug.logWarning( "Some required extension of " + this._gltf.extensionsRequired + " not supported." );
+        return x3dScene;
+    }
+
     // Get the nodes
     for ( var i = 0; i < scene.nodes.length; i++ )
     {
@@ -50,6 +63,21 @@ x3dom.glTF2Loader.prototype.load = function ( input, binary )
     }
 
     return x3dScene;
+};
+
+/**
+ * return true if an extension is required but not supported
+ */
+x3dom.glTF2Loader.prototype._unsupportedExtensionsRequired = function ()
+{
+    if ( !this._gltf.extensionsRequired )
+    {
+        return false;
+    }
+    return this._gltf.extensionsRequired.some( function ( e )
+    {
+        return this._supportedExtensions.indexOf( e ) < 0;
+    }, this );
 };
 
 /**
