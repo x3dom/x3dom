@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3.3.0
+    - uses: actions/setup-node@v3.6.0
       with:
-        node-version: 10.x
+        node-version: 16.x
     - run: npm install
     - name: npm run lint
       continue-on-error: true
@@ -32,24 +32,30 @@ jobs:
         mkdir linted
         for f in `grep x3dom/src eslint.err`; do cat $f >> fixed; cp $f linted; diff -u $f.orig $f >> eslint.err; done
         REPORT="$(cat eslint.err)"
-        REPORT="${REPORT//'%'/'%25'}"
-        REPORT="${REPORT//$'\n'/'%0A'}"
-        REPORT="${REPORT//$'\r'/'%0D'}" 
-        echo "::set-env name=REPORT::$REPORT"
+        # REPORT="${REPORT//'%'/'%25'}"
+        # REPORT="${REPORT//$'\n'/'%0A'}"
+        # REPORT="${REPORT//$'\r'/'%0D'}"
+        echo "$REPORT" >> $GITHUB_STEP_SUMMARY
+        echo "REPORT<<EOF" >> $GITHUB_ENV
+        echo "$REPORT" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
         FIXED="$(cat fixed)"
-        FIXED="${FIXED//'%'/'%25'}"
-        FIXED="${FIXED//$'\n'/'%0A'}"
-        FIXED="${FIXED//$'\r'/'%0D'}"
-        echo "::set-env name=FIXED::$FIXED"
+        # FIXED="${FIXED//'%'/'%25'}"
+        # FIXED="${FIXED//$'\n'/'%0A'}"
+        # FIXED="${FIXED//$'\r'/'%0D'}"
+        echo "$FIXED" >> $GITHUB_STEP_SUMMARY
+        echo "FIXED<<EOF" >> $GITHUB_ENV
+        echo "$FIXED" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
       continue-on-error: true
     - name: upload fixed files
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: eslint fix
         path: linted
     - run: echo "$REPORT"
     - name: Create diff comment
-      uses: peter-evans/commit-comment@v1
+      uses: peter-evans/commit-comment@v2.0.1
       with:
         body: |
           eslint and diff report:
@@ -57,7 +63,7 @@ jobs:
           ${{ env.REPORT }}
           ```
     - name: Create lint comment
-      uses: peter-evans/commit-comment@v1
+      uses: peter-evans/commit-comment@v2.0.1
       with:
         body: |
           fixes by eslint:
