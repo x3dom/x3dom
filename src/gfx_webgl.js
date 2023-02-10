@@ -1831,7 +1831,7 @@ x3dom.gfx_webgl = ( function ()
             var drawable = scene.drawableCollection.get( i );
             var trafo = drawable.transform;
             var shape = drawable.shape;
-            var sortedTransparent = drawable.sortType == 'transparent';
+            var sortedTransparent = drawable.sortType == "transparent";
             var s_gl = shape._webgl;
 
             if ( !s_gl || shape._objectID < 1 || !shape._vf.isPickable )
@@ -2190,7 +2190,7 @@ x3dom.gfx_webgl = ( function ()
 
         var shape = drawable.shape;
         var transform = drawable.transform;
-        var sortedTransparent = drawable.sortType == 'transparent';
+        var sortedTransparent = drawable.sortType == "transparent";
 
         if ( !shape || !shape._webgl || !transform )
         {
