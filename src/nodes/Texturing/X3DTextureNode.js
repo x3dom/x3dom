@@ -317,6 +317,17 @@ x3dom.registerNodeType(
 
             setOrigChannelCount : function ( channelCount )
             {
+                this._parentNodes.forEach( function ( app )
+                {
+                    if ( app._origSortType == "auto" && this._vf.origChannelCount == 0 )
+                    {
+                        if ( channelCount == 2 || channelCount == 4 )
+                        {
+                            app._vf.sortType = "transparent";
+                        }
+                    }
+                }.bind( this ) );
+
                 this._vf.origChannelCount = channelCount;
 
                 this.fieldChanged( "origChannelCount" );
