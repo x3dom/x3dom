@@ -17,6 +17,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * tune glTF alphaCutoff
   * auto sortType based on auto texture channel count
   * disable depth write by default for transparent shapes without textures
   * glTF: support extensionsRequired

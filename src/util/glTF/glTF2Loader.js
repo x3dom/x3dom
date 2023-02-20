@@ -471,6 +471,7 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function ( material )
     {
         appearance.setAttribute( "sortType", "opaque" );
     }
+    appearance.setAttribute( "alphaClipThreshold", 0 );
 
     appearance.appendChild( this._generateX3DPhysicalMaterial( material ) );
 
