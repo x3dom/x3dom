@@ -1617,6 +1617,9 @@ x3dom.gfx_webgl = ( function ()
 
             // Set DepthMode
             var depthMode = s_app ? s_app._cf.depthMode.node : null;
+            var hasTexture = s_app ? s_app._cf.texture.node != null : false;
+            var writeDepth = !transparent || hasTexture;
+
             if ( depthMode )
             {
                 if ( depthMode._vf.enableDepthTest )
@@ -1643,7 +1646,7 @@ x3dom.gfx_webgl = ( function ()
             {
                 // Set Defaults
                 this.stateManager.enable( gl.DEPTH_TEST );
-                this.stateManager.depthMask( !transparent );
+                this.stateManager.depthMask( writeDepth );
                 this.stateManager.depthFunc( gl.LEQUAL );
             }
 
@@ -1956,6 +1959,9 @@ x3dom.gfx_webgl = ( function ()
 
             // Set DepthMode
             var depthMode = s_app ? s_app._cf.depthMode.node : null;
+            var hasTexture = s_app ? s_app._cf.texture.node != null : false;
+            var writeDepth = !transparent || hasTexture;
+
             if ( depthMode )
             {
                 if ( depthMode._vf.enableDepthTest )
@@ -1982,7 +1988,7 @@ x3dom.gfx_webgl = ( function ()
             {
                 // Set Defaults
                 this.stateManager.enable( gl.DEPTH_TEST );
-                this.stateManager.depthMask( !transparent );
+                this.stateManager.depthMask( writeDepth );
                 this.stateManager.depthFunc( gl.LEQUAL );
             }
 
@@ -2525,6 +2531,9 @@ x3dom.gfx_webgl = ( function ()
 
         // Set DepthMode
         var depthMode = s_app ? s_app._cf.depthMode.node : null;
+        var hasTexture = s_app ? s_app._cf.texture.node != null : false;
+        var writeDepth = !transparent || hasTexture;
+
         if ( depthMode )
         {
             if ( depthMode._vf.enableDepthTest )
@@ -2551,7 +2560,7 @@ x3dom.gfx_webgl = ( function ()
         {
             // Set Defaults
             this.stateManager.enable( gl.DEPTH_TEST );
-            this.stateManager.depthMask( !transparent );
+            this.stateManager.depthMask( writeDepth );
             this.stateManager.depthFunc( gl.LEQUAL );
         }
 
