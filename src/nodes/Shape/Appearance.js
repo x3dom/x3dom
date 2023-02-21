@@ -122,7 +122,7 @@ x3dom.registerNodeType(
             this.addField_MFNode( "shaders", x3dom.nodeTypes.X3DShaderNode );
 
             /**
-             * Defines the shape type for sorting.
+             * Defines the shape type for sorting. "auto" uses material transparency and number of texture channels to determine the type.
              * @var {x3dom.fields.SFString} sortType
              * @range [auto, transparent, opaque]
              * @memberof x3dom.nodeTypes.Appearance
@@ -154,6 +154,7 @@ x3dom.registerNodeType(
 
             // shortcut to shader program
             this._shader = null;
+            this._origSortType = this._vf.sortType;
         },
         {
             fieldChanged : function ( fieldName )
@@ -202,8 +203,8 @@ x3dom.registerNodeType(
                     }
                     else if ( this._cf.texture.node && this._cf.texture.node._vf.url.length )
                     {
-                        // uhh, this is a rather coarse guess...
-                        if ( this._cf.texture.node._vf.url[ 0 ].toLowerCase().indexOf( "." + "png" ) >= 0 )
+                        // automatically set in tex.setOrigChannelCount() if not provided
+                        if ( this._cf.texture.node._vf.origChannelCount == 4 || this._cf.texture.node._vf.origChannelCount == 2 )
                         {
                             this._vf.sortType = "transparent";
                         }

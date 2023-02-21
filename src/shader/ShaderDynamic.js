@@ -1314,10 +1314,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
     }
     else if ( properties.ALPHAMASK )
     {
-        shader += "if (color.a <= alphaCutoff) discard;\n";
+        shader += "if (color.a < alphaCutoff) discard;\n";
         shader += "color.a = 1.0;\n";
     }
-    else if ( properties.ALPHATHRESHOLD )
+    else if ( +properties.ALPHATHRESHOLD > 0 )
     {
         shader += "if (color.a <= alphaCutoff) discard;\n";
     }
