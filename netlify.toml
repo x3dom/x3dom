@@ -71,7 +71,7 @@
 HTMLEND
   '''
   
-  # environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
+  environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "14" }
 
 # Deploy Preview context: all deploys resulting from a pull/merge request will 
 # inherit these settings.
