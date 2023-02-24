@@ -91,6 +91,17 @@ x3dom.VRControllerManager.prototype._getControllerAxesScale = function ( type )
     return this._controllers[ type ].axesScale;
 };
 
+x3dom.VRControllerManager.prototype._getControllerDirection = function ( pose )
+{
+    const controllerRotation = ( pose.orientation ? x3dom.fields.Quaternion.fromArray( pose.orientation ) : new x3dom.fields.Quaternion() );
+    const cRotMatrix = controllerRotation.toMatrix();
+    let cDirection = cRotMatrix.e2();
+    const scaleFactor = 1;
+    cDirection = new x3dom.fields.SFVec3f( cDirection.x, cDirection.y, cDirection.z ).multiply( scaleFactor );
+
+    return cDirection;
+};
+
 x3dom.VRControllerManager.prototype._getControllerModelURL = function ( type, side )
 {
     if ( this._controllers[ type ] === undefined )
@@ -136,7 +147,8 @@ x3dom.VRControllerManager.prototype.fit = function ( viewarea )
     var tanfov2 = Math.tan( 0.5 * Math.PI / 2.0 );
     var dist = bsr / tanfov2 / aspect;
 
-    viewarea._movement = viewDir.multiply( -dist );
+    var scaleFactor = 0.001;
+    viewarea._movement = viewDir.multiply( -1 * scaleFactor * dist );
 };
 
 x3dom.VRControllerManager.prototype.update = function ( viewarea, vrFrameData )
@@ -184,7 +196,9 @@ x3dom.VRControllerManager.prototype._updateMatrices = function ( viewarea, contr
 
         if ( controllers.left.gamepad.buttons[ 0 ].pressed )
         {
-            this.fit( viewarea );
+            const pose = controllers.left.pose;
+            const cDirection = this._getControllerDirection( pose );
+            viewarea._movement = viewarea._movement.add( cDirection );
         }
     }
 
@@ -197,7 +211,9 @@ x3dom.VRControllerManager.prototype._updateMatrices = function ( viewarea, contr
 
         if ( controllers.right.gamepad.buttons[ 0 ].pressed )
         {
-            this.fit( viewarea );
+            const pose = controllers.right.pose;
+            const cDirection = this._getControllerDirection( pose );
+            viewarea._movement = viewarea._movement.add( cDirection );
         }
     }
 

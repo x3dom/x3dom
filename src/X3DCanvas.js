@@ -1459,9 +1459,9 @@ x3dom.X3DCanvas.prototype.enterVR = function ()
 
     this.gl.ctx3d.makeXRCompatible().then( () =>
     {
-        navigator.xr.requestSession( "immersive-vr", { requiredFeatures: [ "local-floor" ] } ).then( ( session ) =>
+        navigator.xr.requestSession( "immersive-vr" ).then( ( session ) =>
         {
-            session.requestReferenceSpace( "local-floor" ).then( ( space ) =>
+            session.requestReferenceSpace( "local" ).then( ( space ) =>
             {
                 const xrLayer = new XRWebGLLayer( session, this.gl.ctx3d );
                 session.updateRenderState( { baseLayer: xrLayer } );
@@ -1476,6 +1476,16 @@ x3dom.X3DCanvas.prototype.enterVR = function ()
                 this.xrReferenceSpace = space;
                 this.xrSession = session;
                 this.doc.needRender = true;
+
+                var mat_view = this.doc._viewarea.getViewMatrix();
+                var rotation = new x3dom.fields.Quaternion( 0, 0, 1, 0 );
+                rotation.normalize();
+                rotation.setValue( mat_view );
+                var translation = mat_view.e3();
+
+                const offsetTransform = new XRRigidTransform( {x: translation.x, y: translation.y, z: translation.z},
+                    {x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w} );
+                this.xrReferenceSpace = this.xrReferenceSpace.getOffsetReferenceSpace( offsetTransform );
 
                 this.xrSession.addEventListener( "end", () =>
                 {
