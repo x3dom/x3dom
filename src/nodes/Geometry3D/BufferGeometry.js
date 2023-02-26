@@ -36,6 +36,16 @@ x3dom.registerNodeType(
              */
             this.addField_SFString( ctx, "buffer", "" );
 
+            /**
+             * indicate draco compression of buffer
+             * @var {x3dom.fields.SFBool} draco
+             * @memberof x3dom.nodeTypes.BufferGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool( ctx, "draco", false );
+
             this.addField_MFNode( "views", x3dom.nodeTypes.BufferView );
             this.addField_MFNode( "accessors", x3dom.nodeTypes.BufferAccessor );
 

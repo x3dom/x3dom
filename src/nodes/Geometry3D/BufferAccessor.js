@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             /**
              * Attribute normalization
-             * @var {x3dom.fields.SFInt32} normalized
+             * @var {x3dom.fields.SFBool} normalized
              * @memberof x3dom.nodeTypes.BufferAccessor
              * @initvalue false
              * @field x3dom
