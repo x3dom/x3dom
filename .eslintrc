@@ -2,6 +2,7 @@
     "parserOptions": {
         "ecmaVersion": 5
     },
+    "ignorePatterns": ["src/util/glTF/draco-1.5.5.js"],
     "rules": {
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "no-tabs": ["error"],

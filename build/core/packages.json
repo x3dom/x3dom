@@ -313,6 +313,10 @@
     },
     "FULL":
     {
+        "src/util/":
+        [
+            "glTF/draco-1.5.5.js"
+        ],
         "src/nodes/Geospatial/":
         [
             "GeoCoordinate.js",
