@@ -706,7 +706,7 @@ x3dom.registerNodeType(
                     } );
                 }
 
-                if ( this._vf[ name ] &&
+                if ( this._vf[ name ] != undefined &&
                     !xmlNode.attributes[ name ] && !xmlNode.attributes[ name.toLowerCase() ] )
                 {
                     var str = "";
