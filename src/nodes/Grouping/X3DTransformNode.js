@@ -96,14 +96,14 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     this._graph.localMatrix = this._trafo;
 
                     for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                     {
                         var child = this._childNodes[ i ];
-                        if ( !child || child.renderFlag && child.renderFlag() !== true )
+                        if ( !child || child.renderFlag && child.renderFlag() !== true && !child._vf.bboxDisplay )
                         {continue;}
 
                         var childVol = child.getVolume();

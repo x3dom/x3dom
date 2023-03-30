@@ -354,7 +354,7 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     var childVol = this.rootNode.getVolume();
                     if ( childVol && childVol.isValid() )

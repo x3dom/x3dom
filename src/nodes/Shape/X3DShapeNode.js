@@ -116,12 +116,6 @@ x3dom.registerNodeType(
                 if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
                 {this.invalidateCache();}
 
-                if ( !this._cf.geometry.node ||
-                    drawableCollection.cull( transform, graphState, singlePath, planeMask ) <= 0 )
-                {
-                    return false;
-                }
-
                 if ( singlePath && !this._graph.globalMatrix )
                 {this._graph.globalMatrix = transform;}
 
@@ -132,6 +126,14 @@ x3dom.registerNodeType(
 
                 this._clipPlanes = clipPlanes;
 
+                this.collectBbox( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
+
+                if ( !this._cf.geometry.node ||
+                    drawableCollection.cull( transform, graphState, singlePath, planeMask ) <= 0 )
+                {
+                    return false;
+                }
+
                 drawableCollection.addShape( this, transform, graphState );
 
                 return true;
@@ -141,7 +143,7 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     var geo = this._cf.geometry.node;
                     var childVol = geo ? geo.getVolume() : null;
