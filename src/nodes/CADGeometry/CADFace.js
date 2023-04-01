@@ -54,10 +54,10 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     var child = this._cf.shape.node;
-                    var childVol = ( child && child.renderFlag && child.renderFlag() === true ) ? child.getVolume() : null;
+                    var childVol = ( child && ( child._vf.bboxDisplay || child.renderFlag && child.renderFlag() ) ) ? child.getVolume() : null;
 
                     if ( childVol && childVol.isValid() )
                     {vol.extendBounds( childVol.min, childVol.max );}
@@ -73,6 +73,8 @@ x3dom.registerNodeType(
 
                 if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
                 {this.invalidateCache();}
+
+                this.collectBbox( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
 
                 if ( !this._cf.shape.node ||
                     ( planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask ) ) < 0 )

@@ -71,6 +71,37 @@ x3dom.registerNodeType(
              */
             this.addField_SFVec3f( ctx, "bboxSize", -1, -1, -1 );
 
+            /**
+             * Flag to enable display of the bounding box
+             * @var {x3dom.fields.SFVec3f} bboxDisplay
+             * @memberof x3dom.nodeTypes.X3DBoundedObject
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool( ctx, "bboxDisplay", false );
+
+            /**
+            * Size of additional margin around the bounding box scaled up by the diameter.
+            * @var {x3dom.fields.SFFloat} bboxMargin
+            * @memberof x3dom.nodeTypes.X3DBoundedObject
+            * @initvalue 0.01
+            * @range [-inf, inf]
+            * @field x3dom
+            * @instance
+            */
+            this.addField_SFFloat( ctx, "bboxMargin", 0.01 );
+
+            /**
+             * Color of the bounding box
+             * @var {x3dom.fields.SFColor} bboxColor
+             * @memberof x3dom.nodeTypes.X3DBoundedObject
+             * @initvalue 1, 1, 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFColor( ctx, "bboxColor", 1, 1, 0 );
+
             this._graph = {
                 boundedNode  : this,    // backref to node object
                 localMatrix  : x3dom.fields.SFMatrix4f.identity(),   // usually identity
@@ -84,6 +115,8 @@ x3dom.registerNodeType(
             };
 
             this._render = true;
+            this._bboxNode = null;
+            this._bboxColor = new x3dom.fields.SFColor();
         },
         {
             fieldChanged : function ( fieldName )
@@ -114,13 +147,13 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                     {
                         var child = this._childNodes[ i ];
                         // render could be undefined, but undefined != true
-                        if ( !child || child.renderFlag && child.renderFlag() !== true )
+                        if ( !child || child.renderFlag && child.renderFlag() !== true && !child._vf.bboxDisplay )
                         {continue;}
 
                         var childVol = child.getVolume();
@@ -222,7 +255,57 @@ x3dom.registerNodeType(
                 }
                 //nothing changed
                 return this._render;
+            },
+
+            getBboxNode : function ()
+            {
+                if ( this._bboxNode == null )
+                {
+                    var bbDom = x3dom.bboxDom.cloneNode( true );
+                    this._bboxNode = this._nameSpace.setupTree( bbDom, this._xmlNode.parentElement );
+                }
+                var bbox = this._graph.volume;
+                bboxNode = this._bboxNode;
+                bboxNode._vf.translation = bbox.center;
+                var size = bbox.max.subtract( bbox.min );
+                var margin = bbox.diameter * this._vf.bboxMargin;
+                bboxNode._vf.scale.set( size.x + margin, size.y + margin, size.z + margin );
+                bboxNode.fieldChanged( "scale" );
+                if ( !this._bboxColor.equals( this._vf.bboxColor, 0.01 ) )
+                {
+                    this._bboxColor.setValues( this._vf.bboxColor );
+                    var mat = this._bboxNode._cf.children.nodes[ 0 ]._cf.appearance.node._cf.material.node;
+                    mat._vf.emissiveColor = this._bboxColor.multiply( 0.8 );
+                    mat._vf.diffuseColor = this._bboxColor.multiply( 0.2 );
+                    mat.fieldChanged( "emissiveColor" );
+                }
+                return this._bboxNode;
+            },
+
+            collectBbox : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
+            {
+                if ( this._vf.bboxDisplay )
+                {
+                    var bboxNode = this.getBboxNode();
+                    bboxNode.collectDrawableObjects( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
+                }
             }
         }
     )
 );
+
+x3dom.bboxDom = new DOMParser().parseFromString(
+    "<Transform>" +
+        "<Shape isPickable='false'>" +
+        "  <Appearance>" +
+        //    "<LineProperties lineWidthScaleFactor='0'></LineProperties>" +
+        "   <Material transparency='0.6' specularColor='0.3 0.3 0.3' diffuseColor='0 0.5 0' emissiveColor='1 0.5 0'></Material>" +
+        "   </Appearance>" +
+        "  <Box size='1 1 1'></Box>" +
+        // "<IndexedLineSet coordIndex='0 1 -1 1 2 -1 2 3 -1 3 0 -1 6 7 -1 7 4 -1 4 5 -1 5 6 -1 0 6 -1 1 7 -1 2 4 -1 3 5 -1'>" +
+        //   "<Color color='0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0'/>" +
+        //   "<Coordinate point='-0.5 -0.5 0.5 0.5 -0.5 0.5 0.5 0.5 0.5 -0.5 0.5 0.5 0.5 0.5 -0.5 -0.5 0.5 -0.5 -0.5 -0.5 -0.5 0.5 -0.5 -0.5'/>" +
+        // "</IndexedLineSet>" +
+        "</Shape>" +
+    "</Transform>",
+    "text/xml" ).children[ 0 ];

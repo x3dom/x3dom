@@ -54,14 +54,14 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     if ( this._vf.whichChoice >= 0 &&
                         this._vf.whichChoice < this._childNodes.length )
                     {
                         var child = this._childNodes[ this._vf.whichChoice ];
 
-                        var childVol = ( child && child.renderFlag && child.renderFlag() === true ) ? child.getVolume() : null;
+                        var childVol = ( child && ( child._vf.bboxDisplay || child.renderFlag && child.renderFlag() ) ) ? child.getVolume() : null;
 
                         if ( childVol && childVol.isValid() )
                         {vol.extendBounds( childVol.min, childVol.max );}
@@ -79,12 +79,6 @@ x3dom.registerNodeType(
                 if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
                 {this.invalidateCache();}
 
-                if ( this._vf.whichChoice < 0 || this._vf.whichChoice >= this._childNodes.length ||
-                    ( planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask ) ) < 0 )
-                {
-                    return;
-                }
-
                 var cnode,
                     childTransform;
 
@@ -99,6 +93,14 @@ x3dom.registerNodeType(
                 else
                 {
                     childTransform = this.transformMatrix( transform );
+                }
+
+                this.collectBbox( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
+
+                if ( this._vf.whichChoice < 0 || this._vf.whichChoice >= this._childNodes.length ||
+                    ( planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask ) ) < 0 )
+                {
+                    return;
                 }
 
                 if ( ( cnode = this._childNodes[ this._vf.whichChoice ] ) )

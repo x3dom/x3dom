@@ -36,6 +36,7 @@
   * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
   * verify doc is available (not null), before manipulations
 * Features
+  * bboxDisplay field for X3DBoundedObject, x3dom custom fields bboxMargin and bboxColor
   * support for glTF draco extension
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 
