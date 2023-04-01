@@ -17,6 +17,12 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * prefer dom field updates through mutations
+  * tune glTF alphaCutoff
+  * auto sortType based on auto texture channel count
+  * disable depth write by default for transparent shapes without textures
+  * glTF: support extensionsRequired
+  * Anchor: allow empty urls and log description 
   * allow field access functions for USE nodes
   * replace new Function() with safe constructed method for shader fields 
   * replace eval() with safe JSON.parse()
@@ -30,6 +36,8 @@
   * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
   * verify doc is available (not null), before manipulations
 * Features
+  * bboxDisplay field for X3DBoundedObject, x3dom custom fields bboxMargin and bboxColor
+  * support for glTF draco extension
   * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
 
 ## Version 1.8.2

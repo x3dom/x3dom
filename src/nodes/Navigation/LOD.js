@@ -101,7 +101,7 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
+                if ( !this.volumeValid() && ( this._vf.bboxDisplay || this.renderFlag && this.renderFlag() ) )
                 {
                     var child,
                         childVol;
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
                     {
                         child = this._childNodes[ this._lastRangePos ];
 
-                        childVol = ( child && child.renderFlag && child.renderFlag() === true ) ? child.getVolume() : null;
+                        childVol = ( child && ( child._vf.bboxDisplay || child.renderFlag && child.renderFlag() ) ) ? child.getVolume() : null;
 
                         if ( childVol && childVol.isValid() )
                         {vol.extendBounds( childVol.min, childVol.max );}
@@ -119,7 +119,7 @@ x3dom.registerNodeType(
                     {  // first time we're here
                         for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                         {
-                            if ( !( child = this._childNodes[ i ] ) || child.renderFlag && child.renderFlag() !== true )
+                            if ( !( child = this._childNodes[ i ] ) || child.renderFlag && child.renderFlag() !== true  && !child._vf.bboxDisplay )
                             {continue;}
 
                             childVol = child.getVolume();

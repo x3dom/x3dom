@@ -1033,29 +1033,39 @@ x3dom.X3DDocument.prototype.onX3DNodeAdded = function ( addedNode, target )
 
 x3dom.X3DDocument.prototype.onMutation = function ( records )
 {
-    for ( var i = 0, n = records.length; i < n; i++ )
+    var i,
+        n,
+        record,
+        newValue;
+    var set_prefix = "set_";
+    for ( i = 0, n = records.length; i < n; i++ )
     {
-        if ( records[ i ].type === "attributes" && records[ i ].oldValue )
+        record = records[ i ];
+        if ( record.type === "attributes" ) // && ( record.oldValue != null ) )
         {
-            this.onAttributeChanged( records[ i ].target,
-                records[ i ].attributeName,
-                records[ i ].target[ records[ i ].attributeName ] );
-        }
-        else if ( records[ i ].type === "childList" )
-        {
-            if ( records[ i ].removedNodes.length )
+            if ( record.oldValue != null || record.attributeName.startsWith( set_prefix ) )
             {
-                for ( var j = 0, k = records[ i ].removedNodes.length; j < k; j++ )
+                newValue = record.target.getAttribute( record.attributeName );
+                this.onAttributeChanged( record.target,
+                    record.attributeName,
+                    newValue );
+            }
+        }
+        else if ( record.type === "childList" )
+        {
+            if ( record.removedNodes.length )
+            {
+                for ( var j = 0, k = record.removedNodes.length; j < k; j++ )
                 {
-                    this.onNodeRemoved( records[ i ].removedNodes[ j ], records[ i ].target );
+                    this.onNodeRemoved( record.removedNodes[ j ], record.target );
                 }
             }
 
-            if ( records[ i ].addedNodes.length )
+            if ( record.addedNodes.length )
             {
-                for ( var j = 0, k = records[ i ].addedNodes.length; j < k; j++ )
+                for ( var j = 0, k = record.addedNodes.length; j < k; j++ )
                 {
-                    this.onNodeAdded( records[ i ].addedNodes[ j ], records[ i ].target );
+                    this.onNodeAdded( record.addedNodes[ j ], record.target );
                 }
             }
         }

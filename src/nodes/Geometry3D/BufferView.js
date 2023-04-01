@@ -67,14 +67,24 @@ x3dom.registerNodeType(
             this.addField_SFInt32( ctx, "byteLength", 0 );
 
             /**
-             * The buffer id
-             * @var {x3dom.fields.SFInt32} id
+             * The buffer idx
+             * @var {x3dom.fields.SFInt32} idx
              * @memberof x3dom.nodeTypes.BufferView
              * @initvalue 0
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32( ctx, "id", 0 );
+            this.addField_SFInt32( ctx, "idx", 0 );
+
+            /**
+             * The buffer draco geometry unique id
+             * @var {x3dom.fields.SFInt32} dracoId
+             * @memberof x3dom.nodeTypes.BufferView
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32( ctx, "dracoId", 0 );
         },
         {
             parentAdded : function ( parent )

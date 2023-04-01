@@ -13,7 +13,8 @@
  * Holds the UserAgent feature
  */
 x3dom.userAgentFeature = {
-    supportsDOMAttrModified : false
+    supportsDOMAttrModified  : false,
+    supportsMutationObserver : true
 };
 
 ( function loadX3DOM ()

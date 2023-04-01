@@ -53,13 +53,6 @@ x3dom.registerNodeType(
                 if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
                 {this.invalidateCache();}
 
-                // check if sub-graph can be culled away or render flag was set to false
-                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
-                if ( planeMask < 0 )
-                {
-                    return;
-                }
-
                 var cnode,
                     childTransform;
 
@@ -75,6 +68,16 @@ x3dom.registerNodeType(
                 else
                 {
                     childTransform = this.transformMatrix( transform );
+                }
+
+                // add bbox before cull
+                this.collectBbox( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
+
+                // check if sub-graph can be culled away or render flag was set to false
+                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
+                if ( planeMask < 0 )
+                {
+                    return;
                 }
 
                 var n = this._childNodes.length;

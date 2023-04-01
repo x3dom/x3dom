@@ -5,7 +5,7 @@
     <meta name="theme-color" content="#86c540">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>X3DOM // GLTF 2.0</title>
-    <script type="text/javascript" src="../x3dom-include.js"></script>
+    <script type="text/javascript" src="../x3dom-include.js?full"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -163,8 +163,8 @@
 
             g_direction = direction || "posZ";
             
-            // var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
-            var repo = "http://localhost/glTF-Sample-Models/2.0/";
+            var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+            //var repo = "http://localhost/glTF-Sample-Models/2.0/";
 
             var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
             
@@ -280,7 +280,16 @@
         {
             if( e.keyCode == 13 )
             {
-                var url = document.querySelector("#externalURL").value;
+                var urlInput = document.querySelector("#externalURL");
+                url = urlInput.value;
+                var urls = document.querySelector('#enteredURLs');
+                if ( [...urls.querySelectorAll('option')].every ( option => option.value !== url ) )
+                {
+                    var option = document.createElement( 'option' );
+                    option.setAttribute( 'value', url );
+                    option.setAttribute( 'label', url.slice( url.lastIndexOf( "/") + 1 ) );
+                    urls.appendChild( option );        
+                }               
                 toggleURLInput();
                 updateInline(url);
             }
@@ -348,14 +357,16 @@
 
     <section class="inputbar">
         <i class="material-icons inputbar-icon">link</i>
-        <input id="externalURL" type="url" placeholder="URL to a glTF file..." onkeypress="onKeyPress(event)" onblur="onBlur()" tabindex="0">
+        <input id="externalURL" type="url" placeholder="URL to a glTF file..." onkeypress="onKeyPress(event)" onblur="onBlur()" tabindex="0" list="enteredURLs">
+        <datalist id="enteredURLs">
+        </datalist>
         <i class="material-icons inputbar-icon" onclick="toggleURLInput();">clear</i>
     </section>  
 
     <section class="main-wrapper">
 
         <section class="sidebar">
-            
+
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
@@ -376,10 +387,12 @@
             <div class="sidebar-entry" onclick="load('UnlitTest',undefined,'negZ')">Unlit Test</div>
             <div class="sidebar-entry" onclick="load('InterpolationTest',undefined,'negZ')">Interpolation Test</div>
             
-    
             <div class="sidebar-header">Advanced Tests</div>
     
+            <div class="sidebar-entry" onclick="load('VC')">VC</div>
+            <div class="sidebar-entry" onclick="load('Cameras')">Cameras</div>
             <div class="sidebar-entry" onclick="load('Box')">Box</div>
+            <div class="sidebar-entry" onclick="load('Box','Draco')">Box, Draco compressed</div>
             <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
             <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
             <div class="sidebar-entry" onclick="load('BoxTextured', 'Embedded')">Box Textured (embedded)</div>
@@ -391,8 +404,10 @@
             <div class="sidebar-entry" onclick="load('ReciprocatingSaw')">Reciprocating Saw</div>
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
+            <div class="sidebar-entry" onclick="load('Buggy','Draco')">Buggy, Draco compressed</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
-            <div class="sidebar-entry" onclick="load('Tokyo')">Tokyo</div>
+            <div class="sidebar-entry" onclick="updateInline('https://threejs.org/examples/models/gltf/LittlestTokyo.glb')">Tokyo, binary, Draco</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/andreasplesch/Library/20782db654ce04a3014a519bfd8a180278bbe9d3/Examples/gltf2/Crusader%20Shield%20Damara.glb')">BlenderDraco</div>
     
             <div class="sidebar-header">PBR Tests</div>
         
@@ -409,6 +424,7 @@
             <div class="sidebar-entry" onclick="load('Cube')">Cube</div>
             <div class="sidebar-entry" onclick="load('SciFiHelmet')">SciFiHelmet</div>  
             <div class="sidebar-entry" onclick="load('FlightHelmet')">Flight Helmet</div>
+            <div class="sidebar-entry" onclick="load('StainedGlassLamp','JPG-PNG')">Stained Glass Lamp</div>
             <div class="sidebar-entry" onclick="load('Cerberus')">Cerberus</div>
             <div class="sidebar-entry" onclick="load('adamHead')">Adam Head</div>
             <div class="sidebar-entry" onclick="load('microphone')">Microphone</div>

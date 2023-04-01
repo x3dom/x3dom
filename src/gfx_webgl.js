@@ -1535,10 +1535,11 @@ x3dom.gfx_webgl = ( function ()
             var drawable = scene.drawableCollection.get( i );
             var trafo = drawable.transform;
             var shape = drawable.shape;
+            var transparent = drawable.sortType == "transparent";
 
             var s_gl = shape._webgl;
 
-            if ( !s_gl || ( excludeTrans && drawable.sortType == "transparent" ) )
+            if ( !s_gl || ( excludeTrans && transparent ) )
             {
                 continue;
             }
@@ -1616,6 +1617,9 @@ x3dom.gfx_webgl = ( function ()
 
             // Set DepthMode
             var depthMode = s_app ? s_app._cf.depthMode.node : null;
+            var hasTexture = s_app ? s_app._cf.texture.node != null : false;
+            var writeDepth = !transparent || hasTexture;
+
             if ( depthMode )
             {
                 if ( depthMode._vf.enableDepthTest )
@@ -1642,7 +1646,7 @@ x3dom.gfx_webgl = ( function ()
             {
                 // Set Defaults
                 this.stateManager.enable( gl.DEPTH_TEST );
-                this.stateManager.depthMask( true );
+                this.stateManager.depthMask( writeDepth );
                 this.stateManager.depthFunc( gl.LEQUAL );
             }
 
@@ -1752,10 +1756,11 @@ x3dom.gfx_webgl = ( function ()
             this.stateManager.lineWidth( 1 );
         }
 
+        this.stateManager.depthMask( true );
+
         if ( depthMode )
         {
             this.stateManager.enable( gl.DEPTH_TEST );
-            this.stateManager.depthMask( true );
             this.stateManager.depthFunc( gl.LEQUAL );
             this.stateManager.depthRange( 0, 1 );
         }
@@ -1829,6 +1834,7 @@ x3dom.gfx_webgl = ( function ()
             var drawable = scene.drawableCollection.get( i );
             var trafo = drawable.transform;
             var shape = drawable.shape;
+            var transparent = drawable.sortType == "transparent";
             var s_gl = shape._webgl;
 
             if ( !s_gl || shape._objectID < 1 || !shape._vf.isPickable )
@@ -1953,6 +1959,9 @@ x3dom.gfx_webgl = ( function ()
 
             // Set DepthMode
             var depthMode = s_app ? s_app._cf.depthMode.node : null;
+            var hasTexture = s_app ? s_app._cf.texture.node != null : false;
+            var writeDepth = !transparent || hasTexture;
+
             if ( depthMode )
             {
                 if ( depthMode._vf.enableDepthTest )
@@ -1979,7 +1988,7 @@ x3dom.gfx_webgl = ( function ()
             {
                 // Set Defaults
                 this.stateManager.enable( gl.DEPTH_TEST );
-                this.stateManager.depthMask( true );
+                this.stateManager.depthMask( writeDepth );
                 this.stateManager.depthFunc( gl.LEQUAL );
             }
 
@@ -2133,10 +2142,11 @@ x3dom.gfx_webgl = ( function ()
             this.stateManager.lineWidth( 1 );
         }
 
+        this.stateManager.depthMask( true );
+
         if ( depthMode )
         {
             this.stateManager.enable( gl.DEPTH_TEST );
-            this.stateManager.depthMask( true );
             this.stateManager.depthFunc( gl.LEQUAL );
             this.stateManager.depthRange( 0, 1 );
         }
@@ -2186,6 +2196,7 @@ x3dom.gfx_webgl = ( function ()
 
         var shape = drawable.shape;
         var transform = drawable.transform;
+        var transparent = drawable.sortType == "transparent";
 
         if ( !shape || !shape._webgl || !transform )
         {
@@ -2520,6 +2531,9 @@ x3dom.gfx_webgl = ( function ()
 
         // Set DepthMode
         var depthMode = s_app ? s_app._cf.depthMode.node : null;
+        var hasTexture = s_app ? s_app._cf.texture.node != null : false;
+        var writeDepth = !transparent || hasTexture;
+
         if ( depthMode )
         {
             if ( depthMode._vf.enableDepthTest )
@@ -2546,7 +2560,7 @@ x3dom.gfx_webgl = ( function ()
         {
             // Set Defaults
             this.stateManager.enable( gl.DEPTH_TEST );
-            this.stateManager.depthMask( true );
+            this.stateManager.depthMask( writeDepth );
             this.stateManager.depthFunc( gl.LEQUAL );
         }
 
@@ -3147,10 +3161,12 @@ x3dom.gfx_webgl = ( function ()
         }
 
         // reset to default values for possibly user defined render states
+
+        this.stateManager.depthMask( true );
+
         if ( depthMode )
         {
             this.stateManager.enable( gl.DEPTH_TEST );
-            this.stateManager.depthMask( true );
             this.stateManager.depthFunc( gl.LEQUAL );
             this.stateManager.depthRange( 0, 1 );
         }
