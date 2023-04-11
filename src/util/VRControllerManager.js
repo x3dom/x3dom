@@ -96,10 +96,9 @@ x3dom.VRControllerManager.prototype._getControllerDirection = function ( pose )
     const controllerRotation = ( pose.orientation ? x3dom.fields.Quaternion.fromArray( pose.orientation ) : new x3dom.fields.Quaternion() );
     const cRotMatrix = controllerRotation.toMatrix();
     let cDirection = cRotMatrix.e2();
-    const scaleFactor = 1;
-    cDirection = new x3dom.fields.SFVec3f( cDirection.x, cDirection.y, cDirection.z ).multiply( scaleFactor );
+    cDirection = cDirection.normalize();
 
-    return cDirection;
+    return new x3dom.fields.SFVec3f( cDirection.x, cDirection.y, cDirection.z );
 };
 
 x3dom.VRControllerManager.prototype._getControllerModelURL = function ( type, side )
@@ -198,7 +197,8 @@ x3dom.VRControllerManager.prototype._updateMatrices = function ( viewarea, contr
         {
             const pose = controllers.left.pose;
             const cDirection = this._getControllerDirection( pose );
-            viewarea._movement = viewarea._movement.add( cDirection );
+            const scaleFactor = this._getViewAreaZoom( viewarea );
+            viewarea._movement = viewarea._movement.add( cDirection.multiply( scaleFactor ) );
         }
     }
 
@@ -213,7 +213,8 @@ x3dom.VRControllerManager.prototype._updateMatrices = function ( viewarea, contr
         {
             const pose = controllers.right.pose;
             const cDirection = this._getControllerDirection( pose );
-            viewarea._movement = viewarea._movement.add( cDirection );
+            const scaleFactor = this._getViewAreaZoom( viewarea );
+            viewarea._movement = viewarea._movement.add( cDirection.multiply( scaleFactor ) );
         }
     }
 
@@ -271,4 +272,16 @@ x3dom.VRControllerManager.prototype._updateControllerModels = function ( vieware
 
         this.rightTransform.setAttribute( "matrix", matrix.toString() );
     }
+};
+
+x3dom.VRControllerManager.prototype._getViewAreaZoom = function ( viewarea )
+{
+    var navi = viewarea._scene.getNavigationInfo();
+    var viewpoint = viewarea._scene.getViewpoint();
+    var d = ( viewarea._scene._lastMax.subtract( viewarea._scene._lastMin ) ).length();
+    d = Math.min( d, viewpoint.getFar() );
+    d = ( ( d < x3dom.fields.Eps ) ? 1 : d ) * navi._vf.speed;
+    const zoomAmount = 1;
+
+    return d * ( zoomAmount ) / viewarea._height;
 };

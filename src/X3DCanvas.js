@@ -1558,24 +1558,27 @@ x3dom.X3DCanvas.prototype.getVRFrameData = function ( xrFrame )
         if ( inputSource.gripSpace )
         {
             const inputPose = xrFrame.getPose( inputSource.gripSpace, this.xrReferenceSpace );
-
-            vrFrameData.controllers[ inputSource.handedness ] = {
-                gamepad : inputSource.gamepad,
-                type    : inputSource.profiles[ 0 ],
-                pose    : {
-                    position : [
-                        inputPose.transform.position.x,
-                        inputPose.transform.position.y,
-                        inputPose.transform.position.z
-                    ],
-                    orientation : [
-                        inputPose.transform.orientation.x,
-                        inputPose.transform.orientation.y,
-                        inputPose.transform.orientation.z,
-                        inputPose.transform.orientation.w
-                    ]
-                }
-            };
+            if ( typeof inputPose === "object" && inputPose !== null &&
+                typeof inputPose.transform === "object" && inputPose.transform !== null )
+            {
+                vrFrameData.controllers[ inputSource.handedness ] = {
+                    gamepad : inputSource.gamepad,
+                    type    : inputSource.profiles[ 0 ],
+                    pose    : {
+                        position : [
+                            inputPose.transform.position.x,
+                            inputPose.transform.position.y,
+                            inputPose.transform.position.z
+                        ],
+                        orientation : [
+                            inputPose.transform.orientation.x,
+                            inputPose.transform.orientation.y,
+                            inputPose.transform.orientation.z,
+                            inputPose.transform.orientation.w
+                        ]
+                    }
+                };
+            }
         }
     }
 
