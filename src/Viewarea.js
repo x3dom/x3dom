@@ -159,7 +159,7 @@ x3dom.Viewarea = function ( document, scene )
     this.vrLeftProjMatrix = new x3dom.fields.SFMatrix4f();
     this.vrRightProjMatrix = new x3dom.fields.SFMatrix4f();
 
-    this.vrControllerManager = new x3dom.VRControllerManager();
+    this.vrControllerManager = new x3dom.VRControllerManager( this._doc );
 
     this._inverseDevicePixelRatio = 1.0 / window.devicePixelRatio;
 

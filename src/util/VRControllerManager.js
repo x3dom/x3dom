@@ -1,4 +1,4 @@
-x3dom.VRControllerManager = function ()
+x3dom.VRControllerManager = function ( document )
 {
     this.leftInline     = undefined;
     this.leftTransform  = undefined;
@@ -6,6 +6,7 @@ x3dom.VRControllerManager = function ()
     this.rightTransform = undefined;
     this.wasPresenting  = false;
     this.modelsAdded    = false;
+    this._doc = document;
 
     this._controllers = {
         "htc-vive" : {
@@ -95,10 +96,7 @@ x3dom.VRControllerManager.prototype._getControllerDirection = function ( pose )
 {
     const controllerRotation = ( pose.orientation ? x3dom.fields.Quaternion.fromArray( pose.orientation ) : new x3dom.fields.Quaternion() );
     const cRotMatrix = controllerRotation.toMatrix();
-    let cDirection = cRotMatrix.e2();
-    cDirection = cDirection.normalize();
-
-    return new x3dom.fields.SFVec3f( cDirection.x, cDirection.y, cDirection.z );
+    return cRotMatrix.e2();
 };
 
 x3dom.VRControllerManager.prototype._getControllerModelURL = function ( type, side )
@@ -281,7 +279,8 @@ x3dom.VRControllerManager.prototype._getViewAreaZoom = function ( viewarea )
     var d = ( viewarea._scene._lastMax.subtract( viewarea._scene._lastMin ) ).length();
     d = Math.min( d, viewpoint.getFar() );
     d = ( ( d < x3dom.fields.Eps ) ? 1 : d ) * navi._vf.speed;
-    const zoomAmount = 1;
+    const fps = this._doc._x3dElem.runtime.getFPS();
+    const zoomAmount = 60 / fps;
 
     return d * ( zoomAmount ) / viewarea._height;
 };
