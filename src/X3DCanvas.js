@@ -1558,8 +1558,7 @@ x3dom.X3DCanvas.prototype.getVRFrameData = function ( xrFrame )
         if ( inputSource.gripSpace )
         {
             const inputPose = xrFrame.getPose( inputSource.gripSpace, this.xrReferenceSpace );
-            if ( typeof inputPose === "object" && inputPose !== null &&
-                typeof inputPose.transform === "object" && inputPose.transform !== null )
+            if ( inputPose !== null && inputPose.transform !== null )
             {
                 vrFrameData.controllers[ inputSource.handedness ] = {
                     gamepad : inputSource.gamepad,
