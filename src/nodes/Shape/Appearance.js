@@ -166,6 +166,11 @@ x3dom.registerNodeType(
                         shape.setAppDirty();
                     } );
                 }
+                if ( fieldName == "sortType" )
+                {
+                    this._origSortType = this._vf.sortType;
+                    this.checkSortType();
+                }
             },
 
             nodeChanged : function ()
@@ -194,7 +199,7 @@ x3dom.registerNodeType(
 
             checkSortType : function ()
             {
-                if ( this._vf.sortType == "auto" )
+                if ( this._origSortType == "auto" )
                 {
                     if ( this._cf.material.node && ( this._cf.material.node._vf.transparency > 0 ||
                         this._cf.material.node._vf.backTransparency && this._cf.material.node._vf.backTransparency > 0 ) )
