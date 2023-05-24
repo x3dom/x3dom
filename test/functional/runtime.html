@@ -136,7 +136,7 @@
     x3dom.runtime.ready = function(el) {
         alert('Hello I am the result of a custom runtime ready function.');
 	    // simplify access to the X3D element
-        $element = document.getElementById('the_element');
+        $element = document.querySelector('x3d');
         var sphere = { "X3D": { "encoding":"UTF-8", "@profile":"Interchange", "@version":"3.3", "@xsd:noNamespaceSchemaLocation":"http://www.web3d.org/specifications/x3d-3.3.xsd", "JSON schema":"http://www.web3d.org/specifications/x3d-3.3-JSONSchema.json", "head": { "meta": [ { "@name":"title", "@content":"sphere.x3d" }, { "@name":"creator", "@content":"John Carlson" }, { "@name":"generator", "@content":"manual" }, { "@name":"identifier", "@content":"https://coderextreme.net/X3DJSONLD/sphere.x3d" }, { "@name":"description", "@content":"a sphere" }, { "@name":"translated", "@content":"25 May 2018" }, { "@name":"generator", "@content":"X3dToJson.xslt, http://www.web3d.org/x3d/stylesheets/X3dToJson.html" }, { "@name":"reference", "@content":"X3D JSON encoding: http://www.web3d.org/wiki/index.php/X3D_JSON_Encoding" } ] }, "Scene": { "-children":[ { "Group": { "-children":[ { "Shape": { "-appearance": { "Appearance": { "-material": { "Material": { "@diffuseColor":[1,0,0] } } } }, "-geometry": { "Sphere": { } } } } ] } } ] } } };
 	    var spherex3d = $element.runtime.createX3DFromJS(sphere);
 	    savedSphere = spherex3d;//.querySelector("X3D");
@@ -148,7 +148,7 @@
     };
 
 	function init(event) {
-	    $element = document.getElementById('the_element');
+	    $element = document.querySelector('x3d');
         var container = document.createElement('container');
         container.innerHTML =
 `<X3D><Scene>

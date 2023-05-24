@@ -21,6 +21,7 @@ x3dom.NodeNameSpace = function ( name, document )
     this.name = name;
     this.doc = document;
     this.baseURL = "";
+    this.setBaseURL( document.properties.properties.baseURL );
     this.defMap = {};
     this.parent = null;
     this.childSpaces = [];
