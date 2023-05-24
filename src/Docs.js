@@ -174,13 +174,15 @@ x3dom.docs.getComponentInfo = function ()
                 try {
                     var node = new x3dom.nodeTypes[t];
                     result += "-- basic fields --"
-                    for ( var field in node?._vf )
+                    for ( var field in node._vf )
                     {
                         result += "<li>" + field +": " + node._vf[ field ] ;
                         result += "</li>";
                     }
+                } catch(m) {};
+                try {    
                     result += "-- node fields --"
-                    for ( var cfield in node?._cf )
+                    for ( var cfield in node._cf )
                     {
                         result += "<li>" + cfield +": " + JSON.stringify(node._cf[ cfield ]) ;
                         result += "</li>";
