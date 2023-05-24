@@ -40,7 +40,8 @@
             <td>
                 <?js if(f.initvalue)
                 {
-                    var fullInit = f.initvalue.split('.');
+                    var def = Number.parseFloat( f.initvalue.trim().split(/[ ,]+/)[0] );
+                    var fullInit = Number.isNaN(def) ? f.initvalue.split('.') : [f.initvalue];
                     var defVal = self.linkFromContextTo( f.initvalue, false, fullInit[fullInit.length-1]);
                 ?>
                 <?js= defVal ?></a>
