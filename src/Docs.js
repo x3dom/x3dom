@@ -168,8 +168,28 @@ x3dom.docs.getComponentInfo = function ()
             result += "<li><a href='" +
                 x3dom.docs.specBaseURL + x3dom.docs.specURLMap[ c ] + "#" + t +
                 "' style='color:black; text-decoration:none; font-weight:bold;'>" +
-                t + "</a></li>";
-        }
+                t + "</a> <ul>";
+            if (! t.startsWith('X3D'))
+            {            
+                try {
+                    var node = new x3dom.nodeTypes[t];
+                    result += "-- basic fields --"
+                    for ( var field in node?._vf )
+                    {
+                        result += "<li>" + field +": " + node._vf[ field ] ;
+                        result += "</li>";
+                    }
+                    result += "-- node fields --"
+                    for ( var cfield in node?._cf )
+                    {
+                        result += "<li>" + cfield +": " + JSON.stringify(node._cf[ cfield ]) ;
+                        result += "</li>";
+                    }
+                    
+                } catch(m) {};
+            }
+            result += "</ul> </li>";
+    }
         result += "</ul>";
     }
 
