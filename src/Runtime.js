@@ -1573,18 +1573,32 @@ x3dom.Runtime.prototype.toggleProjection = function ( perspViewID, orthoViewID )
  */
 x3dom.Runtime.prototype.replaceWorld = function ( scene )
 {
-    var x3dElement = this.doc.cloneNode( false );
-    var child,
+    var x3dElement,
+        child,
         name;
+
+    if ( scene.localName.toUpperCase() === "X3D" )
+    {
+        x3dElement = scene.cloneNode( false );
+    }
+    else
+    {
+        x3dElement = this.doc.cloneNode( false );
+    }
+    //clean x3d element
     while ( child = scene.firstChild )
     {
         name = child.nodeType === 1 ? child.localName.toUpperCase() : null;
-        if ( name == "HEAD" || name == "SCENE" ) {x3dElement.appendChild( child );}
+        if ( name == "HEAD" || name == "SCENE" )
+        {
+            x3dElement.appendChild( child );
+        }
         else
         {
             child.remove();
         }
     }
+
     this.doc.parentNode.replaceChild( x3dElement, this.doc );
     this.doc = x3dElement;
     x3dom.reload();
