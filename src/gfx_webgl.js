@@ -4994,7 +4994,12 @@ x3dom.gfx_webgl = ( function ()
             for ( k = startIndex; k < endIndex; k++ )
             {currentLights[ currentLights.length ] = shadowedLights[ k ];}
 
-            var sp = this.cache.getShadowRenderingShader( gl, currentLights );
+            // generate shadow shader properties
+            var properties = {};
+
+            properties.FOG = ( scene.getFog()._vf.visibilityRange > 0 ) ? 1 : 0;
+
+            var sp = this.cache.getShadowRenderingShader( gl, currentLights, properties );
 
             this.stateManager.useProgram( sp );
 
@@ -5104,7 +5109,21 @@ x3dom.gfx_webgl = ( function ()
                 }
             }
 
-            gl.drawArrays( gl.TRIANGLES, 0, 6 );
+            if ( properties.FOG ) { sp.fogType = 999.0; } // draw without fog first
+
+            gl.drawArrays( gl.TRIANGLES, 0, 6 ); //shadows
+
+            // Set fog
+            if ( properties.FOG )
+            {
+                var fog = scene.getFog();
+                this.stateManager.blendColor( fog._vf.color.r, fog._vf.color.g, fog._vf.color.b, 1.0 );
+                this.stateManager.blendFunc( gl.CONSTANT_COLOR, gl.ONE_MINUS_SRC_COLOR );
+                sp.fogColor = fog._vf.color.toGL();
+                sp.fogRange = fog._vf.visibilityRange;
+                sp.fogType = ( fog._vf.fogType == "LINEAR" ) ? 0.0 : 1.0;
+                gl.drawArrays( gl.TRIANGLES, 0, 6 ); // fog
+            }
 
             // cleanup
             var nk = shadowIndex + 1;
@@ -5115,7 +5134,6 @@ x3dom.gfx_webgl = ( function ()
             }
             gl.disableVertexAttribArray( sp.position );
         }
-
         this.stateManager.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
     };
 
