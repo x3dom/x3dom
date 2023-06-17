@@ -276,9 +276,9 @@ x3dom.Cache.prototype.getShaderByProperties = function ( gl, shape, properties, 
  *
  * @returns {*}
  */
-x3dom.Cache.prototype.getShadowRenderingShader = function ( gl, shadowedLights )
+x3dom.Cache.prototype.getShadowRenderingShader = function ( gl, shadowedLights, properties )
 {
-    var ID = "shadow";
+    var ID = "shadow"  + Object.values( properties ).join( "" );
     for ( var i = 0; i < shadowedLights.length; i++ )
     {
         if ( x3dom.isa( shadowedLights[ i ], x3dom.nodeTypes.SpotLight ) )
@@ -297,7 +297,7 @@ x3dom.Cache.prototype.getShadowRenderingShader = function ( gl, shadowedLights )
 
     if ( this.shaders[ ID ] === undefined )
     {
-        var program = new x3dom.shader.ShadowRenderingShader( gl, shadowedLights );
+        var program = new x3dom.shader.ShadowRenderingShader( gl, shadowedLights, properties );
         this.shaders[ ID ] = x3dom.Utils.wrapProgram( gl, program, ID );
     }
     return this.shaders[ ID ];
