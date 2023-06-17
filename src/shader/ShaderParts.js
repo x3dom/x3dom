@@ -397,7 +397,12 @@ x3dom.shader.shadowRendering = function ()
     shaderPart +=
                 "float ESM(float shadowMapDepth, float viewSampleDepth, float offset){\n";
     if ( !x3dom.caps.FP_TEXTURES )
-    {shaderPart +=     "    return exp(-80.0*(1.0-offset)*(viewSampleDepth - shadowMapDepth));\n";}
+    {
+        shaderPart +=
+        "    float d = viewSampleDepth - shadowMapDepth;\n" +
+        "    d = step( 0.002, abs(d) ) * d;\n" +
+        "    return exp(-80.0*(1.0-offset)*d);\n";
+    }
     else     {shaderPart +=     "    return shadowMapDepth * exp(-80.0*(1.0-offset)*viewSampleDepth);\n";}
     shaderPart += "}\n";
 
