@@ -432,7 +432,7 @@ x3dom.Viewarea.prototype.getLightsShadow = function ()
     var lights = this._doc._nodeBag.lights;
     for ( var l = 0; l < lights.length; l++ )
     {
-        if ( lights[ l ]._vf.shadowIntensity > 0.0 )
+        if ( lights[ l ]._vf.shadowIntensity > 0.0 && lights[ l ]._vf.on )
         {
             return true;
         }

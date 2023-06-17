@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * fog pass over shadow
   * numerical field docs
   * improve sortType changes
   * MovieTexture: autostart, ios and removal
@@ -19,6 +20,9 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * shadow/fog test scenes
+  * tweaked ESM with depth delta cutoff
+  * shadow blur ignores now background
   * replaceWorld with X3D dom
   * prefer dom field updates through mutations
   * tune glTF alphaCutoff

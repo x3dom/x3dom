@@ -1336,7 +1336,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
     shader += "color = " + x3dom.shader.encodeGamma( properties, "color" ) + ";\n";
 
     //Fog
-    if ( properties.FOG )
+    if ( properties.FOG && !properties.SHADOW )
     {
         shader += "float f0 = calcFog(fragEyePosition);\n";
         shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
