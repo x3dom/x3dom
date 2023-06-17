@@ -85,25 +85,49 @@ x3dom.shader.BlurShader.prototype.generateFragmentShader = function ( gl )
                     "    vec2 offset;\n" +
                     "    if (horizontal) offset = vec2(pixelSizeHor, 0.0);\n" +
                     "    else offset = vec2(0.0, pixelSizeVert);\n" +
-                    "    float depth = unpackDepth(texture2D(texture, texCoords));\n" +
+                    "    vec4 packedDepth = texture2D(texture, texCoords);\n" +
+                    "    const vec4 clearColor = vec4(1.0, 1.0, 1.0, 0.0);\n" +
+                    "    if ( packedDepth == clearColor ) { discard; };\n" +
+                    "    float depth = unpackDepth(packedDepth);\n" +
                     "    if (filterSize == 3){\n" +
+                    "        vec4 packedDn1 = texture2D(texture, texCoords-offset);\n" +
+                    "        vec4 packedDp1 = texture2D(texture, texCoords+offset);\n" +
+                    //"        if ( packedDn1 == clearColor || packedDp1 == clearColor ) { discard; };\n" +
+                    "        if ( (packedDn1 - clearColor) * (packedDp1 - clearColor) == vec4(0.0) ) { discard; };\n" +
                     "        depth = depth * 0.3844;\n" +
-                    "        depth += 0.3078*unpackDepth(texture2D(texture, texCoords-offset));\n" +
-                    "        depth += 0.3078*unpackDepth(texture2D(texture, texCoords+offset));\n" +
+                    "        depth += 0.3078*unpackDepth(packedDn1);\n" +
+                    "        depth += 0.3078*unpackDepth(packedDp1);\n" +
                     "    } else if (filterSize == 5){\n" +
+                    "        vec4 packedDn1 = texture2D(texture, texCoords-offset);\n" +
+                    "        vec4 packedDp1 = texture2D(texture, texCoords+offset);\n" +
+                    "        vec4 packedDn2 = texture2D(texture, texCoords-2.0*offset);\n" +
+                    "        vec4 packedDp2 = texture2D(texture, texCoords+2.0*offset);\n" +
+                    "        if ( packedDn1 == clearColor || packedDp1 == clearColor || " +
+                    "             packedDn2 == clearColor || packedDp2 == clearColor ) { discard; };\n" +
+                    // "        if ( ( packedDn1 - clearColor ) * ( packedDp1 - clearColor ) * " +
+                    // "             ( packedDn2 - clearColor ) * ( packedDp2 - clearColor ) == vec4(0.0) ) { discard; };\n" +
                     "        depth = depth * 0.2921;\n" +
-                    "        depth += 0.2339*unpackDepth(texture2D(texture, texCoords-offset));\n" +
-                    "        depth += 0.2339*unpackDepth(texture2D(texture, texCoords+offset));\n" +
-                    "        depth += 0.1201*unpackDepth(texture2D(texture, texCoords-2.0*offset));\n" +
-                    "        depth += 0.1201*unpackDepth(texture2D(texture, texCoords+2.0*offset));\n" +
+                    "        depth += 0.2339*unpackDepth(packedDn1);\n" +
+                    "        depth += 0.2339*unpackDepth(packedDp1);\n" +
+                    "        depth += 0.1201*unpackDepth(packedDn2);\n" +
+                    "        depth += 0.1201*unpackDepth(packedDp2);\n" +
                     "    } else if (filterSize == 7){\n" +
+                    "        vec4 packedDn1 = texture2D(texture, texCoords-offset);\n" +
+                    "        vec4 packedDp1 = texture2D(texture, texCoords+offset);\n" +
+                    "        vec4 packedDn2 = texture2D(texture, texCoords-2.0*offset);\n" +
+                    "        vec4 packedDp2 = texture2D(texture, texCoords+2.0*offset);\n" +
+                    "        vec4 packedDn3 = texture2D(texture, texCoords-3.0*offset);\n" +
+                    "        vec4 packedDp3 = texture2D(texture, texCoords+3.0*offset);\n" +
+                    "        if ( packedDn1 == clearColor || packedDp1 == clearColor || " +
+                    "             packedDn2 == clearColor || packedDp2 == clearColor || " +
+                    "             packedDn3 == clearColor || packedDp3 == clearColor ) { discard; };\n" +
                     "        depth = depth * 0.2161;\n" +
-                    "        depth += 0.1907*unpackDepth(texture2D(texture, texCoords-offset));\n" +
-                    "        depth += 0.1907*unpackDepth(texture2D(texture, texCoords+offset));\n" +
-                    "        depth += 0.1311*unpackDepth(texture2D(texture, texCoords-2.0*offset));\n" +
-                    "        depth += 0.1311*unpackDepth(texture2D(texture, texCoords+2.0*offset));\n" +
-                    "        depth += 0.0702*unpackDepth(texture2D(texture, texCoords-3.0*offset));\n" +
-                    "        depth += 0.0702*unpackDepth(texture2D(texture, texCoords+3.0*offset));\n" +
+                    "        depth += 0.1907*unpackDepth(packedDn1);\n" +
+                    "        depth += 0.1907*unpackDepth(packedDp1);\n" +
+                    "        depth += 0.1311*unpackDepth(packedDn2);\n" +
+                    "        depth += 0.1311*unpackDepth(packedDp2);\n" +
+                    "        depth += 0.0702*unpackDepth(packedDn3);\n" +
+                    "        depth += 0.0702*unpackDepth(packedDp3);\n" +
                     "    }\n" +
                     "    gl_FragColor = packDepth(depth);\n" +
                     "}\n";
