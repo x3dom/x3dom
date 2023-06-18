@@ -43,6 +43,7 @@
   * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
   * verify doc is available (not null), before manipulations
 * Features
+  * add basic webXR support
   * baseURL parameter
   * bboxDisplay field for X3DBoundedObject, x3dom custom fields bboxMargin and bboxColor
   * support for glTF draco extension

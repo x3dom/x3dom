@@ -1,6 +1,6 @@
 {
     "parserOptions": {
-        "ecmaVersion": 5
+        "ecmaVersion": 6
     },
     "ignorePatterns": ["src/util/glTF/draco-1.5.5.js"],
     "rules": {
