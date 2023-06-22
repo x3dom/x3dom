@@ -166,14 +166,13 @@ x3dom.registerNodeType(
                     {
                         hasTexCoord = true;
                         texCoords = texCoordNode._vf.point;
-                        if ( !hasTexCoordInd )
+                        var nTexCoords = hasTexCoordInd ? 
+                            Math.max( ...texCoordInd ) + 1 : positions.length;
+                        var i,
+                            lastTexCoord = texCoords.length;
+                        for ( i = lastTexCoord; i < nTexCoords; i++ )
                         {
-                            var i,
-                                lastTexCoord = texCoords.length;
-                            for ( i = lastTexCoord; i < positions.length; i++ )
-                            {
-                                texCoords.push( texCoords[ i % lastTexCoord ] );
-                            }
+                            texCoords.push( texCoords[ i % lastTexCoord ] );
                         }
 
                         if ( x3dom.isa( texCoordNode, x3dom.nodeTypes.TextureCoordinate3D ) )
