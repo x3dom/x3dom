@@ -172,6 +172,10 @@ x3dom.registerNodeType(
                             lastTexCoord = texCoords.length;
                         for ( i = lastTexCoord; i < nTexCoords; i++ )
                         {
+                            x3dom.debug.logWarning(
+                                "IFS " + ( this._DEF || "" ) +
+                                ": more tex. coords. required, guessing " + 
+                                i + 1 + "th coord." ); 
                             texCoords.push( texCoords[ i % lastTexCoord ] );
                         }
 
