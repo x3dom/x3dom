@@ -20,6 +20,7 @@
   * allow smooth creaseAngle during coord updates for IFS
   * NormalInterpolator: array of MFVec3f
 * Improvements
+  * tolerate insufficient tex. coords. for IFS
   * shadow/fog test scenes
   * tweaked ESM with depth delta cutoff
   * shadow blur ignores now background
