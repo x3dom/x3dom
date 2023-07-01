@@ -166,7 +166,7 @@ x3dom.registerNodeType(
                     {
                         hasTexCoord = true;
                         texCoords = texCoordNode._vf.point;
-                        var nTexCoords = hasTexCoordInd ? 
+                        var nTexCoords = hasTexCoordInd ?
                             Math.max( ...texCoordInd ) + 1 : positions.length;
                         var i,
                             lastTexCoord = texCoords.length;
@@ -174,8 +174,8 @@ x3dom.registerNodeType(
                         {
                             x3dom.debug.logWarning(
                                 "IFS " + ( this._DEF || "" ) +
-                                ": more tex. coords. required, guessing " + 
-                                i + 1 + "th coord." ); 
+                                ": more tex. coords. required, guessing " +
+                                i + 1 + "th coord." );
                             texCoords.push( texCoords[ i % lastTexCoord ] );
                         }
 
@@ -884,7 +884,7 @@ x3dom.registerNodeType(
                         {
                             hasTexCoord = true;
                             texCoords = texCoordNode._vf.point;
-                            var nTexCoords = hasTexCoordInd ? 
+                            var nTexCoords = hasTexCoordInd ?
                                 Math.max( ...texCoordInd ) + 1 : positions.length;
                             var i,
                                 lastTexCoord = texCoords.length;
