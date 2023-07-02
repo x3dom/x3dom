@@ -2570,7 +2570,7 @@ x3dom.gfx_webgl = ( function ()
             var srcFactor = x3dom.Utils.blendFunc( gl, blendMode._vf.srcFactor );
             var destFactor = x3dom.Utils.blendFunc( gl, blendMode._vf.destFactor );
 
-            if ( srcFactor && destFactor )
+            if ( srcFactor !== false && destFactor !== false )
             {
                 // Enable Blending
                 this.stateManager.enable( gl.BLEND );
