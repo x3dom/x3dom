@@ -1840,26 +1840,6 @@ x3dom.BinaryContainerLoader.setupBufferInterpolator = function ( interpolator )
             }
         }
 
-        //modify for STEP
-        if ( interpolator._vf.interpolation === "STEP" )
-        {
-            var stepKey   = key.copy();
-            var stepValue = keyValue.copy();
-
-            for ( var i = 1, n = key.length; i < n; i++ )
-            {
-                stepKey.splice( i * 2, 0, key[ i ] );
-            }
-
-            for ( var i = 0, n = keyValue.length; i < n; i++ )
-            {
-                stepValue.splice( i * 2 + 1, 0, keyValue[ i ] );
-            }
-
-            key = stepKey;
-            keyValue = stepValue;
-        }
-
         interpolator._vf.keyValue = keyValue;
     };
 

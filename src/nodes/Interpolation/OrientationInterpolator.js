@@ -79,6 +79,13 @@ x3dom.registerNodeType(
                             return result;//normalize(result);
                         } );
                     }
+                    else if ( this._vf.interpolation === "STEP" )
+                    {
+                        value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                        {
+                            return a.copy();
+                        } );
+                    }
                     else
                     {
                         value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
