@@ -60,7 +60,14 @@ x3dom.registerNodeType(
                 {
                     var value,
                         mix;
-                    if ( this._vf.RGB )
+                    if ( this._vf.interpolation === "STEP" )
+                    {
+                        value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                        {
+                            return a;
+                        } );
+                    }
+                    else if ( this._vf.RGB )
                     {
                         value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
                         {
