@@ -42,23 +42,7 @@ x3dom.registerNodeType(
              */
             this.addField_MFVec3f( ctx, "keyValue", [] );
 
-            if ( ctx && ctx.xmlNode.hasAttribute( "keyValue" ) )
-            {
-                this._vf.keyValue = [];     // FIXME!!!
-
-                var arr = x3dom.fields.MFVec3f.parse( ctx.xmlNode.getAttribute( "keyValue" ) );
-                var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
-                var len = arr.length / key;
-                for ( var i = 0; i < key; i++ )
-                {
-                    var val = new x3dom.fields.MFVec3f();
-                    for ( var j = 0; j < len; j++ )
-                    {
-                        val.push( arr[ i * len + j ] );
-                    }
-                    this._vf.keyValue.push( val );
-                }
-            }
+            this.fieldChanged( "keyValue" );
         },
         {
             fieldChanged : function ( fieldName )
@@ -126,6 +110,28 @@ x3dom.registerNodeType(
                         }
                     }
                 }
+                if ( fieldName === "keyValue" )
+                {
+                    var arr = this._vf.keyValue.copy();
+
+                    this._vf.keyValue = [];  // FIXME!!!
+
+                    var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
+                    var len = arr.length / key;
+                    if ( this._vf.interpolation === "CUBICSPLINE" )
+                    {
+                        len /= 3;
+                    }
+                    for ( var i = 0; i < key; i++ )
+                    {
+                        var val = new x3dom.fields.MFVec3f();
+                        for ( var j = 0; j < len; j++ )
+                        {
+                            val.push( arr[ i * len + j ] );
+                        }
+                        this._vf.keyValue.push( val );
+                    }
+                }
             },
 
             keyValueFromAccessor : function ( array )
@@ -144,6 +150,10 @@ x3dom.registerNodeType(
                 } );
                 var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
                 var len = keyValue.length / key;
+                if ( this._vf.interpolation === "CUBICSPLINE" )
+                {
+                    len /= 3;
+                }
                 var vf_keyValue = [];
                 for ( var i = 0; i < key; i++ )
                 {
