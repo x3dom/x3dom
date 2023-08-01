@@ -1,6 +1,6 @@
 # X3DOM Change Log
 
-## Version 1.8.3-dev
+## Version 1.8.3
 
 * Bugfixes
   * fog pass over shadow
