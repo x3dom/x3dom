@@ -307,11 +307,13 @@ x3dom.registerNodeType(
                 }
                 else if ( fieldName == "cycleInterval" )
                 {
-                    // Spec: Should be ignored when active. (Restore old value)
+                    // Spec. v3.3: Should be ignored when active. (Restore old value)
+                    // Spec. v4.0: immediately update, continue at the same fraction
                     if ( this._vf.isActive )
                     {
-                        this._vf.cycleInterval = this._backupCycleInterval;
-                        return;
+                        this._vf.startTime = this._lastTime - this._fraction * this._vf.cycleInterval;
+                        //this._vf.cycleInterval = this._backupCycleInterval;
+                        //return;
                     }
 
                     this._backupCycleInterval = this._vf.cycleInterval;
