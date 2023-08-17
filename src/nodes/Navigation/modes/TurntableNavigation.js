@@ -1,4 +1,3 @@
-
 x3dom.TurntableNavigation = function ( navigationNode )
 {
     x3dom.DefaultNavigation.call( this, navigationNode );
@@ -365,7 +364,9 @@ x3dom.TurntableNavigation.prototype.animateTo = function ( view, target, prev, d
     var navi = this.navi;
     var targetMat;
 
-    if ( x3dom.isa( target, x3dom.nodeTypes.X3DViewpointNode ) )
+    view._mixer._isVPtarget = x3dom.isa( target, x3dom.nodeTypes.X3DViewpointNode );
+
+    if ( view._mixer._isVPtarget )
     {
         targetMat = x3dom.fields.SFMatrix4f.lookAt( target._vf.position, target.getCenterOfRotation(), new x3dom.fields.SFVec3f( 0, 1, 0 ) );
     }

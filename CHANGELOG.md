@@ -1,6 +1,15 @@
 # X3DOM Change Log
 
-## Version 1.8.3-dev
+## Version 1.8.4-dev
+
+* Features
+  
+* Improvements
+
+* Bugfixes
+  * allow turntable as initial navigation
+    
+## Version 1.8.3
 
 * Bugfixes
   * fog pass over shadow

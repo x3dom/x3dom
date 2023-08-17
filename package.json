@@ -1,6 +1,6 @@
 {
   "name": "x3dom",
-  "version": "1.8.3-dev",
+  "version": "1.8.4-dev",
   "description": "X3DOM. A framework for integrating and manipulating X3D scenes as HTML5/DOM elements.",
   "main": "Main.js",
   "directories": {

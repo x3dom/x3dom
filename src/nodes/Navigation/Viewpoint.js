@@ -65,6 +65,7 @@ x3dom.registerNodeType(
 
             /**
              * The centerOfRotation field specifies a center about which to rotate the user's eyepoint when in EXAMINE mode.
+             * The coordinates are provided in world coordinates for x3dom, currently.
              * @var {x3dom.fields.SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue 0,0,0
