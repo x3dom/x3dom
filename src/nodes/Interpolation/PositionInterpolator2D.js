@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the set of data points, that are used for interpolation.
-             * @var {x3dom.fields.MFVec3f} keyValue
+             * @var {x3dom.fields.MFVec2f} keyValue
              * @memberof x3dom.nodeTypes.PositionInterpolator2D
              * @initvalue []
              * @field x3d
@@ -42,12 +42,49 @@ x3dom.registerNodeType(
             {
                 if ( fieldName === "set_fraction" )
                 {
-                    var value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
-                    {
-                        return a.multiply( 1.0 - t ).add( b.multiply( t ) );
-                    } );
+                    var value;
 
-                    this.postMessage( "value_changed", value );
+                    if ( this._vf.interpolation === "CUBICSPLINE" )
+                    {
+                        value = this.cubicSplineInterp( this._vf.set_fraction, function ( startInTangent, start, endOutTangent, end, h00, h10, h01, h11 )
+                        {
+                            function _applyBasis ( axis )//p0, m0, p1, m1, axis)
+                            {
+                                return h00 * start[ axis ] + h10 * startInTangent[ axis ] + h01 * end[ axis ] + h11 * endOutTangent[ axis ];
+                            }
+
+                            var result = new x3dom.fields.SFVec2f();
+
+                            // do not use SFVec3f methods to avoid generating objects
+
+                            result.x = _applyBasis( "x" );
+                            result.y = _applyBasis( "y" );
+                            return result;
+                        } );
+                    }
+                    else if ( this._vf.interpolation === "STEP" )
+                    {
+                        value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                        {
+                            return a.copy();
+                        } );
+                    }
+                    else
+                    {
+                        value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                        {
+                            var result = a.multiply( 1.0 - t );
+                            result.x += t * b.x;
+                            result.y += t * b.y;
+                            return result;//a.multiply(1.0-t).add(b.multiply(t));
+                        } );
+                    }
+
+                    if ( value != undefined && value != this._lastValue )
+                    {
+                        this._lastValue = value;
+                        this.postMessage( "value_changed", value );
+                    }
                 }
             }
         }

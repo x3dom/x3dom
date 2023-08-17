@@ -17,7 +17,7 @@
         <Material DEF='MaterialNode'>
           
         </Material>
-		<ColorInterpolator DEF='cI' id='ColorInterpolator1_16' key='0  0.412386  1.000704' keyValue='0.800000 0.800000 0.800000  0.882196 0.800000 0  1 0.136646 0'>
+		<ColorInterpolator interpolation='STEP' DEF='cI' id='ColorInterpolator1_16' key='0  0.412386  1.000704' keyValue='0.800000 0.800000 0.800000  0.882196 0.800000 0  1 0.136646 0'>
 		</ColorInterpolator>
 
         <ROUTE fromNode='cI' fromField='value_changed' toNode='MaterialNode' toField='set_diffuseColor'></ROUTE>

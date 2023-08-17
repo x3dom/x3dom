@@ -5,6 +5,8 @@
 * Features
   
 * Improvements
+  * add "STEP" interpolator mode to interpolators
+  * update cycleInterval behaviour to X3Dv4
 
 * Bugfixes
   * allow turntable as initial navigation
