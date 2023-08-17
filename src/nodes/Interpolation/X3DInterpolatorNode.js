@@ -167,7 +167,8 @@ x3dom.registerNodeType(
                         intervalInSeconds = interval * this._vf.duration;
                         basis             = this.cubicSplineBasis( t, intervalInSeconds );
 
-                        return interp( this._vf.keyValue[ i3 + 2 ],
+                        return interp(
+                            this._vf.keyValue[ i3 + 2 ],
                             this._vf.keyValue[ i3 + 1 ],
                             this._vf.keyValue[ i3 + 3 ],
                             this._vf.keyValue[ i3 + 4 ],

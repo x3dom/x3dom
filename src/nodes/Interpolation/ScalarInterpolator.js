@@ -53,6 +53,13 @@ x3dom.registerNodeType(
                             return h00 * start + h10 * startInTangent + h01 * end + h11 * endOutTangent;
                         } );
                     }
+                    else if ( this._vf.interpolation === "STEP" )
+                    {
+                        value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                        {
+                            return a;
+                        } );
+                    }
                     else
                     {
                         value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
