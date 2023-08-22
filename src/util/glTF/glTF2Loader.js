@@ -312,7 +312,7 @@ x3dom.glTF2Loader.prototype._generateX3DPointLight = function ( light )
     var radius = light.range || 1e6;
     x3dLight.setAttribute( "radius", radius );
     x3dLight.setAttribute( "attenuation", "0 0 1" );
-    
+    return x3dLight;
 };
 
 /**

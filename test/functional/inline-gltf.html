@@ -259,7 +259,7 @@
             closeOverflowMenu();
         }
 
-        function setLight( event, ibl )
+        function setLight( event, ibl, headlight )
         {
             var allRadios = document.querySelectorAll(".overflow-icon-light");
 
@@ -270,7 +270,7 @@
 
             event.target.querySelector("i").innerHTML = "radio_button_checked";
 
-            document.querySelector("navigationinfo").setAttribute("headlight", !ibl);
+            document.querySelector("navigationinfo").setAttribute("headlight", headlight);
             document.querySelector("physicalenvironmentlight").setAttribute("on", ibl);
 
             closeOverflowMenu();
@@ -343,12 +343,16 @@
                     <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
                 </div>
                 <div class="overflow-menu-header">Lighting</div>
-                <div class="overflow-menu-entry" onclick="setLight(event, true)">
+                <div class="overflow-menu-entry" onclick="setLight(event, true, false)">
                     <div class="overflow-text">IBL</div>
                     <i class="material-icons overflow-icon-light">radio_button_checked</i>
                 </div>
-                <div class="overflow-menu-entry" onclick="setLight(event, false)">
+                <div class="overflow-menu-entry" onclick="setLight(event, false, true)">
                     <div class="overflow-text">Headlight</div>
+                    <i class="material-icons overflow-icon-light">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setLight(event, false, false)">
+                    <div class="overflow-text">Scene Only</div>
                     <i class="material-icons overflow-icon-light">radio_button_unchecked</i>
                 </div>
             </section>
