@@ -303,23 +303,11 @@ x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
 };
 
 /**
- * Generates a X3D PointLight node
- */
-x3dom.glTF2Loader.prototype._generateX3DPointLight = function ( light )
-{
-    var x3dLight = document.createElement( "PointLight" );
-    this._setX3DLightSharedProperties( x3dLight, light );
-    var radius = light.range || 1e6;
-    x3dLight.setAttribute( "radius", radius );
-    x3dLight.setAttribute( "attenuation", "0 0 1" );
-    return x3dLight;
-};
-
-/**
  * Generates shared X3D Light fields
  */
-x3dom.glTF2Loader.prototype._setX3DLightSharedProperties = function ( x3dLight, light )
+x3dom.glTF2Loader.prototype._createX3DLightElement = function ( type, light )
 {
+    var x3dLight = document.createElement( type );
     if ( light.color != undefined )
     {
         x3dLight.setAttribute( "color", light.color.join( " " ) );
@@ -332,7 +320,31 @@ x3dom.glTF2Loader.prototype._setX3DLightSharedProperties = function ( x3dLight, 
 
     var intensity = light.intensity || 1.0; 
     x3dLight.setAttribute( "intensity", intensity );
-}
+    x3dLight.setAttribute( "global", true );
+    return x3dLight;
+};
+
+/**
+ * Generates a X3D PointLight node
+ */
+x3dom.glTF2Loader.prototype._generateX3DPointLight = function ( light )
+{
+    var x3dLight = this._createX3DLightElement( "PointLight", light );
+    var radius = light.range || 1e6;
+    x3dLight.setAttribute( "radius", radius );
+    x3dLight.setAttribute( "attenuation", "0 0 1" );
+    return x3dLight;
+};
+
+/**
+ * Generates a X3D PointLight node
+ */
+x3dom.glTF2Loader.prototype._generateX3DDirectionalLight = function ( light )
+{
+    var x3dLight = this._createX3DLightElement( "DirectionalLight", light );
+    //x3dLight.setAttribute( "direction", "0 0 -1" ); // is X3D default
+    return x3dLight;
+};
 
 /**
  * Generates a X3D scene node

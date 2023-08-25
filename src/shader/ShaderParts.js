@@ -530,9 +530,13 @@ x3dom.shader.lightPBR = function ( numLights )
                     "        }\n" +
                     "       if(lType == 2.0) {\n" +
                     "           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
-                    "           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
-                    "           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
-                    "           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+                    //"           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" + // see clamp
+                    //"           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
+                    //"           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+                    //"           else{\n" + // use glTF attenuation
+                    "               spot = (cos(spotAngle) - cos(lCutOffAngle) ) / max(0.0001, cos(lBeamWidth) - cos(lCutOffAngle));\n" +
+                    "               spot = clamp(spot, 0.0, 1.0);\n" +
+                    "               spot *= spot;\n" +
                     "       }\n" +
                     "   }\n" +
 
@@ -543,8 +547,8 @@ x3dom.shader.lightPBR = function ( numLights )
                     "   float NoV = clamp( dot( N, V ), 0.0, 1.0 );\n" +
                     "   float VoH = clamp( dot( V, H ), 0.0, 1.0 );\n" +
 
-                    "   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
-                    "   float diffuseFactor  = lIntensity * NoL;\n" +
+                    "   float ambientFactor  = lAmbientIntensity * ambIntensity * 0.3183098861837907;\n" +
+                    "   float diffuseFactor  = lIntensity * NoL * 0.3183098861837907;\n" + // 1/PI for Lambert
                     "   float spec  = lIntensity * NoL;\n" +
                     "   float roughness = 1.0 - shin;\n" +
                     "   float a = max( roughness * roughness, 5e-4 );\n" +
