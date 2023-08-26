@@ -337,7 +337,23 @@ x3dom.glTF2Loader.prototype._generateX3DPointLight = function ( light )
 };
 
 /**
- * Generates a X3D PointLight node
+ * Generates a X3D SpotLight node
+ */
+x3dom.glTF2Loader.prototype._generateX3DSpotLight = function ( light )
+{
+    var x3dLight = this._createX3DLightElement( "SpotLight", light );
+    var radius = light.range || 1e6;
+    var beamWidth = light.innerConeAngle || 0;
+    var cutOffAngle = light.outerConeAngle == undefined ? Math.PI / 4 : light.outerConeAngle;
+    x3dLight.setAttribute( "radius", radius );
+    x3dLight.setAttribute( "beamWidth", beamWidth );
+    x3dLight.setAttribute( "cutOffAngle", cutOffAngle );
+    x3dLight.setAttribute( "attenuation", "0 0 1" );
+    return x3dLight;
+};
+
+/**
+ * Generates a X3D DirectionalLight node
  */
 x3dom.glTF2Loader.prototype._generateX3DDirectionalLight = function ( light )
 {
