@@ -571,7 +571,7 @@ x3dom.shader.lightPBR = function ( numLights )
                     "   vec3 specularFactor = (D * G) * (F * spec);\n" +
 
                     "   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
-                    "   diffuse  += lColor * (1 - F) * diffuseFactor * attentuation * spot;\n" + //1-F for energy total
+                    "   diffuse  += lColor * (1.0 - F) * diffuseFactor * attentuation * spot;\n" + //1-F for energy total
                     "   specular += lColor * specularFactor * attentuation * spot;\n" +
                     "}\n";
 
