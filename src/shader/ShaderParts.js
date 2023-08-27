@@ -529,13 +529,14 @@ x3dom.shader.lightPBR = function ( numLights )
                     "           attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
                     "        }\n" +
                     "       if(lType == 2.0) {\n" +
-                    "           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
+                    //"           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
                     //"           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" + // see clamp
                     //"           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
                     //"           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
                     //"           else{\n" + // use glTF attenuation
-                    "               spot = (cos(spotAngle) - cos(lCutOffAngle) ) / max(0.0001, cos(lBeamWidth) - cos(lCutOffAngle));\n" +
-                    "               spot = clamp(spot, 0.0, 1.0);\n" +
+                    "           float cosSpotAngle = max(0.0, dot(-L, normalize(lDirection)));\n" +
+                    "               spot = (cosSpotAngle - cos(lCutOffAngle) ) / max(0.0001, cos(lBeamWidth) - cos(lCutOffAngle));\n" +
+                    "               spot = clamp(spot, 0.0, 1.0);\n" + //not needed?
                     "               spot *= spot;\n" +
                     "       }\n" +
                     "   }\n" +
@@ -556,7 +557,7 @@ x3dom.shader.lightPBR = function ( numLights )
                     // Distribution Function"
                     "   float a2 = a * a;\n" +
                     "   float denom = NoH * NoH * ( a2 - 1.0 ) + 1.0;\n" +
-                    "   float D = a2 / ( denom * denom );\n" +
+                    "   float D = a2 / ( 3.141592653589793 * denom * denom );\n" +
 
                     // Geometric Shadowing Term
                     "   float k = a / 2.0;\n" +
@@ -570,7 +571,7 @@ x3dom.shader.lightPBR = function ( numLights )
                     "   vec3 specularFactor = (D * G) * (F * spec);\n" +
 
                     "   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
-                    "   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+                    "   diffuse  += lColor * (1 - F) * diffuseFactor * attentuation * spot;\n" + //1-F for energy total
                     "   specular += lColor * specularFactor * attentuation * spot;\n" +
                     "}\n";
 
