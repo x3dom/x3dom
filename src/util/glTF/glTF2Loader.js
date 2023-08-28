@@ -10,7 +10,8 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_materials_pbrSpecularGlossiness",
         "KHR_materials_unlit",
         "KHR_texture_transform",
-        "KHR_lights_punctual"
+        "KHR_lights_punctual",
+        "KHR_materials_emissive_strength",
     ];
     if ( x3dom.DracoDecoderModule )
     {
@@ -744,6 +745,12 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function ( material )
         mat.setAttribute( "unlit", true );
     }
 
+    if ( material.extensions && material.extensions.KHR_materials_emissive_strength && material.extensions.KHR_materials_emissive_strength.emissiveStrength )
+    {
+        var emissiveStrength = material.extensions.KHR_materials_emissive_strength.emissiveStrength;
+        emissiveFactor = emissiveFactor.map( (rgb) => rgb * emissiveStrength; );
+    }
+    
     mat.setAttribute( "emissiveFactor",  emissiveFactor.join( " " ) );
     mat.setAttribute( "alphaMode",  alphaMode );
     mat.setAttribute( "alphaCutoff", alphaCutoff );
