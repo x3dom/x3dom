@@ -9,7 +9,8 @@ x3dom.glTF2Loader = function ( nameSpace )
     this._supportedExtensions = [
         "KHR_materials_pbrSpecularGlossiness",
         "KHR_materials_unlit",
-        "KHR_texture_transform"
+        "KHR_texture_transform",
+        "KHR_lights_punctual"
     ];
     if ( x3dom.DracoDecoderModule )
     {
@@ -261,7 +262,44 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function ( node, index )
         x3dNode.appendChild( this._generateX3DViewpoint( node ) );
     }
 
+    if ( node.extensions && node.extensions.KHR_lights_punctual && node.extensions.KHR_lights_punctual.light != undefined )
+    {
+        var light;
+        if ( this._gltf.extensions && this._gltf.extensions.KHR_lights_punctual && this._gltf.extensions.KHR_lights_punctual.lights )
+        {
+            var light = this._gltf.extensions.KHR_lights_punctual.lights[ node.extensions.KHR_lights_punctual.light ];
+            if ( light )
+            {
+                x3dNode.appendChild( this._generateX3DLight( light ) );
+            }
+            else
+            {
+                x3dom.debug.logWarning( "glTF light with index " + node.extensions.KHR_lights_punctual.light + " requested but not defined in extension." );
+            }
+        }
+        else
+        {
+            x3dom.debug.logWarning( "glTF light requested but no lights defined." );
+        }
+    }
+
     return x3dNode;
+};
+
+/**
+ * Generates a X3D light node
+ */
+x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
+{
+    switch ( light.type )
+    {
+        case "point":
+            return this._generateX3DPointLight( light );
+        case "directional":
+            return this._generateX3DDirectionalLight( light );
+        case "spot":
+            return this._generateX3DSpotLight( light );
+    }
 };
 
 /**
@@ -272,6 +310,82 @@ x3dom.glTF2Loader.prototype._generateX3DScene = function ()
     var scene = document.createElement( "scene" );
 
     return scene;
+};
+
+/**
+ * Generates a X3D light node
+ */
+x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
+{
+    switch ( light.type )
+    {
+        case "point":
+            return this._generateX3DPointLight( light );
+        case "directional":
+            return this._generateX3DDirectionalLight( light );
+        case "spot":
+            return this._generateX3DSpotLight( light );
+    }
+};
+
+/**
+ * Generates initial light element of type with shared X3D Light fields
+ */
+x3dom.glTF2Loader.prototype._createX3DLightElement = function ( type, light )
+{
+    var x3dLight = document.createElement( type );
+    if ( light.color != undefined )
+    {
+        x3dLight.setAttribute( "color", light.color.join( " " ) );
+    }
+
+    if ( light.name != undefined && light.name != "" )
+    {
+        x3dLight.setAttribute( "DEF", "glTF_LIGHT_" + light.name );
+    }
+
+    var intensity = light.intensity || 1.0;
+    x3dLight.setAttribute( "intensity", intensity );
+    x3dLight.setAttribute( "global", true );
+    return x3dLight;
+};
+
+/**
+ * Generates a X3D PointLight node
+ */
+x3dom.glTF2Loader.prototype._generateX3DPointLight = function ( light )
+{
+    var x3dLight = this._createX3DLightElement( "PointLight", light );
+    var radius = light.range || 1e6;
+    x3dLight.setAttribute( "radius", radius );
+    x3dLight.setAttribute( "attenuation", "0 0 1" );
+    return x3dLight;
+};
+
+/**
+ * Generates a X3D SpotLight node
+ */
+x3dom.glTF2Loader.prototype._generateX3DSpotLight = function ( light )
+{
+    var x3dLight = this._createX3DLightElement( "SpotLight", light );
+    var radius = light.range || 1e6;
+    var beamWidth = light.innerConeAngle || 0;
+    var cutOffAngle = light.outerConeAngle || Math.PI / 4; // must be greater than inner
+    x3dLight.setAttribute( "radius", radius );
+    x3dLight.setAttribute( "beamWidth", beamWidth );
+    x3dLight.setAttribute( "cutOffAngle", cutOffAngle );
+    x3dLight.setAttribute( "attenuation", "0 0 1" );
+    return x3dLight;
+};
+
+/**
+ * Generates a X3D DirectionalLight node
+ */
+x3dom.glTF2Loader.prototype._generateX3DDirectionalLight = function ( light )
+{
+    var x3dLight = this._createX3DLightElement( "DirectionalLight", light );
+    //x3dLight.setAttribute( "direction", "0 0 -1" ); // is X3D default
+    return x3dLight;
 };
 
 /**
