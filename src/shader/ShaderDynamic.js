@@ -1204,7 +1204,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                 //Calculate specular lighting from precomputed maps
                 shader += "vec3 brdf      = texture2D( brdfMap, vec2( NoV, roughness ) ).rgb;\n";
                 //shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";
-                shader += "specular += specularEnv * ( _specularColor * brdf.x + brdf.y );\n"; //add contribution
+                shader += "specular += specularEnv * ( _specularColor * brdf.x + brdf.y );\n"; //add env contribution
             }
             shader += "_specularColor = vec3(1.0);\n"; //specular above already includes spec. material color
         }

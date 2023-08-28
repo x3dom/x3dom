@@ -290,7 +290,6 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function ( node, index )
  */
 x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
 {
-
     switch ( light.type )
     {
         case "point":
@@ -303,7 +302,33 @@ x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
 };
 
 /**
- * Generates shared X3D Light fields
+ * Generates a X3D scene node
+ */
+x3dom.glTF2Loader.prototype._generateX3DScene = function ()
+{
+    var scene = document.createElement( "scene" );
+
+    return scene;
+};
+
+/**
+ * Generates a X3D light node
+ */
+x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
+{
+    switch ( light.type )
+    {
+        case "point":
+            return this._generateX3DPointLight( light );
+        case "directional":
+            return this._generateX3DDirectionalLight( light );
+        case "spot":
+            return this._generateX3DSpotLight( light );            
+    }
+};
+
+/**
+ * Generates initial light element of type with shared X3D Light fields
  */
 x3dom.glTF2Loader.prototype._createX3DLightElement = function ( type, light )
 {
@@ -344,7 +369,7 @@ x3dom.glTF2Loader.prototype._generateX3DSpotLight = function ( light )
     var x3dLight = this._createX3DLightElement( "SpotLight", light );
     var radius = light.range || 1e6;
     var beamWidth = light.innerConeAngle || 0;
-    var cutOffAngle = light.outerConeAngle == undefined ? Math.PI / 4 : light.outerConeAngle;
+    var cutOffAngle = light.outerConeAngle || Math.PI / 4; // must be greater than inner 
     x3dLight.setAttribute( "radius", radius );
     x3dLight.setAttribute( "beamWidth", beamWidth );
     x3dLight.setAttribute( "cutOffAngle", cutOffAngle );
@@ -360,16 +385,6 @@ x3dom.glTF2Loader.prototype._generateX3DDirectionalLight = function ( light )
     var x3dLight = this._createX3DLightElement( "DirectionalLight", light );
     //x3dLight.setAttribute( "direction", "0 0 -1" ); // is X3D default
     return x3dLight;
-};
-
-/**
- * Generates a X3D scene node
- */
-x3dom.glTF2Loader.prototype._generateX3DScene = function ()
-{
-    var scene = document.createElement( "scene" );
-
-    return scene;
 };
 
 /**

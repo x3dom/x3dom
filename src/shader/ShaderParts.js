@@ -535,9 +535,9 @@ x3dom.shader.lightPBR = function ( numLights )
                     //"           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
                     //"           else{\n" + // use glTF attenuation
                     "           float cosSpotAngle = max(0.0, dot(-L, normalize(lDirection)));\n" +
-                    "               spot = (cosSpotAngle - cos(lCutOffAngle) ) / max(0.0001, cos(lBeamWidth) - cos(lCutOffAngle));\n" +
-                    "               spot = clamp(spot, 0.0, 1.0);\n" + //not needed?
-                    "               spot *= spot;\n" +
+                    "           spot = (cosSpotAngle - cos(lCutOffAngle) ) / max(0.0001, cos(lBeamWidth) - cos(lCutOffAngle));\n" +
+                    "           spot = clamp(spot, 0.0, 1.0);\n" + //not needed?
+                    "           spot *= spot;\n" +
                     "       }\n" +
                     "   }\n" +
 
