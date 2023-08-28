@@ -10,7 +10,8 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_materials_pbrSpecularGlossiness",
         "KHR_materials_unlit",
         "KHR_texture_transform",
-        "KHR_lights_punctual"
+        "KHR_lights_punctual",
+        "KHR_materials_emissive_strength"
     ];
     if ( x3dom.DracoDecoderModule )
     {
@@ -39,7 +40,7 @@ x3dom.glTF2Loader.prototype.load = function ( input, binary )
     //generate worldinfo from asset properties and extras
     this._generateX3DWorldInfo( scene, x3dScene );
 
-    //check if unsupported extension are required
+    //check if unsupported extensions are required
     if ( this._unsupportedExtensionsRequired() )
     {
         x3dom.debug.logWarning( "Cannot render glTF." );
@@ -742,6 +743,12 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function ( material )
     if ( material.extensions && material.extensions.KHR_materials_unlit )
     {
         mat.setAttribute( "unlit", true );
+    }
+
+    if ( material.extensions && material.extensions.KHR_materials_emissive_strength && material.extensions.KHR_materials_emissive_strength.emissiveStrength )
+    {
+        var emissiveStrength = material.extensions.KHR_materials_emissive_strength.emissiveStrength;
+        emissiveFactor = emissiveFactor.map( ( rgb ) => { return rgb * emissiveStrength; } );
     }
 
     mat.setAttribute( "emissiveFactor",  emissiveFactor.join( " " ) );
