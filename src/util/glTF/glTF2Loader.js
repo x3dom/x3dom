@@ -748,7 +748,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function ( material )
     if ( material.extensions && material.extensions.KHR_materials_emissive_strength && material.extensions.KHR_materials_emissive_strength.emissiveStrength )
     {
         var emissiveStrength = material.extensions.KHR_materials_emissive_strength.emissiveStrength;
-        emissiveFactor = emissiveFactor.map( (rgb) => { return rgb * emissiveStrength; } );
+        emissiveFactor = emissiveFactor.map( ( rgb ) => { return rgb * emissiveStrength; } );
     }
 
     mat.setAttribute( "emissiveFactor",  emissiveFactor.join( " " ) );
