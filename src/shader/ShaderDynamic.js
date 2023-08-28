@@ -1177,7 +1177,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
 
         if ( properties.PBR_MATERIAL )
         {
-            //shader += "_specularColor = vec3(1.0);\n";
             if ( properties.PHYSICALENVLIGHT )
             {
                 shader += "float camDistance = length(cameraPosWS.xyz - fragPositionWS.xyz);\n";
@@ -1193,19 +1192,21 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
 
                 if ( x3dom.caps.TEXTURE_LOD || x3dom.caps.WEBGL_VERSION == 2 )
                 {
-                    shader += "specular = textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
+                    shader += "vec3 specularEnv = textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
                 }
                 else
                 {
                     shader += "float level = calcMipLevel(dirToCubeUV(R));\n";
                     shader += "float bias  = lod - level;\n";
-                    shader += "specular    = textureCube( specularEnvironmentMap, R, bias ).rgb;\n";
+                    shader += "vec3 specularEnv = textureCube( specularEnvironmentMap, R, bias ).rgb;\n";
                 }
 
                 //Calculate specular lighting from precomputed maps
                 shader += "vec3 brdf      = texture2D( brdfMap, vec2( NoV, roughness ) ).rgb;\n";
-                shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";
+                //shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";
+                shader += "specular += specularEnv * ( _specularColor * brdf.x + brdf.y );\n"; //add env contribution
             }
+            shader += "_specularColor = vec3(1.0);\n"; //specular above already includes spec. material color
         }
 
         shader += "color.rgb = _emissiveColor + ((ambient + diffuse) * color.rgb + specular * _specularColor) * _occlusion;\n";
