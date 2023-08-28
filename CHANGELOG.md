@@ -4,6 +4,7 @@
 
 * Features
   * support for glTF punctual lights extension
+  * support for glTF emissive strength extension
   
 * Improvements
   * add "STEP" interpolator mode to interpolators
