@@ -268,17 +268,18 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function ( node, index )
         if ( this._gltf.extensions && this._gltf.extensions.KHR_lights_punctual && this._gltf.extensions.KHR_lights_punctual.lights )
         {
             var light = this._gltf.extensions.KHR_lights_punctual.lights[ node.extensions.KHR_lights_punctual.light ];
-            if ( light ) 
+            if ( light )
             {
                 x3dNode.appendChild( this._generateX3DLight( light ) );
             }
             else
             {
-                x3dom.debug.logWarning("glTF light with index " + node.extensions.KHR_lights_punctual.light + " requested but not defined in extension.");
+                x3dom.debug.logWarning( "glTF light with index " + node.extensions.KHR_lights_punctual.light + " requested but not defined in extension." );
             }
         }
-        else {
-            x3dom.debug.logWarning("glTF light requested but no lights defined.");
+        else
+        {
+            x3dom.debug.logWarning( "glTF light requested but no lights defined." );
         }
     }
 
@@ -297,7 +298,7 @@ x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
         case "directional":
             return this._generateX3DDirectionalLight( light );
         case "spot":
-            return this._generateX3DSpotLight( light );            
+            return this._generateX3DSpotLight( light );
     }
 };
 
@@ -323,7 +324,7 @@ x3dom.glTF2Loader.prototype._generateX3DLight = function ( light )
         case "directional":
             return this._generateX3DDirectionalLight( light );
         case "spot":
-            return this._generateX3DSpotLight( light );            
+            return this._generateX3DSpotLight( light );
     }
 };
 
@@ -343,7 +344,7 @@ x3dom.glTF2Loader.prototype._createX3DLightElement = function ( type, light )
         x3dLight.setAttribute( "DEF", "glTF_LIGHT_" + light.name );
     }
 
-    var intensity = light.intensity || 1.0; 
+    var intensity = light.intensity || 1.0;
     x3dLight.setAttribute( "intensity", intensity );
     x3dLight.setAttribute( "global", true );
     return x3dLight;
@@ -369,7 +370,7 @@ x3dom.glTF2Loader.prototype._generateX3DSpotLight = function ( light )
     var x3dLight = this._createX3DLightElement( "SpotLight", light );
     var radius = light.range || 1e6;
     var beamWidth = light.innerConeAngle || 0;
-    var cutOffAngle = light.outerConeAngle || Math.PI / 4; // must be greater than inner 
+    var cutOffAngle = light.outerConeAngle || Math.PI / 4; // must be greater than inner
     x3dLight.setAttribute( "radius", radius );
     x3dLight.setAttribute( "beamWidth", beamWidth );
     x3dLight.setAttribute( "cutOffAngle", cutOffAngle );
