@@ -11,7 +11,8 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_materials_unlit",
         "KHR_texture_transform",
         "KHR_lights_punctual",
-        "KHR_materials_emissive_strength"
+        "KHR_materials_emissive_strength",
+        "EXT_texture_webp"
     ];
     if ( x3dom.DracoDecoderModule )
     {
@@ -769,6 +770,14 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 {
     var image   = this._gltf.images[ texture.source ];
 
+    var webpImageUrl = ""; 
+
+    if ( texture.extensions && texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
+    {
+        var webpImage = this._gltf.images[ texture.extensions.EXT_texture_webp.source ];
+        webpImageUrl = x3dom.Utils.dataURIToObjectURL( webpImage.uri || "" );
+    }
+
     var imagetexture = document.createElement( "imagetexture" );
 
     this._generateX3DMetadata( texture, imagetexture );
@@ -781,9 +790,11 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
         imagetexture.setAttribute( "containerField", containerField );
     }
 
-    if ( image.uri != undefined )
+    if ( image.uri != undefined || webpImageUrl.length > 0 )
     {
-        imagetexture.setAttribute( "url", x3dom.Utils.dataURIToObjectURL( image.uri ) );
+        var MFUrl = webpImageUrl.length ? [ '"' + webpImageUrl + '"'] : [];
+        if ( image.uri ) MFUrl.push( '"' + x3dom.Utils.dataURIToObjectURL( image.uri ) + '"' );
+        imagetexture.setAttribute( "url", MFUrl.join(" ") );
     }
 
     if ( texture.sampler != undefined )
