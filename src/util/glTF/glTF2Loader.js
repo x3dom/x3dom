@@ -1302,7 +1302,28 @@ x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
 {
     if ( !binary )
     {
-        return ( typeof input == "string" ) ? JSON.parse( input ) : input;
+        var gltf = ( typeof input == "string" ) ? JSON.parse( input ) : input;
+        if ( gltf.buffers && gltf.buffers[ 0 ])
+        {
+            var dataURI = gltf.buffers[ 0 ].uri;
+            if ( dataURI.indexOf( "data:" ) != -1 )
+            {
+                //x3dom.Utils.dataURItoArrayBuffer( dataURI );
+                var parts        = dataURI.split( "," );
+                var mimetype     = parts[ 0 ].split( ":" )[ 1 ].split( ";" )[ 0 ];
+                var data         = parts[ 1 ];
+                var binaryString = window.atob( data );
+                var byteLength   = binaryString.length;
+                var bytes        = new Uint8Array( byteLength );
+
+                for ( var i = 0; i < byteLength; i++ )
+                {
+                    bytes[ i ] = binaryString.charCodeAt( i );
+                }
+                this._convertBinaryImages( gltf, bytes, 0 );   
+            }
+        }
+        return gltf;
     }
 
     var byteOffset = 0;
