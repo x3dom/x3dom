@@ -25,9 +25,9 @@ x3dom.glTF2Loader = function ( nameSpace )
  * @param {Object} gltf
  */
 
-x3dom.glTF2Loader.prototype.load = function ( input, binary )
+x3dom.glTF2Loader.prototype.load = async function ( input, binary )
 {
-    this._gltf = this._getGLTF( input, binary );
+    this._gltf = await this._getGLTF( input, binary );
 
     //generate X3D scene
     var x3dScene = this._generateX3DScene();
@@ -1298,30 +1298,33 @@ x3dom.glTF2Loader.prototype._toAxisAngle = function ( quat )
 
 /**
  */
-x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
+x3dom.glTF2Loader.prototype._getGLTF = async function ( input, binary )
 {
     if ( !binary )
     {
         var gltf = ( typeof input == "string" ) ? JSON.parse( input ) : input;
-        if ( gltf.buffers && gltf.buffers[ 0 ])
+        var hasBinaryImages = gltf.images && gltf.images.some( ( image ) => image.bufferView && gltf.bufferViews[ image.bufferView ] ); //avoid double downloads
+        if ( gltf.buffers && gltf.buffers[ 0 ] && hasBinaryImages )
         {
-            var dataURI = gltf.buffers[ 0 ].uri;
-            if ( dataURI.indexOf( "data:" ) != -1 )
-            {
-                //x3dom.Utils.dataURItoArrayBuffer( dataURI );
-                var parts        = dataURI.split( "," );
-                var mimetype     = parts[ 0 ].split( ":" )[ 1 ].split( ";" )[ 0 ];
-                var data         = parts[ 1 ];
-                var binaryString = window.atob( data );
-                var byteLength   = binaryString.length;
-                var bytes        = new Uint8Array( byteLength );
+            // var dataURI = gltf.buffers[ 0 ].uri;
+            // if ( dataURI.indexOf( "data:" ) != -1 )
+            // {
+            //     //x3dom.Utils.dataURItoArrayBuffer( dataURI );
+            //     var parts        = dataURI.split( "," );
+            //     var mimetype     = parts[ 0 ].split( ":" )[ 1 ].split( ";" )[ 0 ];
+            //     var data         = parts[ 1 ];
+            //     var binaryString = window.atob( data );
+            //     var byteLength   = binaryString.length;
+            //     var bytes        = new Uint8Array( byteLength );
 
-                for ( var i = 0; i < byteLength; i++ )
-                {
-                    bytes[ i ] = binaryString.charCodeAt( i );
-                }
-                this._convertBinaryImages( gltf, bytes, 0 );   
-            }
+            //     for ( var i = 0; i < byteLength; i++ )
+            //     {
+            //         bytes[ i ] = binaryString.charCodeAt( i );
+            //     }
+            //     this._convertBinaryImages( gltf, bytes, 0 );
+            var bufferURI = gltf.buffers[ 0 ].uri;
+            var bytes = await fetch( this._nameSpace.getURL( bufferURI )).then ( ( response ) => response.arrayBuffer() );
+            this._convertBinaryImages( gltf, bytes, 0 );
         }
         return gltf;
     }
@@ -1377,7 +1380,8 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function ( gltf, buffer, byte
                 var bufferView = gltf.bufferViews[ image.bufferView ];
                 bufferView.byteOffset = bufferView.byteOffset || 0;
 
-                var imageData = new Uint8Array( buffer, byteOffset + bufferView.byteOffset, bufferView.byteLength );
+                var imageStart = byteOffset + bufferView.byteOffset;
+                var imageData = buffer.slice( imageStart, imageStart + bufferView.byteLength );
 
                 image.uri = x3dom.Utils.arrayBufferToObjectURL( imageData, image.mimeType );
             }
