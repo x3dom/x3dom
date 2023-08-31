@@ -1240,7 +1240,7 @@ x3dom.glTF2Loader.prototype._bufferURI = function ( value )
         var bufferView = this._gltf.bufferViews[ accessor.bufferView ];
         var buffer     = this._gltf.buffers[ bufferView.buffer ];
 
-        uri = x3dom.Utils.dataURIToObjectURL( buffer.uri );
+        uri = x3dom.Utils.dataURIToObjectURL( buffer.uri ); // should already be converted to objecturl
     }
 
     return uri;
@@ -1303,8 +1303,9 @@ x3dom.glTF2Loader.prototype._getGLTF = async function ( input, binary )
     if ( !binary )
     {
         var gltf = ( typeof input == "string" ) ? JSON.parse( input ) : input;
-        var hasBinaryImages = gltf.images && gltf.images.some( ( image ) => image.bufferView && gltf.bufferViews[ image.bufferView ] ); //avoid double downloads
-        if ( gltf.buffers && gltf.buffers[ 0 ] && hasBinaryImages )
+        //var hasBinaryImages = gltf.images && gltf.images.some( ( image ) => image.bufferView && gltf.bufferViews[ image.bufferView ] ); //avoid double downloads
+        arrayBuffers = [];
+        if ( gltf.buffers ) // && gltf.buffers[ 0 ] ) // && hasBinaryImages )
         {
             // var dataURI = gltf.buffers[ 0 ].uri;
             // if ( dataURI.indexOf( "data:" ) != -1 )
@@ -1322,10 +1323,19 @@ x3dom.glTF2Loader.prototype._getGLTF = async function ( input, binary )
             //         bytes[ i ] = binaryString.charCodeAt( i );
             //     }
             //     this._convertBinaryImages( gltf, bytes, 0 );
-            var bufferURI = gltf.buffers[ 0 ].uri;
-            var bytes = await fetch( this._nameSpace.getURL( bufferURI )).then ( ( response ) => response.arrayBuffer() );
-            this._convertBinaryImages( gltf, bytes, 0 );
+            for ( var i = 0; i < gltf.buffers.length; i++ )
+            {
+                var bufferURI = gltf.buffers[ i ].uri;
+                arrayBuffers[i] = await fetch( this._nameSpace.getURL( bufferURI )).then ( ( response ) => response.arrayBuffer() );
+                this._convertBinaryImages( gltf, arrayBuffers[i], 0 );
+                gltf.buffers[ i ].uri = x3dom.Utils.arrayBufferToObjectURL( arrayBuffers[i], "application/octet-stream" );
+            }
+            //concat arrayBuffers
+            //gltf.buffers.push( { name: "combinedBuffer", byteLength: buf.byteLength, uri: arrayBufferToObjectURL(combined, "as/sct")})
+            //pass to buffergeometry and adjust bufferview offsets
+            //or pass separate buffers and additional bufferIndex for accessors
         }
+
         return gltf;
     }
 
