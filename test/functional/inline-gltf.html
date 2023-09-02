@@ -395,7 +395,6 @@
             <div class="sidebar-entry" onclick="load('VC')">VC</div>
             <div class="sidebar-entry" onclick="load('Cameras')">Cameras</div>
             <div class="sidebar-entry" onclick="load('Box')">Box</div>
-            <div class="sidebar-entry" onclick="load('Box','Draco')">Box, Draco compressed</div>
             <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
             <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
             <div class="sidebar-entry" onclick="load('BoxTextured', 'Embedded')">Box Textured (embedded)</div>
@@ -436,13 +435,14 @@
 
             <div class="sidebar-header">Extension Tests</div>
             <div class="sidebar-entry" onclick="load('UnlitTest', undefined, 'negZ')">Unlit</div>
-            <div class="sidebar-entry" onclick="load('Buggy','Draco')">Buggy, Draco</div>
-            <div class="sidebar-entry" onclick="updateInline('https://threejs.org/examples/models/gltf/LittlestTokyo.glb')">Tokyo, binary, Draco</div>
-            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/andreasplesch/Library/20782db654ce04a3014a519bfd8a180278bbe9d3/Examples/gltf2/Crusader%20Shield%20Damara.glb')">Blender, Draco</div>
+            <div class="sidebar-entry" onclick="load('Box','Draco')">Box, draco</div>
+            <div class="sidebar-entry" onclick="load('Buggy','Draco')">Buggy, draco</div>
+            <div class="sidebar-entry" onclick="updateInline('https://threejs.org/examples/models/gltf/LittlestTokyo.glb')">Tokyo, binary, draco</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/andreasplesch/Library/20782db654ce04a3014a519bfd8a180278bbe9d3/Examples/gltf2/Crusader%20Shield%20Damara.glb')">Blender, draco</div>
             <div class="sidebar-entry" onclick="load('media/data/pointlight.gltf','direct','negZ')">Point Light, punctual</div>
             <div class="sidebar-entry" onclick="load('media/data/spotlight.gltf','direct','negZ')">Spot Light, punctual</div>
             <div class="sidebar-entry" onclick="load('media/data/lights.glb','direct','negZ')">Directional, punctual</div>
-            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/KhronosGroup/glTF/main/extensions/2.0/Khronos/KHR_lights_punctual/schema/examples/lights.gltf','direct','negZ')">Directional, Multibuffer</div>
+            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/KhronosGroup/glTF/main/extensions/2.0/Khronos/KHR_lights_punctual/schema/examples/lights.gltf','direct','negZ')">Directional, multi-buffer</div>
             <div class="sidebar-entry" onclick="load('EmissiveStrengthTest', undefined, 'negZ')">Emissive Strength</div>
             <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/andreasplesch/Library/6eadc3177341c9fd83b48880e0875aa67bde31fc/Examples/gltf2/webp.gltf','direct','negZ')">BJS test, webp</div>
             <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/CesiumGS/cesium/bd8be76b7707ddb9c858ae39538c18064c218f98/Specs/Data/Models/Box-Textured-Webp/CesiumBoxWebp.gltf','direct','negZ')">Cesium, embedded, webp</div>
