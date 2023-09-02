@@ -370,9 +370,6 @@
     <section class="main-wrapper">
 
         <section class="sidebar">
-            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/andreasplesch/x3dom/ext-webp/test/functional/media/data/webp.gltf','direct','negZ')">webp texture, extension</div>
-            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/CesiumGS/cesium/bd8be76b7707ddb9c858ae39538c18064c218f98/Specs/Data/Models/Box-Textured-Webp/CesiumBoxWebp.gltf','direct','negZ')">embedded webp texture, extension</div>
-            
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
@@ -380,6 +377,7 @@
             <div class="sidebar-entry" onclick="load('SimpleMeshes',undefined,'negZ')">Simple Meshes</div>
             <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/cx20/gltf-test/master/tutorialModels/SimpleMaterial/glTF/SimpleMaterial.gltf')">Simple Material</div>
             <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/bghgary/glTF-Asset-Generator/master/Output/Material_MetallicRoughness/Material_MetallicRoughness_09.gltf')">Simple Meshes</div>
+
             <div class="sidebar-header">Feature Tests</div>
     
             <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
@@ -390,7 +388,6 @@
             <div class="sidebar-entry" onclick="load('NormalTangentTest',undefined,'negZ')">Normal Tangent Test</div>
             <div class="sidebar-entry" onclick="load('NormalTangentMirrorTest',undefined,'negZ')">Normal Tangent Mirror Test</div>
             <div class="sidebar-entry" onclick="load('MetalRoughSpheres',undefined,'negZ')">Metal Roughness Spheres</div>
-            <div class="sidebar-entry" onclick="load('UnlitTest',undefined,'negZ')">Unlit Test</div>
             <div class="sidebar-entry" onclick="load('InterpolationTest',undefined,'negZ')">Interpolation Test</div>
             
             <div class="sidebar-header">Advanced Tests</div>
@@ -410,16 +407,8 @@
             <div class="sidebar-entry" onclick="load('ReciprocatingSaw')">Reciprocating Saw</div>
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
-            <div class="sidebar-entry" onclick="load('Buggy','Draco')">Buggy, Draco compressed</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
-            <div class="sidebar-entry" onclick="updateInline('https://threejs.org/examples/models/gltf/LittlestTokyo.glb')">Tokyo, binary, Draco</div>
-            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/andreasplesch/Library/20782db654ce04a3014a519bfd8a180278bbe9d3/Examples/gltf2/Crusader%20Shield%20Damara.glb')">BlenderDraco</div>
-            <div class="sidebar-entry" onclick="load('media/data/pointlight.gltf','direct','negZ')">Point Light, punctual</div>
-            <div class="sidebar-entry" onclick="load('media/data/spotlight.gltf','direct','negZ')">Spot Light, punctual</div>
-            <div class="sidebar-entry" onclick="load('media/data/lights.glb','direct','negZ')">Directional, punctual</div>
-            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/KhronosGroup/glTF/main/extensions/2.0/Khronos/KHR_lights_punctual/schema/examples/lights.gltf','direct','negZ')">directional, multibuffer</div>
-            <div class="sidebar-entry" onclick="load('EmissiveStrengthTest', undefined, 'negZ')">Emissive Strength</div>
-
+            
             <div class="sidebar-header">PBR Tests</div>
         
             <div class="sidebar-entry" onclick="load('Avocado')">Avocado</div>
@@ -444,8 +433,20 @@
             <div class="sidebar-entry" onclick="load('DreamBike')">Dream Bike</div>
             <div class="sidebar-entry" onclick="load('MotorCycle')">Motor Cycle</div>
             <div class="sidebar-entry" onclick="load('WildWestBike')">Wild West Bike</div>
-           
 
+            <div class="sidebar-header">Extension Tests</div>
+            <div class="sidebar-entry" onclick="load('UnlitTest', undefined, 'negZ')">Unlit</div>
+            <div class="sidebar-entry" onclick="load('Buggy','Draco')">Buggy, Draco</div>
+            <div class="sidebar-entry" onclick="updateInline('https://threejs.org/examples/models/gltf/LittlestTokyo.glb')">Tokyo, binary, Draco</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/andreasplesch/Library/20782db654ce04a3014a519bfd8a180278bbe9d3/Examples/gltf2/Crusader%20Shield%20Damara.glb')">Blender, Draco</div>
+            <div class="sidebar-entry" onclick="load('media/data/pointlight.gltf','direct','negZ')">Point Light, punctual</div>
+            <div class="sidebar-entry" onclick="load('media/data/spotlight.gltf','direct','negZ')">Spot Light, punctual</div>
+            <div class="sidebar-entry" onclick="load('media/data/lights.glb','direct','negZ')">Directional, punctual</div>
+            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/KhronosGroup/glTF/main/extensions/2.0/Khronos/KHR_lights_punctual/schema/examples/lights.gltf','direct','negZ')">Directional, Multibuffer</div>
+            <div class="sidebar-entry" onclick="load('EmissiveStrengthTest', undefined, 'negZ')">Emissive Strength</div>
+            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/andreasplesch/Library/6eadc3177341c9fd83b48880e0875aa67bde31fc/Examples/gltf2/webp.gltf','direct','negZ')">BJS test, webp</div>
+            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/CesiumGS/cesium/bd8be76b7707ddb9c858ae39538c18064c218f98/Specs/Data/Models/Box-Textured-Webp/CesiumBoxWebp.gltf','direct','negZ')">Cesium, embedded, webp</div>
+            
 			<div class="sidebar-header">VR Controller</div>
 			
 			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/vive.glb')">Vive</div>
