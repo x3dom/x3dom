@@ -1402,7 +1402,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function ( x, y, buttonState, prevButt
     }
     else
     {
-        var t0 = new Date().getTime();
+        var t0 = Date.now();
         var line = this.calcViewRay( x, y );
         var isect = this._scene.doIntersect( line );
         var obj = line.hitObject;
@@ -1433,7 +1433,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function ( x, y, buttonState, prevButt
             }
         }
 
-        var t1 = new Date().getTime() - t0;
+        var t1 = Date.now() - t0;
         x3dom.debug.logInfo( "Picking time (box): " + t1 + "ms" );
 
         if ( !isect )

@@ -40,7 +40,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
         return;
     }
 
-    var t00 = new Date().getTime();
+    var t00 = Date.now();
     var that = this;
 
     var binGeo = shape._cf.geometry.node;
@@ -453,7 +453,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR0/ index load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.INDEX ] = indicesBuffer;
@@ -579,7 +579,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR/ interleaved array load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.POSITION ] = buffer;
@@ -688,7 +688,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR1/ coord load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.POSITION ] = positionBuffer;
@@ -758,7 +758,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR2/ normal load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.NORMAL ] = normalBuffer;
@@ -857,7 +857,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR3/ texCoord load time: " + t11 + " ms" );
         };
     }
@@ -925,7 +925,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR4/ color load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.COLOR ] = colorBuffer;
@@ -995,7 +995,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR5/ normal load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.TANGENT ] = tangentBuffer;
@@ -1065,7 +1065,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function ( shape, sp, gl, viewarea, cu
 
             that.checkError( gl );
 
-            var t11 = new Date().getTime() - t00;
+            var t11 = Date.now() - t00;
             x3dom.debug.logInfo( "XHR6/ normal load time: " + t11 + " ms" );
 
             shape._webgl.buffers[ x3dom.BUFFER_IDX.BITANGENT ] = binormalBuffer;
@@ -1277,7 +1277,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function ( shape, sp, gl, viewarea, cu
             popGeo.adaptVertexCount( popGeo.hasIndex() ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords );
             //x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
             //    popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
-            //    (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests");
+            //    (Date.now() - shape._webgl.downloadStartTimer) + " ms after posting download requests");
 
             //request redraw, if necessary
             if ( redrawNeeded )
@@ -1290,7 +1290,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function ( shape, sp, gl, viewarea, cu
     //post XHRs
     var dataURLs = popGeo.getDataURLs();
 
-    shape._webgl.downloadStartTimer = new Date().getTime();
+    shape._webgl.downloadStartTimer = Date.now();
 
     for ( var i = 0; i < dataURLs.length; ++i )
     {

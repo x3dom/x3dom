@@ -770,7 +770,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 {
     var image   = this._gltf.images[ texture.source ];
 
-    var webpImageUrl = ""; 
+    var webpImageUrl = "";
 
     if ( texture.extensions && texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
     {
@@ -792,9 +792,9 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 
     if ( image.uri != undefined || webpImageUrl.length > 0 )
     {
-        var MFUrl = webpImageUrl.length ? [ '"' + webpImageUrl + '"'] : [];
-        if ( image.uri ) MFUrl.push( '"' + x3dom.Utils.dataURIToObjectURL( image.uri ) + '"' );
-        imagetexture.setAttribute( "url", MFUrl.join(" ") );
+        var MFUrl = webpImageUrl.length ? [ "\"" + webpImageUrl + "\"" ] : [];
+        if ( image.uri ) {MFUrl.push( "\"" + x3dom.Utils.dataURIToObjectURL( image.uri ) + "\"" );}
+        imagetexture.setAttribute( "url", MFUrl.join( " " ) );
     }
 
     if ( texture.sampler != undefined )
@@ -1315,20 +1315,20 @@ x3dom.glTF2Loader.prototype._getGLTF = async function ( input, binary )
             for ( var i = 0; i < gltf.buffers.length; i++ )
             {
                 var bufferURI = gltf.buffers[ i ].uri;
-                var response = await fetch( this._nameSpace.getURL( bufferURI ));
-                arrayBuffers[i] = await response.arrayBuffer();
-                totalLength += arrayBuffers[i].byteLength;
-                this._convertBinaryImages( gltf, arrayBuffers[i], 0 );
-                gltf.buffers[ i ].uri = x3dom.Utils.arrayBufferToObjectURL( arrayBuffers[i], "application/octet-stream" );
+                var response = await fetch( this._nameSpace.getURL( bufferURI ) );
+                arrayBuffers[ i ] = await response.arrayBuffer();
+                totalLength += arrayBuffers[ i ].byteLength;
+                this._convertBinaryImages( gltf, arrayBuffers[ i ], 0 );
+                gltf.buffers[ i ].uri = x3dom.Utils.arrayBufferToObjectURL( arrayBuffers[ i ], "application/octet-stream" );
             }
             //combine all buffers since BufferGeometry only takes one buffer
             var superBuffer = new Uint8Array( totalLength );
             totalLength = 0;
-            arrayBuffers.forEach( ( buffer ) => 
-                {
-                    superBuffer.set( new Uint8Array( buffer ), totalLength );
-                    totalLength += buffer.byteLength;
-                });
+            arrayBuffers.forEach( ( buffer ) =>
+            {
+                superBuffer.set( new Uint8Array( buffer ), totalLength );
+                totalLength += buffer.byteLength;
+            } );
             gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL( superBuffer.buffer, "application/octet-stream" );
         }
 

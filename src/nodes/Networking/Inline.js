@@ -401,7 +401,7 @@ x3dom.registerNodeType(
 
                                     // that.loadX3D( inlineScene, namespace );
                                     loader.load( xhr.response, isBinary )
-                                    .then( ( inlineScene ) => that.loadX3D( inlineScene, namespace ) );
+                                        .then( ( inlineScene ) => that.loadX3D( inlineScene, namespace ) );
                                 }
                                 else
                                 {
