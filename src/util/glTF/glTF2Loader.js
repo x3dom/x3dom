@@ -1138,9 +1138,6 @@ x3dom.glTF2Loader.prototype._generateX3DInterpolator = function ( id, path, samp
 };
 
 /**
- * Traverses all glTF nodes
- * @param {Object} node - A glTF-Node
- * @param {X3DNode} parent - A X3D-Node
  */
 x3dom.glTF2Loader.prototype._createX3DRoute = function ( fromField, fromNode, toField, toNode )
 {
@@ -1226,28 +1223,6 @@ x3dom.glTF2Loader.prototype._componentsOf = function ( type )
 x3dom.glTF2Loader.prototype._bufferURI = function ( value )
 {
     return this._gltf.buffers[ 0 ].uri;
-    // var uri = "",
-    //     accessorIdx;
-
-    // if ( value.attributes != undefined && value.attributes.POSITION != undefined )
-    // {
-    //     accessorIdx = value.attributes.POSITION;
-    // }
-    // else if ( value.input )
-    // {
-    //     accessorIdx = value.input;
-    // }
-
-    // if ( accessorIdx != undefined )
-    // {
-    //     var accessor = this._gltf.accessors[ accessorIdx ];
-    //     var bufferView = this._gltf.bufferViews[ accessor.bufferView ];
-    //     var buffer     = this._gltf.buffers[ bufferView.buffer ];
-
-    //     uri = x3dom.Utils.dataURIToObjectURL( buffer.uri ); // should already be converted to objecturl
-    // }
-
-    // return uri;
 };
 
 x3dom.glTF2Loader.prototype._USEorDEF = function ( node, value )
@@ -1310,26 +1285,9 @@ x3dom.glTF2Loader.prototype._getGLTF = async function ( input, binary )
         //var hasBinaryImages = gltf.images && gltf.images.some( ( image ) => image.bufferView && gltf.bufferViews[ image.bufferView ] ); //avoid double downloads
         if ( gltf.buffers ) // && gltf.buffers[ 0 ] ) // && hasBinaryImages )
         {
-            var arrayBuffers = [];
-            var totalLength = 0;
-            for ( var i = 0; i < gltf.buffers.length; i++ )
-            {
-                var bufferURI = gltf.buffers[ i ].uri;
-                var response = await fetch( this._nameSpace.getURL( bufferURI ) );
-                arrayBuffers[ i ] = await response.arrayBuffer();
-                totalLength += arrayBuffers[ i ].byteLength;
-                this._convertBinaryImages( gltf, arrayBuffers[ i ], 0 );
-                gltf.buffers[ i ].uri = x3dom.Utils.arrayBufferToObjectURL( arrayBuffers[ i ], "application/octet-stream" );
-            }
-            //combine all buffers since BufferGeometry only takes one buffer
-            var superBuffer = new Uint8Array( totalLength );
-            totalLength = 0;
-            arrayBuffers.forEach( ( buffer ) =>
-            {
-                superBuffer.set( new Uint8Array( buffer ), totalLength );
-                totalLength += buffer.byteLength;
-            } );
-            gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL( superBuffer.buffer, "application/octet-stream" );
+            gltf.buffers[ 0 ].uri_orig = gltf.buffers[ 0 ].uri;
+            gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL(
+                await this._combineBuffers( gltf ), "application/octet-stream" );
         }
 
         return gltf;
@@ -1371,6 +1329,30 @@ x3dom.glTF2Loader.prototype._getGLTF = async function ( input, binary )
             }
         }
     }
+};
+
+x3dom.glTF2Loader.prototype._combineBuffers = async function ( gltf )
+{
+    var arrayBuffers = [];
+    var totalLength = 0;
+    for ( var i = 0; i < gltf.buffers.length; i++ )
+    {
+        var bufferURI = gltf.buffers[ i ].uri;
+        arrayBuffers[ i ] = await ( fetch( this._nameSpace.getURL( bufferURI ) )
+            .then( ( response ) => response.arrayBuffer() ) );
+        totalLength += arrayBuffers[ i ].byteLength;
+        this._convertBinaryImages( gltf, arrayBuffers[ i ], 0 );
+        gltf.buffers[ i ].uri = x3dom.Utils.arrayBufferToObjectURL( arrayBuffers[ i ], "application/octet-stream" );
+    }
+    //combine all buffers since BufferGeometry only takes one buffer
+    var superBuffer = new Uint8Array( totalLength );
+    totalLength = 0;
+    arrayBuffers.forEach( ( buffer ) =>
+    {
+        superBuffer.set( new Uint8Array( buffer ), totalLength );
+        totalLength += buffer.byteLength;
+    } );
+    return superBuffer.buffer;
 };
 
 x3dom.glTF2Loader.prototype._convertBinaryImages = function ( gltf, buffer, byteOffset )
