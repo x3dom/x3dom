@@ -38,7 +38,7 @@ x3dom.X3DCanvas = function ( x3dElem, canvasIdx )
     this._current_dim = [ 0, 0 ];
 
     // for FPS measurements
-    this.fps_t0 = new Date().getTime();
+    this.fps_t0 = Date.now();
     this.lastTimeFPSWasTaken = 0;
     this.framesSinceLastTime = 0;
 
@@ -469,7 +469,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function ()
         {
             numTouches : 0,
 
-            firstTouchTime  : new Date().getTime(),
+            firstTouchTime  : Date.now(),
             firstTouchPoint : new x3dom.fields.SFVec2f( 0, 0 ),
 
             lastPos  : new x3dom.fields.SFVec2f(),
@@ -819,7 +819,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function ()
 
                 if ( dblClick )
                 {
-                    var now = new Date().getTime();
+                    var now = Date.now();
                     var dist = touches.firstTouchPoint.subtract( touches.lastDrag ).length();
 
                     if ( dist < 18 && now - touches.firstTouchTime < 180 )
@@ -1102,7 +1102,7 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function ( x3dElem )
     {
         // If the X3D element does not have an id... do what?
         // For now check the date for creating a (hopefully) unique id
-        var index = new Date().getTime();
+        var index = Date.now();
         canvas.id = "x3dom-" + index + "-canvas";
     }
 
@@ -1248,7 +1248,7 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp, xrFrame )
     this._totalTime = timestamp;
 
     var runtime = this.x3dElem.runtime;
-    var d = new Date().getTime();
+    var d = Date.now();
     var diff = d - this.lastTimeFPSWasTaken;
 
     var fps = 1000.0 / ( d - this.fps_t0 );
@@ -1256,7 +1256,7 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp, xrFrame )
 
     // update routes and stuff
     this.doc.advanceTime( d / 1000.0 );
-    var animD = new Date().getTime() - d;
+    var animD = Date.now() - d;
 
     if ( this.doc.hasAnimationStateChanged() )
     {

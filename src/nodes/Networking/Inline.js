@@ -397,9 +397,11 @@ x3dom.registerNodeType(
                                 {
                                     var loader = new x3dom.glTF2Loader( namespace );
 
-                                    inlineScene = loader.load( xhr.response, isBinary );
+                                    // inlineScene = loader.load( xhr.response, isBinary );
 
-                                    that.loadX3D( inlineScene, namespace );
+                                    // that.loadX3D( inlineScene, namespace );
+                                    loader.load( xhr.response, isBinary )
+                                        .then( ( inlineScene ) => that.loadX3D( inlineScene, namespace ) );
                                 }
                                 else
                                 {

@@ -290,6 +290,7 @@ x3dom.registerNodeType(
                         this._vf.startTime = this._backupStartTime;
                         return;
                     }
+                    this._vf.startTime = Date.now() / 1000; //needs to be refreshed since it can be slow to get here
 
                     this._backupStartTime = this._vf.startTime;
                     this._updateCycleStopTime();
@@ -368,7 +369,7 @@ x3dom.registerNodeType(
             {
                 if ( this._vf.loop == false )
                 {
-                    var now = new Date().getTime() / 1000;
+                    var now = Date.now() / 1000;
                     var cycleToStop = Math.floor( this._getCycleAt( now ) ) + 1;
 
                     this._cycleStopTime = this._vf.startTime + cycleToStop * this._vf.cycleInterval;

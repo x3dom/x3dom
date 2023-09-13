@@ -166,7 +166,7 @@ x3dom.userAgentFeature = {
                 continue;
             }
 
-            t0 = new Date().getTime();
+            t0 = Date.now();
 
             x3ds[ i ].runtime = new x3dom.Runtime( x3ds[ i ], x3dcanvas );
             x3ds[ i ].runtime.initialize( x3ds[ i ], x3dcanvas );
@@ -207,7 +207,7 @@ x3dom.userAgentFeature = {
                 x3ds[ i ].runtime.processIndicator( false );
             }
 
-            t1 = new Date().getTime() - t0;
+            t1 = Date.now() - t0;
             x3dom.debug.logInfo( "Time for setup and init of GL element no. " + i + ": " + t1 + " ms." );
         }
 
