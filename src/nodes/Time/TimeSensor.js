@@ -290,7 +290,7 @@ x3dom.registerNodeType(
                         this._vf.startTime = this._backupStartTime;
                         return;
                     }
-                    this._vf.startTime = Date.now() / 1000; //needs to be refreshed since it can take be slow to get here
+                    this._vf.startTime = Date.now() / 1000; //needs to be refreshed since it can be slow to get here
 
                     this._backupStartTime = this._vf.startTime;
                     this._updateCycleStopTime();
