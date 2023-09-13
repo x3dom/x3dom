@@ -103,7 +103,7 @@ x3dom.registerNodeType(
 
             _buildGeometry : function ()
             {
-                var time0 = new Date().getTime();
+                var time0 = Date.now();
 
                 // this.handleAttribs();
 
@@ -260,7 +260,7 @@ x3dom.registerNodeType(
                     this._mesh._numCoords += this._mesh._positions[ i ].length / 3;
                 }
 
-                var time1 = new Date().getTime() - time0;
+                var time1 = Date.now() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
 
                 function _updateMesh ( mesh )

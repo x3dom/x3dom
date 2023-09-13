@@ -3,12 +3,12 @@
 ## Version 1.8.4-dev
 
 * Features
-  * support for glTF punctual lights extension
-  * support for glTF emissive strength extension
+  * support for glTF punctual lights, emissive strength, webp extensions
   
 * Improvements
   * add "STEP" interpolator mode to interpolators
   * update cycleInterval behaviour to X3Dv4
+  * more accurate startTime update
   * tune PhysicalMaterial for compatible light intensity
 
 * Bugfixes

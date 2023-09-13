@@ -59,7 +59,7 @@ x3dom.registerNodeType(
         {
             nodeChanged : function ()
             {
-                var time0 = new Date().getTime();
+                var time0 = Date.now();
 
                 var i,
                     n = this._cf.vertexAttributes.nodes.length;
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
                 this._mesh._numFaces = this._mesh._indices[ 0 ].length / 3;
                 this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
 
-                var time1 = new Date().getTime() - time0;
+                var time1 = Date.now() - time0;
                 x3dom.debug.logWarning( "Mesh load time: " + time1 + " ms" );
             }
         }
