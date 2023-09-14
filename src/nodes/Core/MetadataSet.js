@@ -36,6 +36,12 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFNode( "value", x3dom.nodeTypes.X3DMetadataObject );
+        },
+        {
+            nodeChanged : function ()
+            {
+                //skip extension field eval.
+            }
         }
     )
 );
