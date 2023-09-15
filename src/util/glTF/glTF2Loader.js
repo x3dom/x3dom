@@ -12,7 +12,8 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_texture_transform",
         "KHR_lights_punctual",
         "KHR_materials_emissive_strength",
-        "EXT_texture_webp"
+        "EXT_texture_webp",
+        "EXT_meshopt_compression"
     ];
     if ( x3dom.DracoDecoderModule )
     {
@@ -80,7 +81,7 @@ x3dom.glTF2Loader.prototype.load = function ( input, binary )
  */
 x3dom.glTF2Loader.prototype._unsupportedExtensionsRequired = function ()
 {
-    if ( !this._gltf.esxtensionsRequired )
+    if ( !this._gltf.extensionsRequired )
     {
         return false;
     }
