@@ -12,6 +12,7 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_texture_transform",
         "KHR_lights_punctual",
         "KHR_materials_emissive_strength",
+        "KHR_mesh_quantization",
         "EXT_texture_webp",
         "EXT_meshopt_compression"
     ];
