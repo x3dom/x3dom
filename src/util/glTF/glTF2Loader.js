@@ -20,9 +20,9 @@ x3dom.glTF2Loader = function ( nameSpace )
     {
         this._supportedExtensions.push( "KHR_draco_mesh_compression" );
     }
-    this._decoderWorkers = 2;
+    var DecoderWorkers = 2;
     this._meshoptDecoder = x3dom.MeshoptDecoder;
-    this._meshoptDecoder.ready.then( () => this._meshoptDecoder.useWorkers( this._decoderWorkers ) );
+    this._meshoptDecoder.ready.then( () => this._meshoptDecoder.useWorkers( DecoderWorkers ) );
 };
 
 /**
@@ -32,8 +32,7 @@ x3dom.glTF2Loader = function ( nameSpace )
 
 x3dom.glTF2Loader.prototype.load = function ( input, binary )
 {
-    //this._gltf = await this._getGLTF( input, binary );
-    return this._getGLTF( input, binary ).then( ( function ( gltf )
+    return this._getGLTF( input, binary ).then( ( gltf ) =>
     {
         this._gltf = gltf;
         //generate X3D scene
@@ -77,7 +76,7 @@ x3dom.glTF2Loader.prototype.load = function ( input, binary )
         }
 
         return x3dScene;
-    } ).bind( this ) );
+    } );
 };
 
 /**
@@ -1287,7 +1286,7 @@ x3dom.glTF2Loader.prototype._toAxisAngle = function ( quat )
  */
 x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
 {
-    return new Promise( ( function ( resolve, reject )
+    return new Promise( ( resolve, reject ) =>
     {
         if ( !binary )
         {
@@ -1349,7 +1348,7 @@ x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
             }
         }
         reject( new Error( "cannot get glTF" ) );
-    } ).bind( this ) );
+    } );
 };
 
 x3dom.glTF2Loader.prototype._combineBuffers = function ( gltf )
@@ -1359,17 +1358,12 @@ x3dom.glTF2Loader.prototype._combineBuffers = function ( gltf )
     for ( var i = 0; i < gltf.buffers.length; i++ )
     {
         var bufferURI = gltf.buffers[ i ].uri;
-        // arrayBuffers[ i ] = await ( fetch( this._nameSpace.getURL( bufferURI ) )
-        //     .then( ( response ) => response.arrayBuffer() ) );
         arrayBuffers[ i ] = bufferURI == undefined ?
             new ArrayBuffer( gltf.buffers[ i ].byteLength ) :
             fetch( this._nameSpace.getURL( bufferURI ) )
                 .then( ( response ) => response.arrayBuffer() );
-        // totalLength += arrayBuffers[ i ].byteLength;
-        // this._convertBinaryImages( gltf, arrayBuffers[ i ], 0 );
-        // gltf.buffers[ i ].uri = x3dom.Utils.arrayBufferToObjectURL( arrayBuffers[ i ], "application/octet-stream" );
     }
-    var bufferPromise = Promise.all( arrayBuffers ).then( ( function ( buffers )
+    var bufferPromise = Promise.all( arrayBuffers ).then( ( buffers ) =>
     {
         buffers.forEach( ( buffer, i ) =>
         {
@@ -1391,8 +1385,7 @@ x3dom.glTF2Loader.prototype._combineBuffers = function ( gltf )
             } );
             return superBuffer.buffer;
         } );
-    } ).bind( this ) );
-    //return superBuffer.buffer
+    } );
     return bufferPromise;
 };
 
@@ -1403,15 +1396,15 @@ x3dom.glTF2Loader.prototype._meshopt_decodeBuffers = function ( gltf, buffers )
         if ( gltf.buffers[ i ].uri_orig == undefined )
         {
             var views = gltf.bufferViews.filter( ( view ) => view.buffer == i );
-            var decodedViewsAsync = views.map( ( ( view ) => this._meshopt_decodeView( view, buffers ) ).bind( this ) );
-            var arrayView = new Uint8Array( buffer );
-            buffers[ i ] = Promise.all( decodedViewsAsync ).then( ( decodedBuffers ) =>
+            var decodedViews = views.map( ( view ) => this._meshopt_decodeViewAsync( view, buffers ) );
+            var typedArray = new Uint8Array( buffer );
+            buffers[ i ] = Promise.all( decodedViews ).then( ( decodedBuffers ) =>
             {
                 decodedBuffers.forEach( ( decodedBuffer, i ) =>
                 {
-                    arrayView.set( decodedBuffer, views[ i ].byteOffset );
+                    typedArray.set( decodedBuffer, views[ i ].byteOffset );
                 } );
-                return arrayView.buffer;
+                return typedArray.buffer;
             }
             );
         }
@@ -1419,7 +1412,7 @@ x3dom.glTF2Loader.prototype._meshopt_decodeBuffers = function ( gltf, buffers )
     return buffers;
 };
 
-x3dom.glTF2Loader.prototype._meshopt_decodeView = function ( view, buffers )
+x3dom.glTF2Loader.prototype._meshopt_decodeViewAsync = function ( view, buffers )
 {
     if ( view.extensions && view.extensions.EXT_meshopt_compression )
     {
