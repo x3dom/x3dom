@@ -1294,13 +1294,10 @@ x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
             //var hasBinaryImages = gltf.images && gltf.images.some( ( image ) => image.bufferView && gltf.bufferViews[ image.bufferView ] ); //avoid double downloads
             if ( gltf.buffers ) // && gltf.buffers[ 0 ] ) // && hasBinaryImages )
             {
-                //gltf.buffers[ 0 ].uri_orig = gltf.buffers[ 0 ].uri;
-                // gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL(
-                //     await this._combineBuffers( gltf ), "application/octet-stream" );
-
-                resolve( this._combineBuffers( gltf ).then( ( buffer ) =>
+                resolve( this._decodeAndCombineBuffers( gltf ).then( ( combinedBuffer ) =>
                 {
-                    gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL( buffer, "application/octet-stream" );
+                    URL.revokeObjectURL( gltf.buffers[ 0 ].uri );
+                    gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL( combinedBuffer, "application/octet-stream" );
                     return gltf;
                 } ) );
                 return null;
@@ -1339,10 +1336,15 @@ x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
 
                     gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL( binaryData, "application/octet-stream" );
 
-                    this._convertBinaryImages( gltf, input, byteOffset, 0 );
+                    //this._convertBinaryImages( gltf, input, byteOffset, 0 );
+                    resolve( this._decodeAndCombineBuffers( gltf ).then( ( combinedBuffer ) =>
+                    {
+                        URL.revokeObjectURL( gltf.buffers[ 0 ].uri );
+                        gltf.buffers[ 0 ].uri = x3dom.Utils.arrayBufferToObjectURL( combinedBuffer, "application/octet-stream" );
+                        return gltf;
+                    } ) );
 
-                    //return gltf;
-                    resolve( gltf );
+                    //resolve( gltf );
                     return null;
                 }
             }
@@ -1351,10 +1353,9 @@ x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
     } );
 };
 
-x3dom.glTF2Loader.prototype._combineBuffers = function ( gltf )
+x3dom.glTF2Loader.prototype._constructOrFetchBuffers = function ( gltf )
 {
     var arrayBuffers = [];
-    var totalLength = 0;
     for ( var i = 0; i < gltf.buffers.length; i++ )
     {
         var bufferURI = gltf.buffers[ i ].uri;
@@ -1363,6 +1364,13 @@ x3dom.glTF2Loader.prototype._combineBuffers = function ( gltf )
             fetch( this._nameSpace.getURL( bufferURI ) )
                 .then( ( response ) => response.arrayBuffer() );
     }
+    return arrayBuffers
+}
+
+x3dom.glTF2Loader.prototype._decodeAndCombineBuffers = function ( gltf )
+{
+    var arrayBuffers = this._constructOrFetchBuffers( gltf );
+    var totalLength = 0;
     var bufferPromise = Promise.all( arrayBuffers ).then( ( buffers ) =>
     {
         buffers.forEach( ( buffer, i ) =>
@@ -1398,15 +1406,14 @@ x3dom.glTF2Loader.prototype._meshopt_decodeBuffers = function ( gltf, buffers )
             var views = gltf.bufferViews.filter( ( view ) => view.buffer == i );
             var decodedViews = views.map( ( view ) => this._meshopt_decodeViewAsync( view, buffers ) );
             var typedArray = new Uint8Array( buffer );
-            buffers[ i ] = Promise.all( decodedViews ).then( ( decodedBuffers ) =>
+            buffers[ i ] = Promise.all( decodedViews ).then( ( decodedArrays ) =>
             {
-                decodedBuffers.forEach( ( decodedBuffer, i ) =>
+                decodedArrays.forEach( ( decodedArray, i ) =>
                 {
-                    typedArray.set( decodedBuffer, views[ i ].byteOffset );
+                    typedArray.set( decodedArray, views[ i ].byteOffset );
                 } );
                 return typedArray.buffer;
-            }
-            );
+            } );
         }
     } );
     return buffers;
