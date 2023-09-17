@@ -4,6 +4,7 @@
 
 * Features
   * support for glTF punctual lights, emissive strength, webp, mesh quantization and meshopt compression extensions
+  * field values from metadata for non-standard nodes
   
 * Improvements
   * add "STEP" interpolator mode to interpolators
