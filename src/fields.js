@@ -5510,6 +5510,28 @@ x3dom.fields.MFInt32.prototype.toGL = function ()
 };
 
 /**
+ * Returns the maximum value in this integer
+ * array as a number.
+ *
+ * @returns {Number} maximum value in array allowing for large arrays
+ */
+x3dom.fields.MFInt32.prototype.max = function ()
+{
+   return this.reduce((a, b) => Math.max(a, b), -Infinity);
+};
+
+/**
+ * Returns the minimum value in this integer
+ * array as a number.
+ *
+ * @returns {Number} minimum value in array allowing for large arrays
+ */
+x3dom.fields.MFInt32.prototype.min = function ()
+{
+   return this.reduce((a, b) => Math.min(a, b), Infinity);
+};
+
+/**
  * MFFloat constructor.
  *
  * An ``MFFloat'' object stores an arbitrary number of
@@ -5604,6 +5626,28 @@ x3dom.fields.MFFloat.prototype.toGL = function ()
     } );
 
     return a;
+};
+
+/**
+ * Returns the maximum value in this float
+ * array as a number.
+ *
+ * @returns {Number} maximum value in array allowing for large arrays
+ */
+x3dom.fields.MFFloat.prototype.max = function ()
+{
+   return this.reduce((a, b) => Math.max(a, b), -Infinity);
+};
+
+/**
+ * Returns the minimum value in this float
+ * array as a number.
+ *
+ * @returns {Number} minimum value in array allowing for large arrays
+ */
+x3dom.fields.MFFloat.prototype.min = function ()
+{
+   return this.reduce((a, b) => Math.min(a, b), Infinity);
 };
 
 /**
