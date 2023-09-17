@@ -167,7 +167,7 @@ x3dom.registerNodeType(
                         hasTexCoord = true;
                         texCoords = texCoordNode._vf.point;
                         var nTexCoords = hasTexCoordInd ?
-                            Math.max( ...texCoordInd ) + 1 : positions.length;
+                            texCoordInd.max() + 1 : positions.length;
                         var i,
                             lastTexCoord = texCoords.length;
                         for ( i = lastTexCoord; i < nTexCoords; i++ )
@@ -885,7 +885,7 @@ x3dom.registerNodeType(
                             hasTexCoord = true;
                             texCoords = texCoordNode._vf.point;
                             var nTexCoords = hasTexCoordInd ?
-                                Math.max( ...texCoordInd ) + 1 : positions.length;
+                                texCoordInd.max() + 1 : positions.length;
                             var i,
                                 lastTexCoord = texCoords.length;
                             for ( i = lastTexCoord; i < nTexCoords; i++ )
