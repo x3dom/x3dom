@@ -1355,17 +1355,14 @@ x3dom.glTF2Loader.prototype._getGLTF = function ( input, binary )
 
 x3dom.glTF2Loader.prototype._constructOrFetchBuffers = function ( gltf )
 {
-    var arrayBuffers = [];
-    for ( var i = 0; i < gltf.buffers.length; i++ )
+    return gltf.buffers.map( ( buffer ) =>
     {
-        var bufferURI = gltf.buffers[ i ].uri;
-        arrayBuffers[ i ] = bufferURI == undefined ?
-            new ArrayBuffer( gltf.buffers[ i ].byteLength ) :
-            fetch( this._nameSpace.getURL( bufferURI ) )
+        return buffer.uri == undefined ?
+            new ArrayBuffer( buffer.byteLength ) :
+            fetch( this._nameSpace.getURL( buffer.uri ) )
                 .then( ( response ) => response.arrayBuffer() );
-    }
-    return arrayBuffers
-}
+    } );
+};
 
 x3dom.glTF2Loader.prototype._decodeAndCombineBuffers = function ( gltf )
 {
