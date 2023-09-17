@@ -5517,7 +5517,7 @@ x3dom.fields.MFInt32.prototype.toGL = function ()
  */
 x3dom.fields.MFInt32.prototype.max = function ()
 {
-   return this.reduce((a, b) => Math.max(a, b), -Infinity);
+    return this.reduce( ( a, b ) => Math.max( a, b ), -Infinity );
 };
 
 /**
@@ -5528,7 +5528,7 @@ x3dom.fields.MFInt32.prototype.max = function ()
  */
 x3dom.fields.MFInt32.prototype.min = function ()
 {
-   return this.reduce((a, b) => Math.min(a, b), Infinity);
+    return this.reduce( ( a, b ) => Math.min( a, b ), Infinity );
 };
 
 /**
@@ -5636,7 +5636,7 @@ x3dom.fields.MFFloat.prototype.toGL = function ()
  */
 x3dom.fields.MFFloat.prototype.max = function ()
 {
-   return this.reduce((a, b) => Math.max(a, b), -Infinity);
+    return this.reduce( ( a, b ) => Math.max( a, b ), -Infinity );
 };
 
 /**
@@ -5647,7 +5647,7 @@ x3dom.fields.MFFloat.prototype.max = function ()
  */
 x3dom.fields.MFFloat.prototype.min = function ()
 {
-   return this.reduce((a, b) => Math.min(a, b), Infinity);
+    return this.reduce( ( a, b ) => Math.min( a, b ), Infinity );
 };
 
 /**
