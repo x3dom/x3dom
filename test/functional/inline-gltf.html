@@ -368,11 +368,12 @@
     </section>  
 
     <section class="main-wrapper">
-
+            
         <section class="sidebar">
+            
             <div class="sidebar-header">Basic Tests</div>
     
-            <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
+            <div class="sidebar-entry" onclick="load('Triangle',undefined,'negZ')">Triangle</div>
             <div class="sidebar-entry" onclick="load('TriangleWithoutIndices',undefined,'negZ')">Triangle Without Indices</div>
             <div class="sidebar-entry" onclick="load('SimpleMeshes',undefined,'negZ')">Simple Meshes</div>
             <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/cx20/gltf-test/master/tutorialModels/SimpleMaterial/glTF/SimpleMaterial.gltf')">Simple Material</div>
@@ -434,6 +435,7 @@
             <div class="sidebar-entry" onclick="load('WildWestBike')">Wild West Bike</div>
 
             <div class="sidebar-header">Extension Tests</div>
+
             <div class="sidebar-entry" onclick="load('UnlitTest', undefined, 'negZ')">Unlit</div>
             <div class="sidebar-entry" onclick="load('Box','Draco')">Box, draco</div>
             <div class="sidebar-entry" onclick="load('Buggy','Draco')">Buggy, draco</div>
@@ -446,7 +448,9 @@
             <div class="sidebar-entry" onclick="load('EmissiveStrengthTest', undefined, 'negZ')">Emissive Strength</div>
             <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/andreasplesch/Library/6eadc3177341c9fd83b48880e0875aa67bde31fc/Examples/gltf2/webp.gltf','direct','negZ')">BJS test, webp</div>
             <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/CesiumGS/cesium/bd8be76b7707ddb9c858ae39538c18064c218f98/Specs/Data/Models/Box-Textured-Webp/CesiumBoxWebp.gltf','direct','negZ')">Cesium, embedded, webp</div>
-            
+            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/zeux/meshoptimizer/master/demo/pirate.glb','direct','negZ')">Pirate, meshopt+quant., glb</div>
+            <div class="sidebar-entry" onclick="load('https://assets.babylonjs.com/meshes/Buggy/glTF-MeshOpt/Buggy.gltf','direct','negZ')">BJS Buggy, meshopt+quant., gltf</div>
+        
 			<div class="sidebar-header">VR Controller</div>
 			
 			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/vive.glb')">Vive</div>

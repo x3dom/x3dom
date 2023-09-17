@@ -38,6 +38,7 @@
             "Moveable.js",
             "Promise.js",
             "glTF/glTF2Loader.js",
+            "glTF/meshopt_decoder-0.19.js",
             "DDSLoader.js",
             "VRControllerManager.js",
             "json/JSONParser.js",
