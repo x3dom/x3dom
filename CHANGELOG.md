@@ -3,7 +3,7 @@
 ## Version 1.8.4-dev
 
 * Features
-  * support for glTF punctual lights, emissive strength, webp extensions
+  * support for glTF punctual lights, emissive strength, webp, mesh quantization and meshopt compression extensions
   
 * Improvements
   * add "STEP" interpolator mode to interpolators
