@@ -11,6 +11,7 @@
             "./src/nodes/Core/",
             "./src/nodes/CubeMapTexturing/",
             "./src/nodes/EnvironmentalEffects/",
+            "./src/nodes/EventUtilities/",
             "./src/nodes/Followers/",
             "./src/nodes/Geometry2D/",
             "./src/nodes/Geometry3D/",
