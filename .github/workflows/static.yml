@@ -37,7 +37,7 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: rm -rf ./lib ./node_modules
-      - run: ln -s ./dist/doc/index.html ./index.html
+      - run: echo '<head><meta http-equiv="refresh" content="0; url=&quot;./dist/doc/&quot;"/></head>' > index.html
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
