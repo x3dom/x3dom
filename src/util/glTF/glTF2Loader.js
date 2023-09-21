@@ -775,7 +775,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function ( material )
  */
 x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, containerField, channel, transform )
 {
-    var image   = this._gltf.images[ texture.source ];
+    var image = this._gltf.images[ texture.source ];
 
     var webpImageUrl = "";
 
@@ -791,6 +791,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 
     imagetexture.setAttribute( "origChannelCount", "2" );
     imagetexture.setAttribute( "flipY", "true" );
+    imagetexture.setAttribute( "colorSpaceConversion", "false" );
 
     if ( containerField )
     {
