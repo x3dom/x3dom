@@ -27,6 +27,16 @@ x3dom.registerNodeType(
         function ( ctx )
         {
             x3dom.nodeTypes.ImageTexture.superClass.call( this, ctx );
+
+            /**
+             * Specifies whether embedded color profiles are used in conversion to rendering. true for X3D, false for glTF.
+             * @var {x3dom.fields.SFBool} colorSpaceConversion
+             * @memberof x3dom.nodeTypes.ImageTexture
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool( ctx, "colorSpaceConversion", true );
         }
     )
 );

@@ -1069,16 +1069,30 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                 shader += "_specularColor = texture2D(specularMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
             }
 
-            //Specularmap
+            //Emissivemap
             if ( properties.EMISSIVEMAP )
             {
                 if ( properties.EMISSIVEMAPCHANNEL )
                 {
-                    shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(texcoord2.x, 1.0-texcoord2.y)).rgb;\n";
+                    if ( properties.PBR_MATERIAL )
+                    {
+                        shader += "_emissiveColor = _emissiveColor * " + x3dom.shader.decodeGamma( properties, "texture2D(emissiveMap, vec2(texcoord2.x, 1.0-texcoord2.y)).rgb" ) + ";\n";
+                    }
+                    else
+                    {
+                        shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(texcoord2.x, 1.0-texcoord2.y)).rgb;\n";
+                    }
                 }
                 else
                 {
-                    shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
+                    if ( properties.PBR_MATERIAL )
+                    {
+                        shader += "_emissiveColor = _emissiveColor * " + x3dom.shader.decodeGamma( properties, "texture2D(emissiveMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb" ) + ";\n";
+                    }
+                    else
+                    {
+                        shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
+                    }
                 }
             }
 

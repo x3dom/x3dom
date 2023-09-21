@@ -3,6 +3,7 @@
 ## Version 1.8.4-dev
 
 * Features
+  * ImageTexture colorSpaceConversion field
   * support for glTF punctual lights, emissive strength, webp, mesh quantization and meshopt compression extensions
   * field values from metadata for non-standard nodes
   
