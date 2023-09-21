@@ -168,7 +168,7 @@ x3dom.Utils.createTexture2D = function ( gl, doc, src, bgnd, crossOrigin, scale,
         gl.bindTexture( gl.TEXTURE_2D, texture );
         if ( tex && tex._vf.colorSpaceConversion == false )
         {
-            gl.pixelStorei( gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE );	
+            gl.pixelStorei( gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE );
         }
         //gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
         gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image );

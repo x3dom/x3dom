@@ -1087,7 +1087,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                 {
                     if ( properties.PBR_MATERIAL )
                     {
-                        shader += "_emissiveColor = _emissiveColor * " + x3dom.shader.decodeGamma( properties, "texture2D(emissiveMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb" ) + ";\n";                        
+                        shader += "_emissiveColor = _emissiveColor * " + x3dom.shader.decodeGamma( properties, "texture2D(emissiveMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb" ) + ";\n";
                     }
                     else
                     {

@@ -37,7 +37,6 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool( ctx, "colorSpaceConversion", true );
-
         }
     )
 );
