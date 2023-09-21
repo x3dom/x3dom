@@ -1,10 +1,10 @@
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
     <meta name="theme-color" content="#86c540">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>X3DOM // GLTF 2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X3DOM // GLTF 2.0</title>
     <script type="text/javascript" src="../x3dom-include.js?full"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -370,7 +370,9 @@
     <section class="main-wrapper">
             
         <section class="sidebar">
-            
+            <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/TextureEncodingTest/glTF/TextureEncodingTest.gltf',undefined,'negZ')"
+            >Texture Encoding</div>
+
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle',undefined,'negZ')">Triangle</div>
@@ -450,19 +452,18 @@
             <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/CesiumGS/cesium/bd8be76b7707ddb9c858ae39538c18064c218f98/Specs/Data/Models/Box-Textured-Webp/CesiumBoxWebp.gltf','direct','negZ')">Cesium, embedded, webp</div>
             <div class="sidebar-entry" onclick="load('https://raw.githubusercontent.com/zeux/meshoptimizer/master/demo/pirate.glb','direct','negZ')">Pirate, meshopt+quant., glb</div>
             <div class="sidebar-entry" onclick="load('https://assets.babylonjs.com/meshes/Buggy/glTF-MeshOpt/Buggy.gltf','direct','negZ')">BJS Buggy, meshopt+quant., gltf</div>
-        
-			<div class="sidebar-header">VR Controller</div>
-			
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/vive.glb')">Vive</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-go.glb')">Oculus Go</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-left.glb')">Oculus Left</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-right.glb')">Oculus Right</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/daydream.glb')">Daydream</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/gearvr.glb')">GearVR</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/microsoft-left.glb')">Microsoft Left</div>
-			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/microsoft-right.glb')">Microsoft Right</div>
-			<div class="sidebar-entry" onclick="updateInline('https://cdn.rawgit.com/KhronosGroup/glTF-Blender-Exporter/0e23c773bf27dad67d2c25f060370d6fa012d87d/polly/project_polly.gltf')">Polly</div>
-           
+
+            <div class="sidebar-header">VR Controller</div>
+            
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/vive.glb')">Vive</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-go.glb')">Oculus Go</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-left.glb')">Oculus Left</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-right.glb')">Oculus Right</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/daydream.glb')">Daydream</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/gearvr.glb')">GearVR</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/microsoft-left.glb')">Microsoft Left</div>
+            <div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/microsoft-right.glb')">Microsoft Right</div>
+            <div class="sidebar-entry" onclick="updateInline('https://cdn.rawgit.com/KhronosGroup/glTF-Blender-Exporter/0e23c773bf27dad67d2c25f060370d6fa012d87d/polly/project_polly.gltf')">Polly</div>
 		   
         </section>
 
