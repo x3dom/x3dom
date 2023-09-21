@@ -36,6 +36,7 @@ jobs:
           node-version: 16.x
       - run: npm install
       - run: npm run build
+      - run: rm -rf ./lib ./src ./node_modules
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
