@@ -285,6 +285,8 @@
             radio.innerHTML = on ? "radio_button_unchecked" : "radio_button_checked";
 
             document.querySelector("directionallight").setAttribute("on", !on);
+            document.querySelector("physicalenvironmentlight").setAttribute("on", false);
+            document.querySelector(".overflow-icon-light").innerHTML="radio_button_unchecked";//first is IBL
 
             closeOverflowMenu();
         }

@@ -8,6 +8,7 @@
   * field values from metadata for non-standard nodes
   
 * Improvements
+  * enable shadows for BufferGeometry/glTF
   * add "STEP" interpolator mode to interpolators
   * update cycleInterval behaviour to X3Dv4
   * more accurate startTime update
