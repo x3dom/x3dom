@@ -276,6 +276,21 @@
             closeOverflowMenu();
         }
 
+        function setShadow( event )
+        {
+            var shadowRadio = document.querySelectorAll(".overflow-icon-shadow");
+
+            var radio = event.target.querySelector("i"); //.innerHTML = "radio_button_checked";
+            var on = radio.innerHTML == "radio_button_checked";
+            radio.innerHTML = on ? "radio_button_unchecked" : "radio_button_checked";
+
+            document.querySelector("directionallight").setAttribute("on", !on);
+            document.querySelector("physicalenvironmentlight").setAttribute("on", false);
+            document.querySelector(".overflow-icon-light").innerHTML="radio_button_unchecked";//first is IBL
+
+            closeOverflowMenu();
+        }
+
         function onKeyPress( e )
         {
             if( e.keyCode == 13 )
@@ -354,6 +369,10 @@
                 <div class="overflow-menu-entry" onclick="setLight(event, false, false)">
                     <div class="overflow-text">Scene Only</div>
                     <i class="material-icons overflow-icon-light">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setShadow(event)">
+                    <div class="overflow-text">Shadows</div>
+                    <i class="material-icons overflow-icon-shadow">radio_button_unchecked</i>
                 </div>
             </section>
         </section>
@@ -473,6 +492,7 @@
                 <physicalenvironmentlight diffuse="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"
                                           specular="https://x3dom.org/download/assets/pbr/papermillSpecular.dds">
                 </physicalenvironmentlight>
+                <directionallight direction="1 -4 -2" shadowintensity="0.8" on="false"></directionallight>
                 <background backURL="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"></background>
                 <Transform translation="0 0 0">
                     <Inline id="inline" url="" nameSpaceName="gltf" mapDEFToID="true"></Inline>
