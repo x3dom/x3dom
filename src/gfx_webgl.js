@@ -1715,6 +1715,14 @@ x3dom.gfx_webgl = ( function ()
                         offset += s_geo._vf.vertexCount[ v ];
                     }
                 }
+                else if ( indicesReady && ( s_gl.bufferGeometry > 0 ) )
+                {
+                    this.drawElements( gl, s_gl.primType[ 0 ], s_geo._vf.vertexCount[ 0 ], s_gl.indexType, shape._indexOffset );
+                }
+                else if ( s_gl.bufferGeometry < 0 )
+                {
+                    this.drawArrays( gl, s_gl.primType[ 0 ], 0, s_geo._vf.vertexCount[ 0 ] );
+                }
                 else if ( s_geo.hasIndexOffset() )
                 {
                     var indOff = shape.tessellationProperties();

@@ -1,4 +1,4 @@
-.github/workflows/static.yml
+./.github/workflows/static.yml
 .travis.yml
 .idea
 _site
