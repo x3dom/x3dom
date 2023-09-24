@@ -22,6 +22,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  permissions:
+    contents: read
+    pages: write
+    id-token: write
   # Single deploy job since we're just deploying
   deploy:
     environment:
