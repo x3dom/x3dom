@@ -202,7 +202,17 @@ x3dom.registerNodeType(
 
             isCCW : function ()
             {
-                return this._cf.geometry.node._vf.ccw;
+                var ccw = this._cf.geometry.node._vf.ccw;
+                if ( x3dom.isa( this._cf.geometry.node, x3dom.nodeTypes.BufferGeometry ) )
+                {
+                    var gM = this._graph.globalMatrix;
+                    // check for negative scale
+                    if ( gM.det3( gM._00, gM._01, gM._02, gM._10, gM._11, gM._12, gM._20, gM._21, gM._22 ) < 0 )
+                    {
+                        return !ccw;
+                    }
+                }
+                return ccw;
             },
 
             parentRemoved : function ( parent )

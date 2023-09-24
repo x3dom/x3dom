@@ -106,7 +106,8 @@
 
         .overflow-menu-entry:hover { background: #ccc; }
         .overflow-text { flex-grow: 10; color: #333; pointer-events: none;}
-        .overflow-icon-environment, .overflow-icon-tonemapping , .overflow-icon-light { font-size: 20px; color: #666;  pointer-events: none;}
+        .overflow-icon-environment, .overflow-icon-tonemapping, .overflow-icon-light, .overflow-icon-shadow {
+            font-size: 20px; color: #666;  pointer-events: none;}
         input[type=url] { flex-grow: 10; border: none; font-size: 22px; height: 100%; margin: 0 16px 0 16px; outline: none}
         .main-wrapper { width: 100%; height: calc(100% - 56px); position: absolute; top: 56px; left: 0; display: flex; flex-direction: row; }
         
@@ -146,6 +147,7 @@
             x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
             
             g_runtime = x3d.runtime;
+            load('Triangle',undefined,'negZ');
         };
 
         function updateInline(url)
@@ -389,7 +391,7 @@
     <section class="main-wrapper">
             
         <section class="sidebar">
-
+            
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle',undefined,'negZ')">Triangle</div>
@@ -428,6 +430,7 @@
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/KhronosGroup/glTF-Asset-Generator/master/Output/Positive/Node_NegativeScale/Node_NegativeScale_04.gltf')">Negative Scale</div>
             
             <div class="sidebar-header">PBR Tests</div>
         
@@ -492,7 +495,7 @@
                 <physicalenvironmentlight diffuse="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"
                                           specular="https://x3dom.org/download/assets/pbr/papermillSpecular.dds">
                 </physicalenvironmentlight>
-                <directionallight direction="1 -4 -2" shadowintensity="0.8" on="false"></directionallight>
+                <directionallight direction="1 -4 -2" shadowintensity="0.8" shadowfiltersize="7" on="false"></directionallight>
                 <background backURL="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"></background>
                 <Transform translation="0 0 0">
                     <Inline id="inline" url="" nameSpaceName="gltf" mapDEFToID="true"></Inline>
