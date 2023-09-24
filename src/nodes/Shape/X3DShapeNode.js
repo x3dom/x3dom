@@ -207,7 +207,7 @@ x3dom.registerNodeType(
                 {
                     var gM = this._graph.globalMatrix;
                     // check for negative scale
-                    if ( gM.det3( gM._00, gM._01, gM_02, gM._10, gM._11, gM._12, gM._20, gM._21, gM._22 ) < 0 )
+                    if ( gM.det3( gM._00, gM._01, gM._02, gM._10, gM._11, gM._12, gM._20, gM._21, gM._22 ) < 0 )
                     {
                         return !ccw;
                     }
