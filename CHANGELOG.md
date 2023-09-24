@@ -8,6 +8,7 @@
   * field values from metadata for non-standard nodes
   
 * Improvements
+  * enable negative scale auto-ccw for BufferGeometry/glTF
   * enable shadows for BufferGeometry/glTF
   * add "STEP" interpolator mode to interpolators
   * update cycleInterval behaviour to X3Dv4

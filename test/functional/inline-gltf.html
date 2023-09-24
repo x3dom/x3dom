@@ -146,6 +146,7 @@
             x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
             
             g_runtime = x3d.runtime;
+            load('Triangle',undefined,'negZ');
         };
 
         function updateInline(url)
@@ -389,8 +390,7 @@
     <section class="main-wrapper">
             
         <section class="sidebar">
-            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/KhronosGroup/glTF-Asset-Generator/master/Output/Positive/Node_NegativeScale/Node_NegativeScale_04.gltf')">Negative Scale</div>
-
+            
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle',undefined,'negZ')">Triangle</div>
@@ -429,6 +429,7 @@
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/KhronosGroup/glTF-Asset-Generator/master/Output/Positive/Node_NegativeScale/Node_NegativeScale_04.gltf')">Negative Scale</div>
             
             <div class="sidebar-header">PBR Tests</div>
         
