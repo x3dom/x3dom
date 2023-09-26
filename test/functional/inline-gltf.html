@@ -147,7 +147,16 @@
             x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
             
             g_runtime = x3d.runtime;
-            load('Triangle',undefined,'negZ');
+            var url = new URL( document.location.href );
+            if ( url.searchParams.get( 'url' ) )
+            {
+                var query_url = url.search.match( /\?url=(.*)/ );
+                load( query_url[1], 'direct', 'negZ' );
+            }
+            else
+            {
+                load( 'Triangle', undefined, 'negZ' ); 
+            }
         };
 
         function updateInline(url)
