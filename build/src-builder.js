@@ -8,6 +8,7 @@ const zip             = require("zip-lib");
 const package         = require("../package.json");
 const packages        = require("./core/packages.json");
 const additionalFiles = require("./core/additionalFiles.json");
+const terser_options  = { mangle: { reserved: ['workerProcess'] } };
 
 //--------------------------------------------------------------------------------------------------
 
@@ -96,15 +97,15 @@ async function build()
 
     console.log( "> Minify x3dom.js ..." );
 
-    versions[ "BASIC_MIN" ] = terser.minify( versions[ "BASIC" ] ).code;
+    versions[ "BASIC_MIN" ] = terser.minify( versions[ "BASIC" ], terser_options ).code;
 
     console.log( "> Minify x3dom-full.js ..." );
 
-    versions[ "FULL_MIN" ] = terser.minify( versions[ "FULL" ] ).code;
+    versions[ "FULL_MIN" ] = terser.minify( versions[ "FULL" ], terser_options ).code;
 
     console.log( "> Minify x3dom-physics.js ..." );
 
-    versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ] ).code;
+    versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ], terser_options ).code;
 
     console.log( "> Write x3dom.debug.js ..." );
 
