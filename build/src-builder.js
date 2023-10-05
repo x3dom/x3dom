@@ -8,7 +8,8 @@ const zip             = require("zip-lib");
 const package         = require("../package.json");
 const packages        = require("./core/packages.json");
 const additionalFiles = require("./core/additionalFiles.json");
-const terser_options  = { mangle: { reserved: ['workerProcess'] } };
+//const terser_options  = { mangle: { reserved: ['workerProcess'] } };
+const terser_options  = {};
 
 //--------------------------------------------------------------------------------------------------
 
