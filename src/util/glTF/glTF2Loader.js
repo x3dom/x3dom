@@ -14,7 +14,8 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_materials_emissive_strength",
         "KHR_mesh_quantization",
         "EXT_texture_webp",
-        "EXT_meshopt_compression"
+        "EXT_meshopt_compression",
+        "MSFT_texture_dds"
     ];
     if ( x3dom.DracoDecoderModule )
     {
@@ -777,13 +778,20 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 {
     var image = this._gltf.images[ texture.source ];
 
-    var webpImageUrl = "";
+    var extImageUrl = "";
 
-    if ( texture.extensions && texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
+    if ( texture.extensions )
     {
-        var webpImage = this._gltf.images[ texture.extensions.EXT_texture_webp.source ];
-        webpImageUrl = x3dom.Utils.dataURIToObjectURL( webpImage.uri || "" );
-    }
+        if ( texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
+        {
+            var extImage = this._gltf.images[ texture.extensions.EXT_texture_webp.source ];
+            extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
+        }
+        else if ( texture.extensions.MSFT_texture_dds && texture.extensions.MSFT_texture_dds.source )
+        {
+            var extImage = this._gltf.images[ texture.extensions.MSFT_texture_dds.source ];
+            extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
+        }
 
     var imagetexture = document.createElement( "imagetexture" );
 
@@ -798,10 +806,13 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
         imagetexture.setAttribute( "containerField", containerField );
     }
 
-    if ( image.uri != undefined || webpImageUrl.length > 0 )
+    if ( image.uri != undefined || extImageUrl.length > 0 )
     {
-        var MFUrl = webpImageUrl.length ? [ "\"" + webpImageUrl + "\"" ] : [];
-        if ( image.uri ) {MFUrl.push( "\"" + x3dom.Utils.dataURIToObjectURL( image.uri ) + "\"" );}
+        var MFUrl = extImageUrl.length ? [ "\"" + extImageUrl + "\"" ] : [];
+        if ( image.uri )
+        {
+            MFUrl.push( "\"" + x3dom.Utils.dataURIToObjectURL( image.uri ) + "\"" );
+        }
         imagetexture.setAttribute( "url", MFUrl.join( " " ) );
     }
 
