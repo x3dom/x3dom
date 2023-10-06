@@ -792,6 +792,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
             var extImage = this._gltf.images[ texture.extensions.MSFT_texture_dds.source ];
             extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
         }
+    }
 
     var imagetexture = document.createElement( "imagetexture" );
 
