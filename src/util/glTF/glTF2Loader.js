@@ -779,6 +779,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
     var image = this._gltf.images[ texture.source ];
 
     var extImageUrl = "";
+    var generateMipMaps = true;
 
     if ( texture.extensions )
     {
@@ -791,6 +792,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
         {
             var extImage = this._gltf.images[ texture.extensions.MSFT_texture_dds.source ];
             extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
+            generateMipMaps = false;
         }
     }
 
@@ -820,7 +822,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
     if ( texture.sampler != undefined )
     {
         var sampler = this._gltf.samplers[ texture.sampler ];
-        imagetexture.appendChild( this._createX3DTextureProperties( sampler ) );
+        imagetexture.appendChild( this._createX3DTextureProperties( sampler, generateMipMaps ) );
     }
 
     if ( channel )
@@ -842,7 +844,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
  * @param {Object} primitive - A glTF sampler node
  * @return {TextureProperties}
  */
-x3dom.glTF2Loader.prototype._createX3DTextureProperties = function ( sampler )
+x3dom.glTF2Loader.prototype._createX3DTextureProperties = function ( sampler, generateMipMaps )
 {
     var textureproperties = document.createElement( "textureproperties" );
 
@@ -852,7 +854,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function ( sampler )
     textureproperties.setAttribute( "magnificationFilter", x3dom.Utils.magFilterDicX3D( sampler.magFilter ) );
     textureproperties.setAttribute( "minificationFilter",  x3dom.Utils.minFilterDicX3D( sampler.minFilter ) );
 
-    if ( sampler.minFilter == undefined || ( sampler.minFilter >= 9984 && sampler.minFilter <= 9987 ) )
+    if ( generateMipMaps && ( sampler.minFilter == undefined || ( sampler.minFilter >= 9984 && sampler.minFilter <= 9987 ) ) )
     {
         textureproperties.setAttribute( "generateMipMaps", "true" );
     }

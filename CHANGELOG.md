@@ -4,7 +4,7 @@
 
 * Features
   * ImageTexture colorSpaceConversion field
-  * support for glTF punctual lights, emissive strength, webp, mesh quantization and meshopt compression extensions
+  * support for glTF punctual lights, emissive strength, webp, mesh quantization, meshopt compression and texture dds extensions
   * field values from metadata for non-standard nodes
   
 * Improvements
