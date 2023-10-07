@@ -21,9 +21,9 @@ x3dom.glTF2Loader = function ( nameSpace )
     {
         this._supportedExtensions.push( "KHR_draco_mesh_compression" );
     }
-    var DecoderWorkers = 2;
-    this._meshoptDecoder = x3dom.MeshoptDecoder;
-    this._meshoptDecoder.ready.then( () => this._meshoptDecoder.useWorkers( DecoderWorkers ) );
+    this.meshoptDecoderWorkers = 2;
+    // this._meshoptDecoder = x3dom.MeshoptDecoder;
+    // this._meshoptDecoder.ready.then( () => this._meshoptDecoder.useWorkers( DecoderWorkers ) );
 };
 
 /**
@@ -1438,7 +1438,12 @@ x3dom.glTF2Loader.prototype._meshopt_decodeViewAsync = function ( view, buffers 
         var meshopt = view.extensions.EXT_meshopt_compression;
         var source = new Uint8Array( buffers[  meshopt.buffer ] )
             .slice( meshopt.byteOffset, meshopt.byteOffset + meshopt.byteLength );
-        return this._meshoptDecoder.ready.then( () => this._meshoptDecoder.decodeGltfBufferAsync(
+        if ( !x3dom.MeshoptDecoder.created )
+        {
+            x3dom.MeshoptDecoder.useWorkers( this.meshoptDecoderWorkers );
+            x3dom.MeshoptDecoder.created = true;
+        }
+        return x3dom.MeshoptDecoder.ready.then( () => x3dom.MeshoptDecoder.decodeGltfBufferAsync(
             meshopt.count, meshopt.byteStride, source, meshopt.mode, meshopt.filter || "NONE" ) );
     }
     return new Uint8Array( buffers[ view.buffer ] ).slice( view.byteOffset, view.byteOffset + view.byteLength );
