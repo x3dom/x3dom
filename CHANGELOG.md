@@ -4,7 +4,13 @@
 
 * Features
   * ImageTexture colorSpaceConversion field
-  * support for glTF punctual lights, emissive strength, webp, mesh quantization, meshopt compression and texture dds extensions
+  * support for glTF extension:
+    * KHR_lights_punctual
+    * KHR_materials_emissive_strength
+    * KHR_mesh_quantization
+    * EXT_texture_webp
+    * EXT_meshopt_compression
+    * MSFT_texture_dds
   * field values from metadata for non-standard nodes
   
 * Improvements
@@ -16,6 +22,7 @@
   * tune PhysicalMaterial for compatible light intensity
 
 * Bugfixes
+  * fix mipmaps for compressed dds
   * allow turntable as initial navigation
     
 ## Version 1.8.3
