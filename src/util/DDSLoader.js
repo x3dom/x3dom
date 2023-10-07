@@ -309,6 +309,7 @@ x3dom.DDSLoader._readData = function ( dds, buffer, texture, options )
     dds.width = dds.header.dwWidth;
     dds.height = dds.header.dwHeight;
     dds.generateMipmaps = ( dds.numberOfMipmaps <= 1 && !dds.isCompressed );
+    dds.format.bytesPerElementFactor = 1;
 
     for ( var i = 0; i < dds.numberOfImages; i++ )
     {
