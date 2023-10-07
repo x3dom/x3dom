@@ -277,10 +277,10 @@ x3dom.Utils.tryDDSLoading = function ( texture, gl, doc, src, genMipMaps, flipY,
             gl.generateMipmap( dds.type );
         }
 
-        if ( flipY )
-        {
-            gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false );
-        }
+        // if ( flipY )
+        // {
+        //     gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false );
+        // }
 
         gl.bindTexture( dds.type, null );
 

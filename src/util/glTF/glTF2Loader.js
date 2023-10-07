@@ -14,15 +14,16 @@ x3dom.glTF2Loader = function ( nameSpace )
         "KHR_materials_emissive_strength",
         "KHR_mesh_quantization",
         "EXT_texture_webp",
-        "EXT_meshopt_compression"
+        "EXT_meshopt_compression",
+        "MSFT_texture_dds"
     ];
     if ( x3dom.DracoDecoderModule )
     {
         this._supportedExtensions.push( "KHR_draco_mesh_compression" );
     }
-    var DecoderWorkers = 2;
-    this._meshoptDecoder = x3dom.MeshoptDecoder;
-    this._meshoptDecoder.ready.then( () => this._meshoptDecoder.useWorkers( DecoderWorkers ) );
+    this.meshoptDecoderWorkers = 2;
+    // this._meshoptDecoder = x3dom.MeshoptDecoder;
+    // this._meshoptDecoder.ready.then( () => this._meshoptDecoder.useWorkers( DecoderWorkers ) );
 };
 
 /**
@@ -777,12 +778,22 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 {
     var image = this._gltf.images[ texture.source ];
 
-    var webpImageUrl = "";
+    var extImageUrl = "";
+    var generateMipMaps = true;
 
-    if ( texture.extensions && texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
+    if ( texture.extensions )
     {
-        var webpImage = this._gltf.images[ texture.extensions.EXT_texture_webp.source ];
-        webpImageUrl = x3dom.Utils.dataURIToObjectURL( webpImage.uri || "" );
+        if ( texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
+        {
+            var extImage = this._gltf.images[ texture.extensions.EXT_texture_webp.source ];
+            extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
+        }
+        else if ( texture.extensions.MSFT_texture_dds && texture.extensions.MSFT_texture_dds.source )
+        {
+            var extImage = this._gltf.images[ texture.extensions.MSFT_texture_dds.source ];
+            extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
+            generateMipMaps = false;
+        }
     }
 
     var imagetexture = document.createElement( "imagetexture" );
@@ -798,17 +809,20 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
         imagetexture.setAttribute( "containerField", containerField );
     }
 
-    if ( image.uri != undefined || webpImageUrl.length > 0 )
+    if ( image.uri != undefined || extImageUrl.length > 0 )
     {
-        var MFUrl = webpImageUrl.length ? [ "\"" + webpImageUrl + "\"" ] : [];
-        if ( image.uri ) {MFUrl.push( "\"" + x3dom.Utils.dataURIToObjectURL( image.uri ) + "\"" );}
+        var MFUrl = extImageUrl.length ? [ "\"" + extImageUrl + "\"" ] : [];
+        if ( image.uri )
+        {
+            MFUrl.push( "\"" + x3dom.Utils.dataURIToObjectURL( image.uri ) + "\"" );
+        }
         imagetexture.setAttribute( "url", MFUrl.join( " " ) );
     }
 
     if ( texture.sampler != undefined )
     {
         var sampler = this._gltf.samplers[ texture.sampler ];
-        imagetexture.appendChild( this._createX3DTextureProperties( sampler ) );
+        imagetexture.appendChild( this._createX3DTextureProperties( sampler, generateMipMaps ) );
     }
 
     if ( channel )
@@ -830,7 +844,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
  * @param {Object} primitive - A glTF sampler node
  * @return {TextureProperties}
  */
-x3dom.glTF2Loader.prototype._createX3DTextureProperties = function ( sampler )
+x3dom.glTF2Loader.prototype._createX3DTextureProperties = function ( sampler, generateMipMaps )
 {
     var textureproperties = document.createElement( "textureproperties" );
 
@@ -840,7 +854,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function ( sampler )
     textureproperties.setAttribute( "magnificationFilter", x3dom.Utils.magFilterDicX3D( sampler.magFilter ) );
     textureproperties.setAttribute( "minificationFilter",  x3dom.Utils.minFilterDicX3D( sampler.minFilter ) );
 
-    if ( sampler.minFilter == undefined || ( sampler.minFilter >= 9984 && sampler.minFilter <= 9987 ) )
+    if ( generateMipMaps && ( sampler.minFilter == undefined || ( sampler.minFilter >= 9984 && sampler.minFilter <= 9987 ) ) )
     {
         textureproperties.setAttribute( "generateMipMaps", "true" );
     }
@@ -1424,7 +1438,12 @@ x3dom.glTF2Loader.prototype._meshopt_decodeViewAsync = function ( view, buffers 
         var meshopt = view.extensions.EXT_meshopt_compression;
         var source = new Uint8Array( buffers[  meshopt.buffer ] )
             .slice( meshopt.byteOffset, meshopt.byteOffset + meshopt.byteLength );
-        return this._meshoptDecoder.ready.then( () => this._meshoptDecoder.decodeGltfBufferAsync(
+        if ( !x3dom.MeshoptDecoder.created )
+        {
+            x3dom.MeshoptDecoder.useWorkers( this.meshoptDecoderWorkers );
+            x3dom.MeshoptDecoder.created = true;
+        }
+        return x3dom.MeshoptDecoder.ready.then( () => x3dom.MeshoptDecoder.decodeGltfBufferAsync(
             meshopt.count, meshopt.byteStride, source, meshopt.mode, meshopt.filter || "NONE" ) );
     }
     return new Uint8Array( buffers[ view.buffer ] ).slice( view.byteOffset, view.byteOffset + view.byteLength );
