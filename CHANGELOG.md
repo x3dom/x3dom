@@ -4,7 +4,7 @@
 
 * Features
   * ImageTexture colorSpaceConversion field
-  * support for glTF extension:
+  * support for glTF extensions:
     * KHR_lights_punctual
     * KHR_materials_emissive_strength
     * KHR_mesh_quantization
@@ -22,6 +22,7 @@
   * tune PhysicalMaterial for compatible light intensity
 
 * Bugfixes
+  * fix nav. type field updates
   * fix mipmaps for compressed dds
   * allow turntable as initial navigation
     

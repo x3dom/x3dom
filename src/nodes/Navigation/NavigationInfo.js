@@ -197,7 +197,7 @@ x3dom.registerNodeType(
             setType : function ( type, viewarea )
             {
                 var navType = this.checkType( type.toLowerCase() );
-                var oldType = this.checkType( this.getType() );
+                var oldType = this._oldType;
 
                 if ( oldType !== navType || this._impl == null )
                 {
@@ -239,6 +239,7 @@ x3dom.registerNodeType(
                 }
 
                 this._vf.type[ 0 ] = navType;
+                this._oldType = navType;
                 x3dom.debug.logInfo( "Switch to " + navType + " mode." );
             },
 
