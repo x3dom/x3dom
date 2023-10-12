@@ -238,6 +238,7 @@ x3dom.registerNodeType(
                     {this._impl.init( this._nameSpace.doc._viewarea, false );}
                 }
 
+                this._vf.type[ 0 ] = navType;
                 this._oldType = navType;
                 x3dom.debug.logInfo( "Switch to " + navType + " mode." );
             },
