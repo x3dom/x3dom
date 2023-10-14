@@ -2298,7 +2298,7 @@ x3dom.gfx_webgl = ( function ()
         var fog = scene.getFog();
 
         // THINKABOUTME: changed flag only works as long as lights and fog are global
-        if ( fog && changed )
+        if ( fog._vf.visibilityRange && changed )
         {
             sp.fogColor = fog._vf.color.toGL();
             sp.fogRange = fog._vf.visibilityRange;
@@ -5117,21 +5117,15 @@ x3dom.gfx_webgl = ( function ()
                 }
             }
 
-            if ( properties.FOG ) { sp.fogType = 999.0; } // draw without fog first
-
-            gl.drawArrays( gl.TRIANGLES, 0, 6 ); //shadows
-
-            // Set fog
+            // Mask shadows w/ fog, no need for fogColor
             if ( properties.FOG )
             {
                 var fog = scene.getFog();
-                this.stateManager.blendColor( fog._vf.color.r, fog._vf.color.g, fog._vf.color.b, 1.0 );
-                this.stateManager.blendFunc( gl.CONSTANT_COLOR, gl.ONE_MINUS_SRC_COLOR );
-                sp.fogColor = fog._vf.color.toGL();
                 sp.fogRange = fog._vf.visibilityRange;
                 sp.fogType = ( fog._vf.fogType == "LINEAR" ) ? 0.0 : 1.0;
-                gl.drawArrays( gl.TRIANGLES, 0, 6 ); // fog
             }
+
+            gl.drawArrays( gl.TRIANGLES, 0, 6 ); // fog
 
             // cleanup
             var nk = shadowIndex + 1;
