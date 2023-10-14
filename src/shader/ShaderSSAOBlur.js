@@ -65,7 +65,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function ( gl )
                 "varying vec2 fragTexCoord;\n";
 
     shader +=     x3dom.shader.SSAOShader.depthReconsructionFunctionCode();
-// dutch
+
     // always use fog uniforms, even if no fog
     shader += x3dom.shader.fog();
 
@@ -81,7 +81,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function ( gl )
             "                numSamples++;\n" +
             "    }}}\n" +
             "    float intensity = mix(1.0,sum/numSamples,amount);\n" +
-// dutch
+
           //"    gl_FragColor = vec4(intensity,intensity,intensity,1.0);\n" +
             "    vec4 color = vec4(intensity,intensity,intensity,1.0);\n" +
 
