@@ -742,17 +742,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
         }
     }
 
-    //Fog
-    if ( properties.FOG )
-    {
-        shader += x3dom.shader.fog();
-    }
+    if ( properties.FOG ) { shader += x3dom.shader.fog(); }
 
-    if ( properties.LIGHTS || properties.CLIPPLANES )
+    // same as vertex shader but with fragPositionWS for fogNoise (w/ or w/out lights)
+    if ( properties.LIGHTS || properties.FOG || properties.CLIPPLANES )
     {
         shader += "varying vec4 fragPosition;\n";
-        shader += "varying vec4 fragPositionWS;\n";
         shader += "uniform float isOrthoView;\n";
+        shader += "varying vec4 fragPositionWS;\n";
     }
 
     //Lights
@@ -1350,11 +1347,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
 
     shader += "color = " + x3dom.shader.encodeGamma( properties, "color" ) + ";\n";
 
-    //Fog
-    if ( properties.FOG && !properties.SHADOW )
+    if ( properties.FOG )
     {
-        shader += "float f0 = calcFog(fragEyePosition);\n";
-        shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
+        shader += "     float f0 = calcFog(fragEyePosition);\n" +
+                  "     color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
     }
 
     shader += "gl_FragColor = color;\n";
