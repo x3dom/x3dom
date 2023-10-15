@@ -2303,6 +2303,9 @@ x3dom.gfx_webgl = ( function ()
             sp.fogColor = fog._vf.color.toGL();
             sp.fogRange = fog._vf.visibilityRange;
             sp.fogType = ( fog._vf.fogType == "LINEAR" ) ? 0.0 : 1.0;
+
+            sp.fogHeight = fog._vf.fogHeight;
+            sp.fogNoise = fog._vf.fogNoise / 100.0;
         }
 
         // Set Material
