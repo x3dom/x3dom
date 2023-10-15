@@ -1350,7 +1350,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
     if ( properties.FOG )
     {
         shader += "     float f0 = calcFog(fragEyePosition);\n" +
-                  "     color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
+                //"     color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
+                // use original fog above, or optional Noise and Height below
+                "       if (fogNoise > 0.0) f0 += mix( 0.0, 0.1, noise3d(fragPositionWS.xyz * fogNoise) );\n" +
+                "       vec3 fcol = fogColor * (1.0-f0) + f0 * (color.rgb);\n" +
+                "       float fogH = clamp( (fragPositionWS.y - fogHeight)  /  fogRange, 0.0, 1.0);\n" +
+                "       float fogD = clamp( (f0 - fogRange),                             0.0, 1.0);\n" +
+                "       color.rgb = mix( fcol, color.rgb, max(fogH,fogD) ) ;\n";
     }
 
     shader += "gl_FragColor = color;\n";
