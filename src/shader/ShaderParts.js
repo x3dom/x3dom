@@ -56,8 +56,8 @@ x3dom.shader.twoSidedMaterial = function ()
 * Fog
 ********************************************************************************/
 x3dom.shader.fog = function ()
-{                   
-    var shaderPart ="uniform vec3  fogColor;\n" +
+{
+    var shaderPart = "uniform vec3  fogColor;\n" +
                     "uniform float fogType;\n" +
                     "uniform float fogRange;\n" +
                     "varying vec3 fragEyePosition;\n" +

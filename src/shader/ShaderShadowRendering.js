@@ -170,17 +170,18 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function (
     // is incorrect and full light is zero here so unaffected as well.
     shader += "    color = " + x3dom.shader.encodeGamma( {}, "vec4(shadowValue, shadowValue, shadowValue, 1.0)" ) + " ;\n";
 
-    if ( properties.FOG ) { 
+    if ( properties.FOG )
+    {
     // mask shadow w/ fogDepth, visually no need for fogColor
-    shader += "   vec3 fragEyePosition = eyeCoords.xyz / eyeCoords.w;\n" +
+        shader += "   vec3 fragEyePosition = eyeCoords.xyz / eyeCoords.w;\n" +
               "   float f0 = calcFog(fragEyePosition);\n" +
-            //"   color.rgb = fogColor * (1.0 - f0) + f0 * color.rgb;\n";
-              "   color.rgb = 1.0      * (1.0 - f0) + f0 * color.rgb;\n"; 
+        //"   color.rgb = fogColor * (1.0 - f0) + f0 * color.rgb;\n";
+              "   color.rgb = 1.0      * (1.0 - f0) + f0 * color.rgb;\n";
     }
 
     shader += "    gl_FragColor = color;\n" +
     "}\n";
-    
+
     var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
     gl.shaderSource( fragmentShader, shader );
     gl.compileShader( fragmentShader );

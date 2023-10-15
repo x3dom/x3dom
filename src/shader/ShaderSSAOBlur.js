@@ -82,11 +82,11 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function ( gl )
             "    }}}\n" +
             "    float intensity = mix(1.0,sum/numSamples,amount);\n" +
 
-          //"    gl_FragColor = vec4(intensity,intensity,intensity,1.0);\n" +
+    //"    gl_FragColor = vec4(intensity,intensity,intensity,1.0);\n" +
             "    vec4 color = vec4(intensity,intensity,intensity,1.0);\n" +
 
             "    if (fogRange > 0.0) {\n" +
-            "       vec3 eye = vec3(0.0, 0.0, referenceDepth);\n" + 
+            "       vec3 eye = vec3(0.0, 0.0, referenceDepth);\n" +
             "       float f0 = calcFog(eye);\n" +
             "       color.rgb = 1.0 * (1.0 - f0) + f0 * color.rgb;\n" +
             "    }\n" +
