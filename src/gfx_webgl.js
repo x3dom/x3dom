@@ -5117,7 +5117,7 @@ x3dom.gfx_webgl = ( function ()
                 }
             }
 
-            // Mask shadows w/ fog, no need for fogColor
+            // Mask shadows w/ fog, no need for fogColor, fogHeight, fogNoise.
             if ( properties.FOG )
             {
                 var fog = scene.getFog();
@@ -5125,7 +5125,7 @@ x3dom.gfx_webgl = ( function ()
                 sp.fogType = ( fog._vf.fogType == "LINEAR" ) ? 0.0 : 1.0;
             }
 
-            gl.drawArrays( gl.TRIANGLES, 0, 6 ); // fog
+            gl.drawArrays( gl.TRIANGLES, 0, 6 );
 
             // cleanup
             var nk = shadowIndex + 1;
