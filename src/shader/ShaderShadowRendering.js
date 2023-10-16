@@ -176,7 +176,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function (
         shader += "   vec3 fragEyePosition = eyeCoords.xyz / eyeCoords.w;\n" +
               "   float f0 = calcFog(fragEyePosition);\n" +
         //"   color.rgb = fogColor * (1.0 - f0) + f0 * color.rgb;\n";
-              "   color.rgb = 1.0      * (1.0 - f0) + f0 * color.rgb;\n";
+              "   color.rgb = vec3(1.0, 1.0, 1.0) * (1.0 - f0) + f0 * color.rgb;\n";
     }
 
     shader += "    gl_FragColor = color;\n" +
