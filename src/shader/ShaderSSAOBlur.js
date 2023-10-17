@@ -55,7 +55,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function ( gl )
     shader += " precision mediump float;\n";
     shader += "#endif\n\n";
 
-    shader +=     "uniform sampler2D SSAOTexture;\n" +
+    shader +=   "uniform sampler2D SSAOTexture;\n" +
                 "uniform sampler2D depthTexture;\n" +
                 "uniform float nearPlane;\n" +
                 "uniform float farPlane;\n" +
@@ -65,6 +65,9 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function ( gl )
                 "varying vec2 fragTexCoord;\n";
 
     shader +=     x3dom.shader.SSAOShader.depthReconsructionFunctionCode();
+
+    // always use fog uniforms, even if no fog
+    shader += x3dom.shader.fog();
 
     shader += "void main(void) {\n" +
             "    float sum = 0.0;\n" +
@@ -78,8 +81,18 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function ( gl )
             "                numSamples++;\n" +
             "    }}}\n" +
             "    float intensity = mix(1.0,sum/numSamples,amount);\n" +
-            "    gl_FragColor = vec4(intensity,intensity,intensity,1.0);\n" +
-            "}\n";
+
+    //"    gl_FragColor = vec4(intensity,intensity,intensity,1.0);\n" +
+            "    vec4 color = vec4(intensity,intensity,intensity,1.0);\n" +
+
+            "    if (fogRange > 0.0) {\n" +
+            "       vec3 eye = vec3(0.0, 0.0, referenceDepth);\n" +
+            "       float f0 = calcFog(eye);\n" +
+            "       color.rgb = vec3(1.0, 1.0, 1.0) * (1.0 - f0) + f0 * color.rgb;\n" +
+            "    }\n" +
+
+            "    gl_FragColor = color;\n" +
+    "}\n";
 
     var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
     gl.shaderSource( fragmentShader, shader );

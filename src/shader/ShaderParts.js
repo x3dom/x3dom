@@ -58,24 +58,24 @@ x3dom.shader.twoSidedMaterial = function ()
 x3dom.shader.fog = function ()
 {
     var shaderPart = "uniform vec3  fogColor;\n" +
-                     "uniform float fogType;\n" +
-                     "uniform float fogRange;\n" +
-                     "varying vec3 fragEyePosition;\n" +
-                     "float calcFog(in vec3 eye) {\n" +
-                     "   float f0 = 0.0;\n" +
-                     "   if(fogType == 0.0) {\n" +
-                     "       if(length(eye) < fogRange){\n" +
-                     "           f0 = (fogRange-length(eye)) / fogRange;\n" +
-                     "       }\n" +
-                     "   }else{\n" +
-                     "       if(length(eye) < fogRange){\n" +
-                     "           f0 = exp(-length(eye) / (fogRange-length(eye) ) );\n" +
-                     "       }\n" +
-                     "   }\n" +
-                     "   f0 = clamp(f0, 0.0, 1.0);\n" +
-                     "   return f0;\n" +
-                     "}\n";
+                    "uniform float fogType;\n" +
+                    "uniform float fogRange;\n" +
+                    "varying vec3 fragEyePosition;\n" +
 
+                    "float calcFog(in vec3 eye) {\n" +
+                    "   float f0 = 0.0;\n" +
+                    "   if(fogType == 0.0) {\n" +
+                    "       if(length(eye) < fogRange){\n" +
+                    "           f0 = (fogRange-length(eye)) / fogRange;\n" +
+                    "       }\n" +
+                    "   }else{\n" +
+                    "       if(length(eye) < fogRange){\n" +
+                    "           f0 = exp(-length(eye) / (fogRange-length(eye) ) );\n" +
+                    "       }\n" +
+                    "   }\n" +
+                    "   f0 = clamp(f0, 0.0, 1.0);\n" +
+                    "   return f0;\n" +
+                    "}\n";
     return shaderPart;
 };
 
