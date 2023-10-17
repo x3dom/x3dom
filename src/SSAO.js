@@ -255,6 +255,11 @@ x3dom.SSAO.blur = function ( stateManager, gl, scene, ssaoTexture, depthTexture,
 
     stateManager.useProgram( sp );
 
+    // shader always requires fog uniforms
+    var fog = scene.getFog();
+    sp.fogRange = fog._vf.visibilityRange;
+    sp.fogType = ( fog._vf.fogType == "LINEAR" ) ? 0.0 : 1.0;
+
     sp.SSAOTexture = 0;
     sp.depthTexture = 1;
 

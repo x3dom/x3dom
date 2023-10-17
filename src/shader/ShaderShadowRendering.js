@@ -118,16 +118,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function (
             "    projCoords = projCoords / projCoords.w;\n" +
             "    projCoords.xy = vPosition;\n" +
             "    vec4 eyeCoords = inverseProj*projCoords;\n";
-    if ( properties.FOG )
-    {
-        shader +=
-            "    if (fogType < 2.0) {\n" +
-            "        vec3 eye = eyeCoords.xyz / eyeCoords.w;\n" +
-            "        float f0 = calcFog( eye );\n" +
-            "        color = vec4(  1.0 - f0, 1.0 - f0, 1.0 - f0, 1.0 );\n" +
-            "    }\n" +
-            "    else {\n";
-    }
+
     shader +=
         "    float shadowValue = 1.0;\n" +
         //reconstruct world and view coordinates from scene map
@@ -172,15 +163,23 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function (
         shader += "    }\n";
     }
 
-    shader += "    color = " + x3dom.shader.encodeGamma( {}, "vec4(shadowValue, shadowValue, shadowValue, 1.0)" ) + " ;\n";
-    if ( properties.FOG ) { shader += "    }\n"; }
     // In principle we should fix the place where this is multplied in instead
     // of overcompensating for the subsequent error from here. This way of doing
     // gamma correction explots the rule that (a*b)^x = a^x * b^x (x being the
     // gamma coefficient), i.e. the umbra is corrected for now, the penumbra
     // is incorrect and full light is zero here so unaffected as well.
+    shader += "    color = " + x3dom.shader.encodeGamma( {}, "vec4(shadowValue, shadowValue, shadowValue, 1.0)" ) + " ;\n";
+
+    if ( properties.FOG )
+    {
+        shader += "   vec3 fragEyePosition = eyeCoords.xyz / eyeCoords.w;\n" +
+              "   float f0 = calcFog(fragEyePosition);\n" +
+              "   color.rgb = vec3(1.0, 1.0, 1.0) * (1.0 - f0) + f0 * color.rgb;\n";
+    }
+
     shader += "    gl_FragColor = color;\n" +
-        "}\n";
+    "}\n";
+
     var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
     gl.shaderSource( fragmentShader, shader );
     gl.compileShader( fragmentShader );

@@ -12,15 +12,14 @@
     * EXT_meshopt_compression
     * MSFT_texture_dds
   * field values from metadata for non-standard nodes
-  
 * Improvements
+  * improved fog over shadows ([dmorehead](https://github.com/dmorehead))
   * enable negative scale auto-ccw for BufferGeometry/glTF
   * enable shadows for BufferGeometry/glTF
   * add "STEP" interpolator mode to interpolators
   * update cycleInterval behaviour to X3Dv4
   * more accurate startTime update
   * tune PhysicalMaterial for compatible light intensity
-
 * Bugfixes
   * fix nav. type field updates
   * fix mipmaps for compressed dds
