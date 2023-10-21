@@ -70,27 +70,29 @@ x3dom.registerNodeType(
 
             /**
              * FogHeight is in world scale like visibilityRange.
+             * Positive values grow fog from ground to sky.
+             * Negative values drop fog from sky to ground.
              * @var {x3dom.fields.SFFloat} fogHeight
              * @memberof x3dom.nodeTypes.X3DFogNode
              * @initvalue 0
-             * @range [0, -inf]
+             * @range [-inf, 0, inf]
              * @field x3dom
              * @instance
              * Hint: Start with a low visibilityRange (very dense fog) to adjust fogHeight.
              */
-            this.addField_SFFloat( ctx, "fogHeight", 1000000.0 );
+            this.addField_SFFloat( ctx, "fogHeight", 0 );
 
             /**
              * fogNoise is 3d noise which create "clouds" within the fog.
              * @var {x3dom.fields.SFFloat} fogNoise
              * @memberof x3dom.nodeTypes.X3DFogNode
              * @initvalue 0
-             * @range [0, -inf]
+             * @range [0, inf]
              * @field x3dom
              * @instance
              * Hint: Useful range is 0.0-3.0, larger values create more "clouds".
              */
-            this.addField_SFFloat( ctx, "fogNoise", 0.0 );
+            this.addField_SFFloat( ctx, "fogNoise", 0 );
         },
         {
         }
