@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+     <head>
+         <title>x3dom Testing</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+        <script type="text/javascript" src="../x3dom-include.js"></script>
+
+         <style>
+             html, body, {
+                 min-width: 100%;
+                 min-height: 100%;
+                 margin:0;
+                 padding:0;
+                 overflow: hidden;
+                 position:fixed;
+                top:0; left:0; bottom:0; right:0;   
+             }
+         </style>
+     </head>
+</head>
+<body style='width:100%; height:100%; border:0; margin:0; padding:0;' onload="setTimeout(function() {  init()  }, 3000);">
+
+    <div id="dropzone" style="width:100px; height:100px; position:fixed; border:1px solid red; background-color:lightgray; z-index:100;" contenteditable="true"> drop .x3d .glb 
+    </div>
+    
+    <div id='HUDs_Div'> 
+      <div id='Interaction_Toolbox' style='margin:2px; padding:4px 150px 4px 4px; background-color:rgba(199,202,204,.7); position:absolute; z-index:1000; right:0px; top:0px;'> 
+        
+            <div >
+              <label >you can drag the yellow light manips</label><br/><br/>
+        
+              <label>Fog Distance :</label><br/>
+              <input type="range" style="width:300px" min="0" max="128" value="0" step="1"
+                     oninput="FogX3d.visibilityRange=this.value * this.value * this.value;">
+              </input><br/><br/>
+
+              <label>Fog Height : ..uses both positive & negative numbers</label><br/>
+              <!-- return both positive & negative values -->
+              <input type="range" style="width:300px" min="-128" max="128" value="0" step="1"
+                     oninput="FogX3d.fogHeight=this.value * this.value * this.value;"
+                     ondblclick="this.value=0; FogX3d.fogHeight=0;"
+                     title="double-click to reset to 0"
+                     >
+              </input><br/><br/>  
+ 
+                <label>Fog Noise :</label><br/>
+              <input type="range"style="width:300px"  min="0.0" max="2.0" value="0" step="0.01"
+                     oninput="FogX3d.fogNoise=this.value;">
+              </input><br/><br/>  
+        
+              <label>SSAO  :</label>
+              <input type="range" min='0' max='50' step='1' value='0' 
+                     oninput="ssaoUpdate(Number(this.value)); "
+              </input><br/><br/>        
+        
+              <label>ShadowIntensity :</label>
+              <input type="range" min="0.0" max="1.0" step="0.1" value="0" 
+                     oninput="pntLight.shadowIntensity=value; sptLight.shadowIntensity=value; dirLight.shadowIntensity=value;">
+              </input><br/><br/>
+      
+              <input type="checkbox"   checked onclick="toggleTruF('pntLight','on'); toggleTruF('pntLightXform','render');"/>
+              <label >:  Point Light  :</label>
+                        <input type="button" value="Snap to Cam"   onclick="snaplight2Cam('pntLightXform')"></input><br/>
+            </div> 
+
+            <div >
+              <input type="checkbox"  onclick="toggleTruF('sptLight','on'); toggleTruF('sptLightXform','render');" />
+              <label>:  Spot Light  :</label>
+                        <input type="button" value="Snap to Cam"   onclick="snaplight2Cam('sptLightXform')"></input><br/>  
+            </div> 
+
+            <div>
+              <input type="checkbox"  onclick="toggleTruF('dirLight','on'); toggleTruF('dirLightXform','render');" />
+              <label>:  Dir Light  :</label>
+                        <input type="button" value="Snap to Cam"   onclick="snaplight2Cam('dirLightXform')"></input><br/>
+            </div>  
+      </div> 
+    </div>
+
+
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%;'>
+      <scene DEF='scene'>
+        <navigationInfo type='examine' headlight="false" speed='0.1'></navigationInfo>
+        <Environment id='x3dElementEnv' SSAO='false' SSAOradius='30' SSAOamount='0.6' SSAOblurDepthTreshold='5.0'></Environment>
+        <viewpoint id='cam' position='50 300 2500' fieldOfView='0.8'></viewpoint>
+        <Fog id='FogX3d' fogType="LiNEAR" color="0.6 0.6 1.0" visibilityRange="0" ></Fog>
+        <background skyColor="0.6 0.6 1.0"></background>
+
+           <depthmode DEF="MANIP" depthfunc="ALWAYS" enabledepthtest="false" znearrange="-1" zfarrange="-1"></depthmode>
+       <material DEF='LIGHT' diffuseColor='0 0 0' emissiveColor="1 1 0"  shininess='1' specularColor='1 1 1' transparency='.5'></material>     
+
+        <appearance DEF="LIGHTMANIP" sortType="transparent" sortKey="9000">
+            <material USE='LIGHT'></material> 
+            <depthmode USE="MANIP"></depthmode>       
+        </appearance>        
+        
+           <Transform id="xform" translation='0 0 0' scale="100 100 100"> 
+              <inline  id="line" nameSpaceName="foo" onload="element.runtime.fitObject(this, true)"></inline>
+          </Transform>  
+        
+                    <Transform id="pntLightXform" render="true"  translation="-500 500 200" scale="1 1 1" > 
+                        <PointLight id='pntLight'  on='true' ambientIntensity='.5' intensity='1' radius='1000000' 
+                            shadowIntensity='0' shadowMapSize='1024' shadowFilterSize='2' shadowCascades='1' zNear='50' ></PointLight>
+                        <Transform scale="25 25 25" > <!-- Moveable breaks if scale is not 1  -->
+                        <Shape>
+                            <appearance USE="LIGHTMANIP"></appearance>
+                            <sphere ></sphere>
+                        </Shape>
+                        </Transform>                                        
+                    </Transform>
+        
+                    <Transform id="sptLightXform" render="false"  rotation="-1.0 0 0 1.570796" translation="0 250 250" scale="1 1 1" > 
+                        <spotLight id='sptLight'  ambientIntensity='.5' intensity='1' cutOffAngle='1'  beamWidth='0.8' radius='1000000' 
+                            direction='0 0 -1' location='0 0 0'    on='false'  global='true' 
+                            shadowIntensity='0' shadowMapSize='1024' shadowFilterSize='2' shadowCascades='1' zNear='50' ></spotLight>
+                        <Transform scale="25 25 25" rotation="1.0 0 0 1.570796"> 
+                        <Shape>
+                            <appearance USE="LIGHTMANIP"></appearance>
+                            <cone subdivision='16'></cone>
+                        </Shape>
+                        </Transform>                                        
+                    </Transform>
+
+                    <Transform id="dirLightXform" render="false" rotation="-0.35355 0.35355 0.14644, 0.85355" translation="0 0 100" scale="1 1 1" > 
+                        <DirectionalLight  id='dirLight'  on='false' global='true' ambientIntensity='.5' Intensity='1' direction='0 0 -1'
+                              shadowIntensity='0' shadowMapSize='2048' > </DirectionalLight>
+                        <Transform scale="15 25 15" rotation="1.0 0 0 1.570796"> 
+                        <Shape>
+                            <appearance USE="LIGHTMANIP"></appearance>
+                            <cone topRadius='1' bottom="false" bottomRadius='2' subdivision='16'></cone>
+                        </Shape>
+                        </Transform>                                        
+                    </Transform>
+        
+    <Transform rotation='-1 0 0,1.5707963267948966' translation="-1 -1 -1" scale="2 2 2">
+       
+            <Transform translation='250 -500 125' rotation="-1.5 -1.5 0 1" scale='100 100 100' >
+              <Shape >
+                <appearance > 
+                    <material></material>
+                </appearance>
+                <torus/> 
+              </Shape>
+            </Transform>
+
+            <Transform translation='0 0 0' scale='800 800 800' >
+              <Shape >
+                <appearance > 
+                    <material></material>
+                </appearance>
+                <plane/> 
+              </Shape>
+            </Transform>
+
+            <Transform translation='0 0 0'rotation='-1 0 0,1.5707963267948966'  scale='100 500 100' >
+              <Shape >
+                <appearance > 
+                    <material></material>
+                </appearance>
+                <cylinder/> 
+              </Shape>
+            </Transform>
+      
+            <Transform translation='-500 500 50' rotation='1 0 0,1.5707963267948966' scale='100 100 100' >
+              <Shape >
+                <appearance > 
+                    <material></material>
+                </appearance>
+                <cone/> 
+              </Shape>
+            </Transform>
+        
+        </Transform>
+        
+      </scene>
+    </x3d>
+
+
+<script>
+
+// great for debuggin mobile
+window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
+        alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber + ' Column: ' + column + ' StackTrace: ' +  errorObj);
+}
+
+var element; 
+var camera; 
+var inline = document.getElementById('line');
+
+function init () {
+    element = document.getElementById('x3dElement');
+    camera = document.getElementById('cam');
+    camera.onviewpointChanged = vpChanged ; // any current active VP
+    document.getElementById('dropzone').addEventListener("drop", drop, false);
+
+    var pntLightXform = document.getElementById('pntLightXform');
+    var pntLightMovalbe = new x3dom.Moveable(element, pntLightXform, null, 0, 'all');
+
+    var dirLightXform = document.getElementById('dirLightXform');
+    var dirLightMovalbe = new x3dom.Moveable(element, dirLightXform, null, 0, 'rotation');
+
+    var sptLightXform = document.getElementById('sptLightXform');
+    var sptLightMovalbe = new x3dom.Moveable(element, sptLightXform, null, 0, 'all'); 
+}
+
+function ssaoUpdate (val=0) {        
+    if (val > 0 ) {
+        x3dElementEnv.setAttribute('SSAO',true);
+        x3dElementEnv.setAttribute('SSAOradius',val);
+
+    } else {
+        x3dElementEnv.setAttribute('SSAO',false); 
+        // up to 1.8.3 needs to be poked to turn off ssao
+        element.runtime.canvas.doc.needRender = true;
+        element.runtime.canvas.doc.onMouseOver(x3dom.canvases[0].gl, 0, 0, 0);
+    }
+}
+
+function swapModel (data,type) {
+      inline.setAttribute('contentType', type);
+      inline.setAttribute('url', data);
+}
+
+function drop (evt) {
+  console.log('dropped');
+  evt.stopPropagation();
+  evt.preventDefault();
+  var files = evt.dataTransfer.files;
+  var   dropFile = files[0];
+  var   dropExt = getFileExt(dropFile.name);
+  var reader = new FileReader();
+
+  if (dropExt == 'x3d') { 
+      reader.readAsDataURL(dropFile);
+      reader.onloadend = function(e){ 
+        var file= e.target.result;
+        swapModel(file,'model/x3d+xml');
+      }
+
+  } else if (dropExt == 'glb' ) {
+      reader.readAsDataURL(dropFile);
+      //reader.readAsBinaryString(dropFile);            
+      reader.onloadend = function(e){ 
+          var file = e.target.result;
+          swapModel(file,'model/gltf-binary');
+      }         
+   }
+}
+
+function getFileExt (str) {
+    return str.split('.').pop().toString().toLowerCase();
+} 
+
+
+function vpChanged (e) {
+    camera.pos = e.position;
+    camera.rot = e.orientation;
+}
+
+function snaplight2Cam (lightXform) {
+    var snapper = document.getElementById(lightXform);
+        snapper.setAttribute('translation', camera.pos.x+' '+camera.pos.y+' '+camera.pos.z);
+          snapper.setAttribute('rotation', camera.rot[0].x+' '+camera.rot[0].y+' '+camera.rot[0].z+' '+camera.rot[1]);
+}
+
+function toggleTruF (id, param) {
+  if (document.getElementById(id).getAttribute(param) == 'false') {
+      document.getElementById(id).setAttribute(param, 'true');
+  } else {
+      document.getElementById(id).setAttribute(param, 'false');
+  }  
+  element.runtime.triggerRedraw(); // nope
+}
+
+function toggle01 (id, param, optionalVal=1) {
+  if (document.getElementById(id).getAttribute(param) == '0') {
+      document.getElementById(id).setAttribute(param, optionalVal.toString() );
+  } else {
+      document.getElementById(id).setAttribute(param, '0');
+  } 
+}
+</script>
+
+</body>
+</html>
+
+
+
