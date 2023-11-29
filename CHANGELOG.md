@@ -13,6 +13,7 @@
     * MSFT_texture_dds
   * field values from metadata for non-standard nodes
 * Improvements
+  * allow null value for glTF.scene.nodes
   * improved fog over shadows ([dmorehead](https://github.com/dmorehead))
   * enable negative scale auto-ccw for BufferGeometry/glTF
   * enable shadows for BufferGeometry/glTF
