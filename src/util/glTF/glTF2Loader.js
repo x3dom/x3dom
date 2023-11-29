@@ -57,7 +57,7 @@ x3dom.glTF2Loader.prototype.load = function ( input, binary )
         }
 
         // Get the nodes
-        for ( var i = 0; i < scene.nodes.length; i++ )
+        for ( var i = 0; i < ( scene.nodes ? scene.nodes.length : 0 ); i++ )
         {
             var node = this._gltf.nodes[ scene.nodes[ i ] ];
 
