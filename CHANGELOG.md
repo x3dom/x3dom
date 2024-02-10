@@ -22,6 +22,7 @@
   * more accurate startTime update
   * tune PhysicalMaterial for compatible light intensity
 * Bugfixes
+  * fix fitAll for OrthoViewpoint
   * fix nav. type field updates
   * fix mipmaps for compressed dds
   * allow turntable as initial navigation
