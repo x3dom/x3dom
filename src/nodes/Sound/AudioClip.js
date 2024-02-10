@@ -58,6 +58,11 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "loop", false );
 
             this._audio = document.createElement( "audio" );
+            this._audio.setAttribute( "preload", "auto" );
+            //this._audio.setAttribute( "muted", "muted" );
+            this._audio.setAttribute( "autoplay", "" );
+            this._audio.setAttribute( "playsinline", "" );
+            this._audio.crossOrigin = "anonymous";
             //this._audio.setAttribute('preload', 'none');
             //this._audio.setAttribute('autoplay', 'true');
             if ( navigator.appName != "Microsoft Internet Explorer" )
@@ -86,27 +91,35 @@ x3dom.registerNodeType(
 
                 var that = this;
 
-                var audioID = 0;
-
                 this._startAudio = function ()
                 {
+                    //x3dom.debug.logInfo( "startAudio" );
+                    window.removeEventListener( "mousedown", that._startAudio );
+                    window.removeEventListener( "keydown", that._startAudio );
+                    if ( !( that._audio instanceof HTMLMediaElement ) )
+                    {
+                        x3dom.debug.logInfo( "No audio exists." );
+                        return;
+                    }
                     if ( that._vf.enabled === true )
                     {
                         that._audio.play()
                             .then( function ( success )
                             {
-                                clearTimeout( audioID );
                             } )
                             .catch( function ( error )
                             {
-                                x3dom.debug.logError( error );
-                                audioID = setTimeout( that._startAudio, 100 );
+                                x3dom.debug.logInfo( "Waiting for interaction: " + error );  //x3dom.debug.logError( error );
+                                window.addEventListener( "mousedown", that._startAudio );
+                                window.addEventListener( "keydown", that._startAudio );
                             } );
                     }
                 };
 
                 this._stopAudio = function ()
                 {
+                    window.removeEventListener( "mousedown", that._startAudio );
+                    window.removeEventListener( "keydown", that._startAudio );
                     that._audio.pause();
                 };
 
@@ -118,15 +131,10 @@ x3dom.registerNodeType(
                     }
                 };
 
-                var log = function ( e )
-                {
-                    x3dom.debug.logWarning( "MediaEvent error:" + e );
-                };
-
                 this._audio.addEventListener( "canplaythrough", this._startAudio, true );
                 this._audio.addEventListener( "ended", this._audioEnded, true );
-                this._audio.addEventListener( "error", log, true );
-                this._audio.addEventListener( "pause", this._audioEnded, true );
+                this._audio.addEventListener( "error", ( e )=>{x3dom.debug.logWarning( "MediaEvent error:" + e );}, true );
+                //this._audio.addEventListener( "pause", this._stopAudio, true );
 
                 this._createSources();
             },
@@ -168,11 +176,12 @@ x3dom.registerNodeType(
                 }
             },
 
-            shutdown : function ()
+            parentRemoved : function ( parent )
             {
-                if ( this._audio )
+                x3dom.nodeTypes.X3DSoundSourceNode.prototype.parentRemoved.call( this, parent );
+                if ( this._parentNodes.length === 0 && this._audio )
                 {
-                    this._audio.pause();
+                    this._stopAudio();
                     while ( this._audio.hasChildNodes() )
                     {
                         this._audio.removeChild( this._audio.firstChild );

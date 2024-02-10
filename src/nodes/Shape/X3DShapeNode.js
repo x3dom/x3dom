@@ -217,24 +217,24 @@ x3dom.registerNodeType(
 
             parentRemoved : function ( parent )
             {
-                for ( var i = 0, n = this._childNodes.length; i < n; i++ )
-                {
-                    var child = this._childNodes[ i ];
-                    if ( child )
-                    {
-                        child.parentRemoved( this );
-                    }
-                }
+                x3dom.nodeTypes.X3DBoundedObject.prototype.parentRemoved.call( this, parent );
 
                 if ( parent )
                 {parent.invalidateVolume();}
                 if ( this._parentNodes.length > 0 )
                 {this.invalidateVolume();}
 
-                // Cleans all GL objects for WebGL-based renderer
-                if ( this._cleanupGLObjects )
+                if ( this._parentNodes.length === 0 )
                 {
-                    this._cleanupGLObjects();
+                    // Cleans all GL objects for WebGL-based renderer
+                    if ( this._cleanupGLObjects )
+                    {
+                        this._cleanupGLObjects();
+                    }
+                    if ( x3dom.nodeTypes.Shape.idMap.nodeID[ this._objectID ] )
+                    {
+                        delete x3dom.nodeTypes.Shape.idMap.nodeID[ this._objectID ];
+                    }
                 }
             },
 
