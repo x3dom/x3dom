@@ -76,7 +76,9 @@ async function concatVersions()
             version[ packageName ] = version[ packageName ].replace( "__X3DOM_REVISION__", REVISION );
             version[ packageName ] = version[ packageName ].replace( "__X3DOM_DATE__", DATE );
         }
-
+        version[ packageName + "_MODULE"] = `${version[packageName]}
+export default x3dom;
+export { x3dom };`;
         lastPackageName = packageName;
     }
 
@@ -100,37 +102,73 @@ async function build()
 
     versions[ "BASIC_MIN" ] = terser.minify( versions[ "BASIC" ], terser_options ).code;
 
+    console.log( "> Minify x3dom-module.js ..." );
+
+    versions[ "BASIC_MODULE_MIN" ] = terser.minify( versions[ "BASIC_MODULE" ], terser_options ).code;
+
     console.log( "> Minify x3dom-full.js ..." );
 
     versions[ "FULL_MIN" ] = terser.minify( versions[ "FULL" ], terser_options ).code;
+
+    console.log( "> Minify x3dom-full-module.js ..." );
+
+    versions[ "FULL_MODULE_MIN" ] = terser.minify( versions[ "FULL_MODULE" ], terser_options ).code;
 
     console.log( "> Minify x3dom-physics.js ..." );
 
     versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ], terser_options ).code;
 
+    console.log( "> Minify x3dom-physics-module.js ..." );
+
+    versions[ "PHYSICS_MODULE_MIN" ] = terser.minify( versions[ "PHYSICS_MODULE" ], terser_options ).code;
+
     console.log( "> Write x3dom.debug.js ..." );
 
     fs.writeFileSync( DIST_FOLDER + "x3dom.debug.js", HEADER + versions[ "BASIC" ] );
+
+    console.log( "> Write x3dom-module.debug.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-module.debug.js", HEADER + versions[ "BASIC_MODULE" ] );
 
     console.log( "> Write x3dom.js ..." );
 
     fs.writeFileSync( DIST_FOLDER + "x3dom.js", HEADER + versions[ "BASIC_MIN" ] );
 
+    console.log( "> Write x3dom-module.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-module.js", HEADER + versions[ "BASIC_MODULE_MIN" ] );
+
     console.log( "> Write x3dom-full.debug.js ..." );
 
     fs.writeFileSync( DIST_FOLDER + "x3dom-full.debug.js", HEADER + versions[ "FULL" ] );
+
+    console.log( "> Write x3dom-full-module.debug.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-full-module.debug.js", HEADER + versions[ "FULL_MODULE" ] );
 
     console.log( "> Write x3dom-full.js ..." );
 
     fs.writeFileSync( DIST_FOLDER + "x3dom-full.js", HEADER + versions[ "FULL_MIN" ] );
 
+    console.log( "> Write x3dom-full-module.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-full-module.js", HEADER + versions[ "FULL_MODULE_MIN" ] );
+
     console.log( "> Write x3dom-physics.debug.js ..." );
 
     fs.writeFileSync( DIST_FOLDER + "x3dom-physics.debug.js", HEADER + versions[ "PHYSICS" ] );
 
+    console.log( "> Write x3dom-physics-module.debug.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-physics-module.debug.js", HEADER + versions[ "PHYSICS_MODULE" ] );
+
     console.log( "> Write x3dom-physics.js ..." );
 
     fs.writeFileSync( DIST_FOLDER + "x3dom-physics.js", HEADER + versions[ "PHYSICS_MIN" ] );
+
+    console.log( "> Write x3dom-physics-module.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-physics-module.js", HEADER + versions[ "PHYSICS_MODULE_MIN" ] );
 
     console.log( "> Write VERSION ..." );
 
