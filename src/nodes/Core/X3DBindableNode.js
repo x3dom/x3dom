@@ -57,6 +57,27 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool( ctx, "isActive", false );
 
+            /**
+             * Output event true gets sent when node becomes bound and activated,
+             * otherwise output event false gets sent when node becomes unbound and deactivated.
+             * Only appears in messages
+             * @var {x3dom.fields.SFBool} isBound
+             * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
+
+            /**
+             * Event sent reporting timestamp when node becomes active/inactive.
+             * Only appears in messages
+             * @var {x3dom.fields.SFTime} bindTime
+             * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue null
+             * @field x3d
+             * @instance
+             */
+
             this._autoGen = ( ctx && ctx.autoGen ? true : false );
             if ( this._autoGen )
             {this._vf.description = "default" + this.constructor.superClass._typeName;}
@@ -88,6 +109,8 @@ x3dom.registerNodeType(
             activate : function ( prev )
             {
                 this.postMessage( "isActive", true );
+                this.postMessage( "isBound", true );
+                this.postMessage( "bindTime", Date.now() / 1000 );
                 x3dom.debug.logInfo( "activate " + this.typeName() + "Bindable " +
                     this._DEF + "/" + this._vf.description );
             },
@@ -95,6 +118,8 @@ x3dom.registerNodeType(
             deactivate : function ( prev )
             {
                 this.postMessage( "isActive", false );
+                this.postMessage( "isBound", false );
+                this.postMessage( "bindTime", Date.now() / 1000 );
                 x3dom.debug.logInfo( "deactivate " + this.typeName() + "Bindable " +
                     this._DEF + "/" + this._vf.description );
             },
