@@ -2,7 +2,7 @@
 var template = require('jsdoc/template'),
     fs = require('jsdoc/fs'),
     path = require('jsdoc/path'),
-    taffy = require('taffydb').taffy,
+    taffy = require('@jsdoc/salty').taffy,
     handle = require('jsdoc/util/error').handle,
     helper = require('jsdoc/util/templateHelper'),
     util = require('util'),
