@@ -1300,7 +1300,7 @@ x3dom.X3DCanvas.prototype.tick = function ( timestamp, xrFrame )
 
         this.doc.render( this.gl, this.getVRFrameData( xrFrame ) );
 
-        if ( !this.doc._scene._vf.doPickPass )
+        if ( this.doc._scene && !this.doc._scene._vf.doPickPass )
         {
             runtime.removeMeasurement( "PICKING" );
         }

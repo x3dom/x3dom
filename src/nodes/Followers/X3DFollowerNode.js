@@ -68,15 +68,10 @@ x3dom.registerNodeType(
 
                     if ( doc )
                     {
-                        for ( var i = 0, n = doc._nodeBag.followers.length; i < n; i++ )
-                        {
-                            if ( doc._nodeBag.followers[ i ] === this )
-                            {
-                                doc._nodeBag.followers.splice( i, 1 );
-                            }
-                        }
+                        this.cleanNodeBag( doc._nodeBag.followers );  //X3DNode.cleanNodeBag()
                     }
                 }
+                x3dom.nodeTypes.X3DChildNode.prototype.parentRemoved.call( this, parent );
             },
 
             tick : function ( t )

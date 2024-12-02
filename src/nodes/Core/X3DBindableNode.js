@@ -135,6 +135,25 @@ x3dom.registerNodeType(
             nodeChanged : function ()
             {
                 this._stack = this._nameSpace.doc._bindableBag.addBindable( this );
+            },
+
+            parentRemoved : function ( parent )
+            {
+                x3dom.nodeTypes.X3DChildNode.prototype.parentRemoved.call( this, parent );
+                if ( this._parentNodes.length === 0 )
+                {
+                    var stack = this._stack;
+                    if ( stack )
+                    {
+                        this.bind( false );
+                        this.cleanNodeBag( stack._bindBag );  //X3DNode.cleanNodeBag()
+                    }
+                    // Background may have geometry
+                    if ( this._cleanupGLObjects )
+                    {
+                        this._cleanupGLObjects();
+                    }
+                }
             }
         }
     )

@@ -409,7 +409,9 @@ x3dom.Texture.prototype.updateTexture = function ()
             element_vid.setAttribute( "class", "dash-video-player" + x3dom.Texture.textNum );
             tex._video = document.createElement( "video" );
             tex._video.setAttribute( "preload", "auto" );
-            tex._video.setAttribute( "muted", "muted" );
+            //tex._video.setAttribute( "muted", "muted" );
+            tex._video.setAttribute( "playsinline", "" );
+            tex._video.crossOrigin = "anonymous";
 
             var scriptToRun = document.createElement( "script" );
             scriptToRun.setAttribute( "type", "text/javascript" );
@@ -427,7 +429,7 @@ x3dom.Texture.prototype.updateTexture = function ()
             {
                 tex._video = document.createElement( "video" );
                 tex._video.setAttribute( "preload", "auto" );
-                tex._video.setAttribute( "muted", "muted" );
+                //tex._video.setAttribute( "muted", "muted" );
                 tex._video.setAttribute( "autoplay", "" );
                 tex._video.setAttribute( "playsinline", "" );
                 tex._video.crossOrigin = "anonymous";

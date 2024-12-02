@@ -183,26 +183,21 @@ x3dom.registerNodeType(
 
             parentRemoved : function ( parent )
             {
-                if ( this._parentNodes.length === 1 && this._parentNodes[ 0 ] == parent )
+                if ( this._parentNodes.length === 0 )
                 {
                     var doc = this.findX3DDoc();
 
                     if ( doc )
                     {
-                        for ( var i = 0, n = doc._nodeBag.lights.length; i < n; i++ )
-                        {
-                            if ( doc._nodeBag.lights[ i ] === this )
-                            {
-                                doc._nodeBag.lights.splice( i, 1 );
-                            }
-                        }
+                        this.cleanNodeBag( doc._nodeBag.lights );  //X3DNode.cleanNodeBag()
                     }
                 }
-            },
-            onRemove : function ()
+                x3dom.nodeTypes.X3DChildNode.prototype.parentRemoved.call( this, parent );
+            }
+            /*onRemove : function ()
             {
                 //console.log("remove");
-            }
+            }*/
         }
     )
 );

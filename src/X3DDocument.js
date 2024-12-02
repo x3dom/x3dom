@@ -58,7 +58,7 @@ x3dom.X3DDocument.prototype.load = function ( uri, sceneElemPos )
         if ( queued_uris.length === 0 )
         {
             // All done
-            doc._setup( uri_docs[ uri ], uri_docs, sceneElemPos );
+            doc._setup( uri_docs[ uri ], uri_docs, sceneElemPos );  //What do the 2nd and 3rd parameters do?
             doc.onload();
             return;
         }
@@ -77,7 +77,7 @@ x3dom.X3DDocument.prototype.load = function ( uri, sceneElemPos )
     next_step();
 };
 
-x3dom.findScene = function ( x3dElem )
+x3dom.X3DDocument.prototype.findScene = function ( x3dElem )
 {
     var sceneElems = [];
 
@@ -93,25 +93,51 @@ x3dom.findScene = function ( x3dElem )
 
     if ( sceneElems.length > 1 )
     {
-        x3dom.debug.logError( "X3D element has more than one Scene child (has " +
-                             x3dElem.childNodes.length + ")." );
+        x3dom.debug.logInfo( "X3D element has more than one Scene child (has " + sceneElems.length + "). Load the 1st." );
+        return sceneElems[ 0 ];
     }
-    else
+    else if ( sceneElems.length === 1 )
     {
         return sceneElems[ 0 ];
     }
-    return null;
+    else
+    {
+        x3dom.debug.logInfo( "X3D element has no Scene child." );
+        var onMutation = function ( records, observer )
+        {
+            for ( var record of records )
+            {
+                if ( record.type === "childList" )
+                {
+                    for ( var addedNode of record.addedNodes )
+                    {
+                        if ( addedNode.tagName == "SCENE" )
+                        {
+                            x3dom.debug.logInfo( "Scene element(s) found in X3D element." );
+                            observer.disconnect();
+                            var scene = this._scene;
+                            scene.parentRemoved( null );
+                            scene.onRemove();
+                        }
+                    }
+                }
+            }
+        };
+        var mutationObserver = new MutationObserver( onMutation.bind( this ) );
+        mutationObserver.observe( x3dElem, { attributes: false, attributeOldValue: false, childList: true, subtree: false } );
+        return document.createElement( "Scene" );
+    }
+    //return null;
 };
 
-x3dom.X3DDocument.prototype._setup = function ( sceneDoc )
+x3dom.X3DDocument.prototype._setup = function ( x3dElem )
 {
     var doc = this;
 
-    // sceneDoc is the X3D element here...
-    var sceneElem = x3dom.findScene( sceneDoc );
+    var sceneElem = this.findScene( x3dElem );
 
     this.X3DMutationObserver.observe( document, { attributes: false, attributeOldValue: false, childList: true, subtree: true } );
-    this.mutationObserver.observe( sceneDoc, { attributes: false, attributeOldValue: false, childList: true, subtree: false } );
+    this.mutationObserver.observe( x3dElem, { attributes: false, attributeOldValue: false, childList: true, subtree: false } );
     this.mutationObserver.observe( sceneElem, { attributes: true, attributeOldValue: true, childList: true, subtree: true } );
 
     // create and add BindableBag that holds all bindable stacks
@@ -300,6 +326,10 @@ x3dom.X3DDocument.prototype.onDoubleClick = function ( ctx, x, y )
 x3dom.X3DDocument.prototype.onKeyDown = function ( keyCode )
 {
     //x3dom.debug.logInfo("pressed key " + keyCode);
+    if ( !this._viewarea )
+    {
+        return;
+    }
     switch ( keyCode )
     {
         case 37: /* left */
@@ -322,6 +352,10 @@ x3dom.X3DDocument.prototype.onKeyUp = function ( keyCode )
 {
     //x3dom.debug.logInfo("released key " + keyCode);
     var stack = null;
+    if ( !this._scene )
+    {
+        return;
+    }
 
     switch ( keyCode )
     {
@@ -391,6 +425,10 @@ x3dom.X3DDocument.prototype.onKeyUp = function ( keyCode )
 x3dom.X3DDocument.prototype.onKeyPress = function ( charCode )
 {
     //x3dom.debug.logInfo("pressed key " + charCode);
+    if ( !this._scene )
+    {
+        return;
+    }
     var nav = this._scene.getNavigationInfo();
     var env = this._scene.getEnvironment();
 
@@ -600,7 +638,8 @@ x3dom.X3DDocument.prototype.decrementDownloads = function ()
     this.downloadCount--;
 };
 
-x3dom.X3DDocument.prototype.cleanNodeBag = function ( bag, node )
+//This function is superseded by X3DNode.cleanNodeBag( bag ). Aug.2022
+/*x3dom.X3DDocument.prototype.cleanNodeBag = function ( bag, node )
 {
     for ( var i = 0, n = bag.length; i < n; i++ )
     {
@@ -610,18 +649,19 @@ x3dom.X3DDocument.prototype.cleanNodeBag = function ( bag, node )
             break;
         }
     }
-};
+};*/
 
 x3dom.X3DDocument.prototype.removeX3DOMBackendGraph = function ( domNode )
 {
     var children = domNode.childNodes;
 
-    for ( var i = 0, n = children.length; i < n; i++ )
+    for ( var child of domNode.children )
     {
-        this.removeX3DOMBackendGraph( children[ i ] );
+        this.removeX3DOMBackendGraph( child );
     }
 
-    if ( domNode._x3domNode )
+    //These codes are moved to the corresponding x3domNode's parentRemoved(). Aug.2022
+    /*if ( domNode._x3domNode )
     {
         var node = domNode._x3domNode;
         var nameSpace = node._nameSpace;
@@ -728,6 +768,10 @@ x3dom.X3DDocument.prototype.removeX3DOMBackendGraph = function ( domNode )
         }
         node._xmlNode = null;
 
+        delete domNode._x3domNode;
+    }*/
+    if ( domNode.getAttribute( "use" ) || domNode.getAttribute( "USE" ) )
+    {
         delete domNode._x3domNode;
     }
 };
@@ -871,9 +915,16 @@ x3dom.X3DDocument.prototype.onNodeRemoved =  function ( removedNode, target )
             exportsMap.delete( AS );
         }
     }
+    else if ( parentNode && parentNode.tagName == "X3D" && "_x3domNode" in domNode && x3dom.isa( domNode._x3domNode, x3dom.nodeTypes.Scene ) )
+    {
+        //Root scene may have no parent, call parentRemoved() directly to clean up.
+        var node = domNode._x3domNode;
+        node.parentRemoved( null );
+        node.onRemove();
+    }
 };
 
-x3dom.X3DDocument.prototype.onX3DNodeRemoved =  function ( removedNode, target )
+x3dom.X3DDocument.prototype.onX3DNodeRemoved = function ( removedNode, target )
 {
     var domNodes = [];
     if ( "querySelector" in removedNode && removedNode.querySelector( "X3D" ) )
@@ -1044,4 +1095,29 @@ x3dom.X3DDocument.prototype.onX3DMutation = function ( records )
             //}
         }
     }
+};
+
+//Called by Scene.parentRemoved() when root scene is removed.
+x3dom.X3DDocument.prototype.onSceneRemoved = function ()
+{
+    //un-setup
+    if ( this._bindableBag )
+    {
+        this._bindableBag.clearRefNode();
+    }
+    this._scene = null;
+    if ( this._viewarea )
+    {
+        var i = this._nodeBag.viewarea.indexOf( this._viewarea );
+        if ( i >= 0 )
+        {
+            this._nodeBag.viewarea.splice( i, 1 );
+        }
+        this._viewarea._doc = null;
+        this._viewarea._scene = null;
+        this._viewarea = null;
+    }
+    //re-setup
+    this._setup( this._x3dElem );
+    this.needRender = true;
 };

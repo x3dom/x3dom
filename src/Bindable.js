@@ -291,6 +291,23 @@ x3dom.BindableBag.prototype.setRefNode = function ( node )
 };
 
 /**
+ * BindableBag Clear Ref Node
+ *
+ */
+x3dom.BindableBag.prototype.clearRefNode = function ()
+{
+    this._stacks.forEach( function ( stack )
+    {
+        // clear reference to Scene
+        if ( stack._defaultRoot )
+        {
+            delete stack._defaultRoot[ stack._getter ];
+        }
+        stack._defaultRoot = null;
+    } );
+};
+
+/**
  * BindableBag Add Bindable
  *
  * @param node
