@@ -100,27 +100,27 @@ async function build()
 
     console.log( "> Minify x3dom.js ..." );
 
-    versions[ "BASIC_MIN" ] = terser.minify( versions[ "BASIC" ], terser_options ).code;
+    versions[ "BASIC_MIN" ] = (await terser.minify( versions[ "BASIC" ], terser_options )).code;
 
     console.log( "> Minify x3dom-module.js ..." );
 
-    versions[ "BASIC_MODULE_MIN" ] = terser.minify( versions[ "BASIC_MODULE" ], terser_options ).code;
+    versions[ "BASIC_MODULE_MIN" ] = (await terser.minify( versions[ "BASIC_MODULE" ], terser_options )).code;
 
     console.log( "> Minify x3dom-full.js ..." );
 
-    versions[ "FULL_MIN" ] = terser.minify( versions[ "FULL" ], terser_options ).code;
+    versions[ "FULL_MIN" ] = (await terser.minify( versions[ "FULL" ], terser_options )).code;
 
     console.log( "> Minify x3dom-full-module.js ..." );
 
-    versions[ "FULL_MODULE_MIN" ] = terser.minify( versions[ "FULL_MODULE" ], terser_options ).code;
+    versions[ "FULL_MODULE_MIN" ] = (await terser.minify( versions[ "FULL_MODULE" ], terser_options )).code;
 
     console.log( "> Minify x3dom-physics.js ..." );
 
-    versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ], terser_options ).code;
+    versions[ "PHYSICS_MIN" ] = (await terser.minify( versions[ "PHYSICS" ], terser_options )).code;
 
     console.log( "> Minify x3dom-physics-module.js ..." );
 
-    versions[ "PHYSICS_MODULE_MIN" ] = terser.minify( versions[ "PHYSICS_MODULE" ], terser_options ).code;
+    versions[ "PHYSICS_MODULE_MIN" ] = (await terser.minify( versions[ "PHYSICS_MODULE" ], terser_options )).code;
 
     console.log( "> Write x3dom.debug.js ..." );
 
