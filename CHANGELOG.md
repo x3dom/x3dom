@@ -13,6 +13,7 @@
     * MSFT_texture_dds
   * field values from metadata for non-standard nodes
 * Improvements
+  * improve IS field name processing in Protos
   * isBound and bindTime output for bindable nodes
   * generate module builds (x3dom-modules.js etc.)
   * allow null value for glTF.scene.nodes
