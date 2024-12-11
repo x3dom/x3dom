@@ -1,0 +1,47 @@
+name: Dispatch Release
+
+on:
+  release:
+    types: [released]
+  push:
+    branches: 
+      - main
+      - master
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+  stable:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+    steps:
+      - name: Get App token
+        id: app_token
+        uses: getsentry/action-github-app-token@v3
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+      - name: Dispatch stable release
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app_token.outputs.token }}
+          repository: x3dom/x3dom-stable
+          event-type: x3dom-released
+          client-payload: '{"repository": "${{ github.repository }}", "ref": "${{ github.ref }}", "tag_name": "${{ github.event.release.tag_name }}"}'
+  dev:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Get App token
+        id: app_token
+        uses: getsentry/action-github-app-token@v3
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+      - name: Dispatch dev release
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app_token.outputs.token }}
+          repository: x3dom/x3dom-dev
+          event-type: x3dom-pushed
+          client-payload: '{"repository": "${{ github.repository }}", "ref": "${{ github.ref }}"}'

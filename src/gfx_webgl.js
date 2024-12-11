@@ -843,7 +843,7 @@ x3dom.gfx_webgl = ( function ()
                         geoNode._mesh._numBinormalComponents,
                         shape._webgl.binormalType, false,
                         shape._binormalStrideOffset[ 0 ], shape._binormalStrideOffset[ 1 ] );
-                    gl.enableVertexAttribArray( sp.tangent );
+                    gl.enableVertexAttribArray( sp.binormal );
 
                     binormals = null;
                 }
