@@ -340,11 +340,12 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
 
                 _normalizeName : function ( name, node )
                 {
-                    if ( name in node._vf )
+                    var stripped = name.replace( /^set_/, "" ).replace( /_changed$/, "" );
+                    if ( stripped in node._vf )
                     {
-                        return name;
+                        return stripped;
                     }
-                    return name.replace( /^set_/, "" ).replace( /_changed$/, "" );
+                    return name;
                 },
 
                 _setupFieldWatchers : function ( field )
