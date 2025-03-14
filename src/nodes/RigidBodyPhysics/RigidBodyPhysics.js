@@ -273,6 +273,7 @@ function X3DJoint ()
         solver = new Ammo.btSequentialImpulseConstraintSolver();
         bulletWorld = new Ammo.btDiscreteDynamicsWorld( dispatcher, overlappingPairCache, solver, collisionConfiguration );
         bulletWorld.setGravity( new Ammo.btVector3( 0, -9.81, 0 ) );
+        bulletWorld.clock = new x3dom.Clock();
     };
 
     //    ###############################################################
@@ -1492,7 +1493,7 @@ function X3DJoint ()
 
     updateRigidbodies = function ()
     {
-        bulletWorld.stepSimulation( 1 / 60, 100 );
+        bulletWorld.stepSimulation( bulletWorld.clock.getDelta(), 100 );
         var r,
             transform = new Ammo.btTransform(),
             origin = new Ammo.btVector3(),
