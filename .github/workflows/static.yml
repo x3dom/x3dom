@@ -41,7 +41,11 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: rm -rf ./lib ./node_modules
-      - run: echo '<head><meta http-equiv="refresh" content="0; url=&quot;./dist/doc/&quot;"/></head>' > index.html
+      # - run: echo '<head><meta http-equiv="refresh" content="0; url=&quot;./dist/doc/&quot;"/></head>' > index.html
+      - name: Generate Directory Listings
+        uses: jayanta525/github-pages-directory-listing@v4.0.0
+        with:
+          FOLDER: '.'      #directory to generate index
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
