@@ -1,3 +1,4 @@
+
 /** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
@@ -112,8 +113,8 @@ x3dom.registerNodeType(
                 {
                     this._mesh._positions[ 0 ] = [];
                     var size = this._vf.size;
-                    var sx = size.x / 2;
-                    var sy = size.y / 2;
+                    var sx = size.x;
+                    var sy = size.y;
 
                     var partx = this._vf.subdivision.x,
                         party = this._vf.subdivision.y;
@@ -147,8 +148,8 @@ x3dom.registerNodeType(
                     this._mesh._normals[ 0 ] = [];
                     this._mesh._texCoords[ 0 ] = [];
 
-                    var sx = this._vf.size.x / 2;
-                    var sy = this._vf.size.y / 2;
+                    var sx = this._vf.size.x;
+                    var sy = this._vf.size.y;
 
                     var partx = this._vf.subdivision.x,
                         party = this._vf.subdivision.y;

@@ -2,7 +2,7 @@
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
- * (C)2020 Andreas Plesch, Waltham, MA
+ * (C)2025 Andreas Plesch, Waltham, MA
  * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
@@ -75,7 +75,7 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
                                 ctx.xmlNode.setAttribute( field.name, field.value );
                             }
                         }
-                        this[ "addField_" + field.dataType ]( ctx, field.name, field.value );
+                        this[ "addField_" + field.dataType ]( ctx, field.name, field.value == null ? undefined : field.value );
                     }
                     else // _cf fields
                     {
