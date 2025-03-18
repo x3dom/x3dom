@@ -1,0 +1,25 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'">
+    <title>Hanim Displacer test</title>
+    <script type="text/javascript" src="../../x3dom-include.js?full"></script>
+</head>
+<body>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="false" width="500px" height="300px">
+        <Scene>
+            <Background skyColor='0 0 0'></Background>
+            <Transform>
+                <Inline id="inline" nameSpaceName="hanim" mapDEFToID="true" url='"Tongue.x3d"' ></Inline>
+            </Transform>
+            <Transform translation='0 1 0'>
+                <Inline id="inline2" nameSpaceName="hanim2" mapDEFToID="true" url='"tongueCurved.x3d"' ></Inline>
+            </Transform>
+            <Transform translation='0 -1 0'>
+                <Inline id="inline2" nameSpaceName="hanim2" mapDEFToID="true" url='"pointOutput_Tongue.x3d"' ></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+</body>
+</html>
