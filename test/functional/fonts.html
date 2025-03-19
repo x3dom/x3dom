@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="utf-8">
+    <title>X3DOM text example</title>
+    <script type="text/javascript" src="../x3dom-include.js"></script>
+    <link rel="stylesheet" type="text/css" href="media/font/orbitron.css">
+    <style>
+      x3d { margin-right:10px; margin-bottom:10px; }
+      .webfont {font-family:'Orbitron';}
+      @font-face {
+        font-family: "Oxygen";
+        src: url("https://fonts.gstatic.com/s/oxygen/v5/qBSyz106i5ud7wkBU-FrPevvDin1pK8aKteLpeZ5c0A.woff2") format(woff2);
+        font-display: swap;
+      }
+    </style>    
+</head>
+<body>
+
+<div class="content">
+    
+    <h1>X3DOM Text Example</h1>
+    
+    <p>The following scenes demonstrate the use of the <tt>text</tt> and <tt>fontstyle</tt> nodes.
+    You can also use web fonts, however on windows there is a glitch. For faster loading, use and <span style='font-weight: bold;' class="webfont">display the font in your document</span> before you use them in X3DOM.</p>
+    
+    <x3d width="392px" height="392px">
+    <scene>
+      <fontlibrary family="myBitter" url='"https://fonts.gstatic.com/s/bitter/v7/HEpP8tJXlWaYHimsnXgfCOvvDin1pK8aKteLpeZ5c0A.woff2" "media/font/Orbitron-Black.ttf"'
+      <viewpoint position='0 0 11'></viewpoint>
+      <background skyColor='0 0 0'></background>
+      <shape>
+        <appearance>
+          <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+        </appearance>
+        <text string='"Font from FontLibrary" "begin; default quality"' solid='false'>
+            <fontstyle family='"myBitter"' style='PLAIN' size="0.8" justify="begin"></fontstyle>
+        </text>
+      </shape>
+      <transform translation='0 0 -2'>
+        <shape>
+            <appearance> 
+                <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
+            </appearance>
+            <box></box>
+        </shape>
+      </transform>
+    </scene>
+    </x3d>
+
+    <x3d width="392px" height="392px">
+    <scene>
+      <viewpoint position='0 0 11'></viewpoint>
+      <background skyColor='0 0 0'></background>
+      <shape>
+        <appearance>
+          <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+        </appearance>
+        <text string='"Google font from CSS" "Oxygen" "middle; quality: 1"' solid='false'>
+            <fontstyle family="Oxygen" style="BOLDITALIC" size="0.8" justify='middle' quality='1'></fontstyle>
+        </text>
+      </shape>
+      <transform translation='0 0 -2'>
+        <shape>
+            <appearance> 
+                <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
+            </appearance>
+            <box></box>
+        </shape>
+      </transform>
+    </scene>
+    </x3d>
+
+    <x3d width="392px" height="392px">
+    <scene>
+      <viewpoint position='0 0 11'></viewpoint>
+      <background skyColor='0 0 0'></background>
+      <shape>
+        <appearance>
+          <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+        </appearance>
+        <text string='"Orbitron Web Font" "preloaded on page" "quality 3;end"' solid='false'>
+            <fontstyle family="'Orbitron'" style="BOLD" size="1" justify='end' quality='3'></fontstyle>
+        </text>
+      </shape>
+      <transform translation='0 0 -2'>
+        <shape>
+            <appearance> 
+                <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
+            </appearance>
+            <box></box>
+        </shape>
+      </transform>
+    </scene>
+    </x3d>
+
+</div> <!-- /content  -->
+</body>
+</html>
