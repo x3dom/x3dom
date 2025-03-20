@@ -46,6 +46,8 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFString( ctx, "url", [] );
+
+            this._hasFontFace = false;
         },
         {
             nodeChanged : function ()
@@ -57,11 +59,15 @@ x3dom.registerNodeType(
 
             fieldChanged : function ( fieldName )
             {
-                if ( !document.fonts.delete( this._fontFace ) )
+                if ( this._hasFontFace )
                 {
-                    x3dom.debug.logWarning( "Could not remove previous font family: " + this_fontFace.family );
+                    if ( !document.fonts.delete( this._fontFace ) )
+                    {
+                        x3dom.debug.logWarning( "Could not remove previous font family: " + this_fontFace.family );
+                    }
+                    this._hasFontFace = false;
+                    this.addFont();
                 }
-                this.addFont();
             },
 
             addFont : function ()
@@ -84,14 +90,13 @@ x3dom.registerNodeType(
                     family,
                     urls, // same as src of @font-face, can have multiple urls
                     { "display": "swap" } );
-                //this._hasFontFace = true;
+                this._hasFontFace = true;
                 try
                 {
                     document.fonts.add( this._fontFace );
                 }
                 catch ( error )
                 {
-                    //this._hasFontFace = true;
                     x3dom.debug.logError( error.message );
                 }
             }
