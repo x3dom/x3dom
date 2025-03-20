@@ -48,9 +48,52 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "url", [] );
         },
         {
+            nodeChanged : function ()
+            {
+                this.addFont();
+                //this.font = new  FontFace ( this._vf.family, urls );
+                //document.fonts.add( this.font );
+            },
+
             fieldChanged : function ( fieldName )
             {
+                if ( !document.fonts.delete( this._fontFace ) )
+                {
+                    x3dom.debug.logWarning( "Could not remove previous font family: " + this_fontFace.family );
+                }
+                this.addFont();
+            },
 
+            addFont : function ()
+            {
+                const family = this._vf.family;
+                if ( family == "" )
+                {
+                    x3dom.debug.logWarning( "FontLibrary family is required but empty for url: " + urls );
+                    return;
+                }
+                
+                const urls = this._vf.url.map( ( url ) => "url(" + url + ")" ).join( "," );
+                if ( urls.length == 0 )
+                {
+                    x3dom.debug.logWarning( "FontLibrary url is required but empty for family: " + family );
+                    return;
+                }
+                
+                this._fontFace = new FontFace(
+                    family,
+                    urls, // same as src of @font-face, can have multiple urls
+                    { "display": "swap" } );
+                //this._hasFontFace = true;
+                try
+                {
+                    document.fonts.add( this._fontFace );
+                }
+                catch ( error )
+                {
+                    //this._hasFontFace = true;
+                    x3dom.debug.logError( error.message );
+                }
             }
         }
     )
