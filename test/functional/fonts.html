@@ -23,8 +23,8 @@
     
     <h1>X3DOM Text Example</h1>
     
-    <p>The following scenes demonstrate the use of the <tt>text</tt> and <tt>fontstyle</tt> nodes.
-    You can also use web fonts, however on windows there is a glitch. For faster loading, use and <span style='font-weight: bold;' class="webfont">display the font in your document</span> before you use them in X3DOM.</p>
+    <p>The following scenes demonstrate the use of the <tt>text</tt>, <tt>fontlibrary</tt> and <tt>fontstyle</tt> nodes.
+    You can also use css fonts. For faster loading, use and <span style='font-weight: bold;' class="webfont">display the font in your document</span> before you use them in X3DOM.</p>
     
     <x3d width="392px" height="392px">
     <scene>
@@ -66,7 +66,7 @@
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
         <text string='"Google font from CSS" "Oxygen" "middle; quality: 1"' solid='false'>
-            <fontstyle family="Oxygen" style="BOLDITALIC" size="0.8" justify='"middle"' quality='1'></fontstyle>
+            <fontstyle family='"Oxygen"' style="BOLDITALIC" size="0.8" justify='"middle"' quality='1'></fontstyle>
         </text>
       </shape>
       <transform translation='0 0 -2'>
@@ -89,7 +89,7 @@
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
         <text string='"Orbitron Web Font" "preloaded on page" "quality 3;end"' solid='false'>
-            <fontstyle family="'Orbitron'" style="BOLD" size="1" justify='"end"' quality='3'></fontstyle>
+            <fontstyle family='"Orbitron"' style="BOLD" size="1" justify='"end"' quality='3'></fontstyle>
         </text>
       </shape>
       <transform translation='0 0 -2'>
