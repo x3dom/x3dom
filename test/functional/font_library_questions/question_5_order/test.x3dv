@@ -1,0 +1,16 @@
+#X3D V4.0 utf8
+PROFILE Full
+
+Shape {
+  Text {
+    string ["Hello World!"]
+    fontStyle FontStyle {
+      family "my custom family name"
+    }
+  }
+}
+
+FontLibrary {
+  url "../DejaVuSans-BoldOblique.ttf"
+  family "my custom family name"
+}

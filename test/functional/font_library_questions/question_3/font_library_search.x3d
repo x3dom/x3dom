@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <head>
+    <meta name='generator' content='x3d-tidy V2.0.26, https://www.npmjs.com/package/x3d-tidy'/>
+    <meta name='modified' content='Fri, 21 Mar 2025 02:43:33 GMT'/>
+  </head>
+  <Scene>
+    <FontLibrary url='"../DejaVuSans-BoldOblique.ttf"' family='DejaVuSans-BoldOblique' />
+    <Transform translation='0 0 0'>
+      <Shape>
+        <Appearance>
+          <Material
+              diffuseColor='1 1 0'/>
+        </Appearance>
+        <Text
+            string='"OK, this is DejaVuSans-BoldOblique"'>
+          <FontStyle
+              family='"DejaVuSans-BoldOblique"'/>
+        </Text>
+      </Shape>
+    </Transform>
+    <Transform translation='0 -2 0'>
+      <Shape>
+        <Appearance>
+          <Material
+              diffuseColor='1 1 0'/>
+        </Appearance>
+        <Text
+            string='"What font is this? Before FontLibrary with DejaVuSansMono was defined!"'>
+          <FontStyle
+              family='"DejaVuSansMono"'/>
+        </Text>
+      </Shape>
+    </Transform>
+
+    <FontLibrary url='"../DejaVuSansMono.ttf"' family='DejaVuSansMono' />
+    
+    <Transform translation='0 -6 0'>
+      <Shape>
+        <Appearance>
+          <Material
+              diffuseColor='1 1 0'/>
+        </Appearance>
+        <Text
+            string='"OK, this is DejaVuSansMono"'>
+          <FontStyle
+              family='"DejaVuSansMono"'/>
+        </Text>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

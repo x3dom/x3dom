@@ -1,0 +1,7 @@
+#X3D V4.0 utf8
+PROFILE Full
+
+FontLibrary {
+  url "DejaVuSans-BoldOblique.ttf"
+  family "my custom family name"
+}

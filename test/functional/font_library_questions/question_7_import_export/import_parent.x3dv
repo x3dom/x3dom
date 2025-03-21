@@ -1,0 +1,14 @@
+#X3D V4.0 utf8
+PROFILE Full
+
+DEF I Inline { url "import_child.x3dv" }
+IMPORT I.MyFontLib AS FontLibFromInline
+
+Shape {
+  Text {
+    string ["Hello World!"]
+    fontStyle FontStyle {
+      family "my custom family name"
+    }
+  }
+}

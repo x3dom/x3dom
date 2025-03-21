@@ -1,0 +1,26 @@
+#X3D V4.0 utf8
+PROFILE Full
+
+DEF FL1 FontLibrary {
+  url "../DejaVuSansMono-Oblique.ttf"
+  family "my custom family name"
+}
+
+DEF FL2 FontLibrary {
+  url "../DejaVuSansMono.ttf"
+  family "my custom family name"
+}
+
+Shape {
+  Text {
+    string ["Hello World!"]
+    fontStyle FontStyle {
+      family "my custom family name"
+    }
+  }
+}
+
+DEF FL3 FontLibrary {
+  url "../DejaVuSans-BoldOblique.ttf"
+  family "my custom family name"
+}

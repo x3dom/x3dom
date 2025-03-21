@@ -1,0 +1,13 @@
+#X3D V4.0 utf8
+PROFILE Full
+
+PROTO MyText [ ] [
+  Shape {
+    Text {
+      string ["Hello World from PROTO in proto.x3dv!"]
+      fontStyle FontStyle {
+        family "my custom family name"
+      }
+    }
+  }
+]
