@@ -537,7 +537,7 @@ x3dom.Texture.prototype.updateTexture = function ()
  * Update Text
  *
  */
-x3dom.Texture.prototype.updateText = function ()
+x3dom.Texture.prototype.updateText = async function ()
 {
     var gl = this.gl;
 
