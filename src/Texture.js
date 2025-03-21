@@ -537,7 +537,7 @@ x3dom.Texture.prototype.updateTexture = function ()
  * Update Text
  *
  */
-x3dom.Texture.prototype.updateText = async function ()
+x3dom.Texture.prototype.updateText = function ()
 {
     var gl = this.gl;
 
@@ -656,153 +656,170 @@ x3dom.Texture.prototype.updateText = async function ()
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
-    var maxWidth = 0,
-        pWidth,
-        pLength,
-        i,
-        j;
-
-    // calculate maxWidth and length scaling; sanitize lengths
-    for ( i = 0; i < paragraph.length; i++ )
+    if ( document.fonts.check( text_ctx.font ) )
     {
-        pWidth = text_ctx.measureText( paragraph[ i ] ).width;
-        if ( pWidth > maxWidth )
+        proceed_with_font();
+    }
+    else
+    {
+        document.fonts.load( text_ctx.font ).then( () =>
         {
-            maxWidth = pWidth;
+            proceed_with_font();
+        },
+        ( err ) => { x3dom.debug.logError( "font loading rejection:" + err ); }
+        );
+    }
+
+    function proceed_with_font ()
+    {
+        var maxWidth = 0,
+            pWidth,
+            pLength,
+            i,
+            j;
+
+        // calculate maxWidth and length scaling; sanitize lengths
+        for ( i = 0; i < paragraph.length; i++ )
+        {
+            pWidth = text_ctx.measureText( paragraph[ i ] ).width;
+            if ( pWidth > maxWidth )
+            {
+                maxWidth = pWidth;
+            }
+
+            pLength = this.node._vf.length[ i ] | 0;
+            if ( maxExtent > 0 && ( pLength > maxExtent || pLength == 0 ) )
+            {
+                pLength = maxExtent;
+            }
+            lengths[ i ] = pLength <= 0 ? pWidth : pLength * x3dToPx;
         }
 
-        pLength = this.node._vf.length[ i ] | 0;
-        if ( maxExtent > 0 && ( pLength > maxExtent || pLength == 0 ) )
+        var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
+        var txtW = maxWidth + canvas_extra; // needed for italic since textMetrics.width ignores that
+        var txtH = textHeight + textHeight * font_spacing * ( paragraph.length - 1 ) + canvas_extra;
+
+        textX = 0;
+        textY = 0;
+
+        var x_offset = 0,
+            y_offset = 0,
+            baseLine = "alphabetic";
+
+        // x_offset and starting X
+        switch ( font_justify )
         {
-            pLength = maxExtent;
+            case "center":
+                x_offset = -txtW / 2;
+                textX = txtW / 2;
+                break;
+            case "left":
+                x_offset = 0;
+                textX = 0;
+                break;
+            case "right":
+                x_offset = -txtW;
+                textX = txtW;
+                break;
         }
-        lengths[ i ] = pLength <= 0 ? pWidth : pLength * x3dToPx;
-    }
 
-    var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
-    var txtW = maxWidth + canvas_extra; // needed for italic since textMetrics.width ignores that
-    var txtH = textHeight + textHeight * font_spacing * ( paragraph.length - 1 ) + canvas_extra;
-
-    textX = 0;
-    textY = 0;
-
-    var x_offset = 0,
-        y_offset = 0,
-        baseLine = "alphabetic";
-
-    // x_offset and starting X
-    switch ( font_justify )
-    {
-        case "center":
-            x_offset = -txtW / 2;
-            textX = txtW / 2;
-            break;
-        case "left":
-            x_offset = 0;
-            textX = 0;
-            break;
-        case "right":
-            x_offset = -txtW;
-            textX = txtW;
-            break;
-    }
-
-    // y_offset, baseline and first Y
-    switch ( minor_alignment )
-    {
-        case "MIDDLE":
-            y_offset = txtH / 2 - canvas_extra / 2;
-            baseLine = "middle";
-            textY = topToBottom ? textHeight / 2 : textHeight / 2;
-            break;
-        case "BEGIN":
-            y_offset = topToBottom ? 0 : txtH - canvas_extra;
-            baseLine = topToBottom ? "top" : "bottom";
-            textY = topToBottom ? 0 : textHeight; // adjust for baseline
-            break;
-        case "FIRST":
-            //special case of BEGIN
-            y_offset = topToBottom ? textHeight : txtH - canvas_extra;
-            baseLine = topToBottom ? "alphabetic" : "bottom";
-            textY = topToBottom ? textHeight : textHeight;
-            break;
-        case "END":
-            y_offset = topToBottom ? txtH - canvas_extra : 0;
-            baseLine = topToBottom ? "bottom" : "top";
-            textY = topToBottom ? textHeight : 0;
-            break;
-    }
-
-    var pxToX3d = 1 / x3dToPx;
-    var w = txtW * pxToX3d;
-    var h = txtH * pxToX3d;
-    var max_texture_size = x3dom.caps.MAX_TEXTURE_SIZE >> 2;
-
-    x_offset *= pxToX3d;
-    y_offset *= pxToX3d;
-
-    text_canvas.width = Math.min(
-        x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
-        max_texture_size );
-    text_canvas.height = Math.min(
-        x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
-        max_texture_size );
-    text_canvas.dir = leftToRight;
-
-    text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
-
-    // transparent background
-    text_ctx.fillStyle = "rgba(0,0,0,0)";
-    text_ctx.fillRect( 0, 0, text_ctx.canvas.width, text_ctx.canvas.height );
-
-    // write white text with black border
-    text_ctx.fillStyle = "white";
-
-    text_ctx.textBaseline = baseLine;
-
-    text_ctx.font = font_style + " " + textHeight + "px " + font_family;
-    text_ctx.textAlign = textAlignment;
-
-    var renderConfig = {
-        font_style   : font_style,
-        font_family  : font_family,
-        font_spacing : font_spacing,
-        paragraph    : paragraph,
-        topToBottom  : topToBottom,
-        leftToRight  : leftToRight,
-        textX        : textX,
-        textY        : textY,
-        textHeight   : textHeight,
-        lengths      : lengths
-    };
-
-    if ( this.texture === null )
-    {
-        this.texture = gl.createTexture();
-    }
-
-    this.renderScaledText( text_ctx, 1, renderConfig ).then( () =>
-    {
-        gl.bindTexture( this.type, this.texture );
-        this.uploadTextMipmap( text_ctx, renderConfig );
-        gl.bindTexture( this.type, null );
-
-        //remove canvas after Texture creation
-        document.body.removeChild( text_canvas );
-
-        this.node._mesh._positions[ 0 ] = [
-            0 + x_offset, -h + y_offset, 0,
-            w + x_offset, -h + y_offset, 0,
-            w + x_offset, 0 + y_offset, 0,
-            0 + x_offset, 0 + y_offset, 0 ];
-
-        this.node.invalidateVolume();
-        this.node._parentNodes.forEach( function ( node )
+        // y_offset, baseline and first Y
+        switch ( minor_alignment )
         {
-            node.setAllDirty();
+            case "MIDDLE":
+                y_offset = txtH / 2 - canvas_extra / 2;
+                baseLine = "middle";
+                textY = topToBottom ? textHeight / 2 : textHeight / 2;
+                break;
+            case "BEGIN":
+                y_offset = topToBottom ? 0 : txtH - canvas_extra;
+                baseLine = topToBottom ? "top" : "bottom";
+                textY = topToBottom ? 0 : textHeight; // adjust for baseline
+                break;
+            case "FIRST":
+                //special case of BEGIN
+                y_offset = topToBottom ? textHeight : txtH - canvas_extra;
+                baseLine = topToBottom ? "alphabetic" : "bottom";
+                textY = topToBottom ? textHeight : textHeight;
+                break;
+            case "END":
+                y_offset = topToBottom ? txtH - canvas_extra : 0;
+                baseLine = topToBottom ? "bottom" : "top";
+                textY = topToBottom ? textHeight : 0;
+                break;
+        }
+
+        var pxToX3d = 1 / x3dToPx;
+        var w = txtW * pxToX3d;
+        var h = txtH * pxToX3d;
+        var max_texture_size = x3dom.caps.MAX_TEXTURE_SIZE >> 2;
+
+        x_offset *= pxToX3d;
+        y_offset *= pxToX3d;
+
+        text_canvas.width = Math.min(
+            x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
+            max_texture_size );
+        text_canvas.height = Math.min(
+            x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
+            max_texture_size );
+        text_canvas.dir = leftToRight;
+
+        text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
+
+        // transparent background
+        text_ctx.fillStyle = "rgba(0,0,0,0)";
+        text_ctx.fillRect( 0, 0, text_ctx.canvas.width, text_ctx.canvas.height );
+
+        // write white text with black border
+        text_ctx.fillStyle = "white";
+
+        text_ctx.textBaseline = baseLine;
+
+        text_ctx.font = font_style + " " + textHeight + "px " + font_family;
+        text_ctx.textAlign = textAlignment;
+
+        var renderConfig = {
+            font_style   : font_style,
+            font_family  : font_family,
+            font_spacing : font_spacing,
+            paragraph    : paragraph,
+            topToBottom  : topToBottom,
+            leftToRight  : leftToRight,
+            textX        : textX,
+            textY        : textY,
+            textHeight   : textHeight,
+            lengths      : lengths
+        };
+
+        if ( this.texture === null )
+        {
+            this.texture = gl.createTexture();
+        }
+
+        this.renderScaledText( text_ctx, 1, renderConfig ).then( () =>
+        {
+            gl.bindTexture( this.type, this.texture );
+            this.uploadTextMipmap( text_ctx, renderConfig );
+            gl.bindTexture( this.type, null );
+
+            //remove canvas after Texture creation
+            document.body.removeChild( text_canvas );
+
+            this.node._mesh._positions[ 0 ] = [
+                0 + x_offset, -h + y_offset, 0,
+                w + x_offset, -h + y_offset, 0,
+                w + x_offset, 0 + y_offset, 0,
+                0 + x_offset, 0 + y_offset, 0 ];
+
+            this.node.invalidateVolume();
+            this.node._parentNodes.forEach( function ( node )
+            {
+                node.setAllDirty();
+            } );
+            this.node.validateGLObject(); // undirty texture right away since async
         } );
-        this.node.validateGLObject(); // undirty texture right away since async
-    } );
+    }
 };
 
 x3dom.Texture.prototype.renderScaledText = function ( ctx2d, pot, txt )

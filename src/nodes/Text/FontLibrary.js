@@ -78,14 +78,14 @@ x3dom.registerNodeType(
                     x3dom.debug.logWarning( "FontLibrary family is required but empty for url: " + urls );
                     return;
                 }
-                
-                const urls = this._vf.url.map( ( url ) => "url(" + this._nameSpace.getURL(url) + ")" ).join( "," );
+
+                const urls = this._vf.url.map( ( url ) => "url(" + this._nameSpace.getURL( url ) + ")" ).join( "," );
                 if ( urls.length == 0 )
                 {
                     x3dom.debug.logWarning( "FontLibrary url is required but empty for family: " + family );
                     return;
                 }
-                
+
                 this._fontFace = new FontFace(
                     family,
                     urls, // same as src of @font-face, can have multiple urls

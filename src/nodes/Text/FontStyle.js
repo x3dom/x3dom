@@ -149,7 +149,7 @@ x3dom.registerNodeType(
                     } );
                 }
             },
-            
+
             getCSSFamily : function ()
             {
                 const font_family = this._vf.family.map( function ( s )
