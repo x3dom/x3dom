@@ -79,7 +79,7 @@ x3dom.registerNodeType(
                     return;
                 }
                 
-                const urls = this._vf.url.map( ( url ) => "url(" + url + ")" ).join( "," );
+                const urls = this._vf.url.map( ( url ) => "url(" + this._nameSpace.getURL(url) + ")" ).join( "," );
                 if ( urls.length == 0 )
                 {
                     x3dom.debug.logWarning( "FontLibrary url is required but empty for family: " + family );

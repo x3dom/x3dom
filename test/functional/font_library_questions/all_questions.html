@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
-    <title>Inline nurbs test</title>
+    <title>Inline fonts test</title>
     <script type="text/javascript" src="../../x3dom-include.js?full"></script>
     <style>
         label {margin: 5px;}
@@ -20,8 +20,9 @@
 <body>
     <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="false" width="640px" height="480px">
         <Scene>
+            <Background skyColor='"0 0 0"'></Background>
             <Transform>
-                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="fonts" url="question_1/inline_parent.x3d" ></Inline>
+                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="fonts" url="question_2/inline_parent.x3d" ></Inline>
             </Transform>
         </Scene>
     </X3D>
@@ -40,10 +41,11 @@
     const inline = document.querySelector('#Inline');
     const ext = '.x3d';
     function handleChange(event) {
+        document.fonts.clear();
         inline.setAttribute('url', event.target.options[event.target.selectedIndex].value + ext);
     }
     function handleLoad(event) {
-        document.querySelector('X3D').runtime.showAll('negZ');
+        setTimeout(()=>{document.querySelector('X3D').runtime.showAll('negZ');}, 3000);
     }
 </script>
 </html>
