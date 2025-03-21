@@ -664,7 +664,7 @@ x3dom.Texture.prototype.updateText = function ()
     {
         document.fonts.load( text_ctx.font ).then( () =>
         {
-            proceed_with_font();
+            proceed_with_font.bind( this )();
         },
         ( err ) => { x3dom.debug.logError( "font loading rejection:" + err ); }
         );
