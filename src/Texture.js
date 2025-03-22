@@ -658,7 +658,7 @@ x3dom.Texture.prototype.updateText = function ()
 
     if ( document.fonts.check( text_ctx.font ) )
     {
-        proceed_with_font();
+        proceed_with_font.bind( this )();
     }
     else
     {
