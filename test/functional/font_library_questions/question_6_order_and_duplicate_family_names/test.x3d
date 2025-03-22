@@ -16,7 +16,7 @@
       <Text
           string='"Hello World!"'>
         <FontStyle
-            family='"my custom name"'/>
+            family='"my custom family"'/>
       </Text>
     </Shape>
     <FontLibrary DEF='FL3' url='"../DejaVuSans-BoldOblique.ttf"' family='my custom family' />
