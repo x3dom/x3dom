@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <head>
+    <meta name='generator' content='x3d-tidy V2.0.26, https://www.npmjs.com/package/x3d-tidy'/>
+    <meta name='modified' content='AP, Sat, 22 Mar 2025 03:00:35 GMT'/>
+  </head>
+  <Scene>
+    <FontLibrary DEF='FL1' url='"../DejaVuSansMono-Oblique.ttf"' family='my custom family' />
+    <FontLibrary DEF='FL2' url='"../DejaVuSansMono.ttf"' family='my custom family' />
+    <Shape>
+      <Appearance>
+        <Material
+            diffuseColor='1 1 0'/>
+      </Appearance>
+      <Text
+          string='"Hello World!"'>
+        <FontStyle
+            family='"my family name"'/>
+      </Text>
+    </Shape>
+    <FontLibrary DEF='FL3' url='"../DejaVuSans-BoldOblique.ttf"' family='my custom family' />
+  </Scene>
+</X3D>

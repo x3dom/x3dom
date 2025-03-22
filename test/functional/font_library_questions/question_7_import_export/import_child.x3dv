@@ -1,8 +1,9 @@
 #X3D V4.0 utf8
 PROFILE Full
 
+DEF MyFontLib Viewpoint{}
 DEF MyFontLib FontLibrary {
   url "../DejaVuSans-BoldOblique.ttf"
-  family "my custom family name"
+  family "my import family name"
 }
 EXPORT MyFontLib

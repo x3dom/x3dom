@@ -16,7 +16,7 @@
           <Text
               string='"Hello World from PROTO in proto.x3d !"'>
             <FontStyle
-                family='"my custom family name"'/>
+                family='"DejaVuSansMono"'/>
           </Text>
         </Shape>
       </ProtoBody>

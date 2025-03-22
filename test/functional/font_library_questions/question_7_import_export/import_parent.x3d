@@ -3,11 +3,22 @@
 <X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
   <head>
     <meta name='generator' content='x3d-tidy V2.0.26, https://www.npmjs.com/package/x3d-tidy'/>
-    <meta name='modified' content='AP, Fri, 21 Mar 2025 21:35:30 GMT'/>
+    <meta name='modified' content='AP, Sat, 22 Mar 2025 03:09:18 GMT'/>
   </head>
   <Scene>
-    <ExternProtoDeclare name='MyText' url='"proto.x3d#MyText"'/>
-    <FontLibrary url='"../DejaVuSansMono.ttf"' family='DejaVuSansMono' />
-    <ProtoInstance name='MyText'/>
+    <Inline DEF='I'
+        url='"import_child.x3d"'/>
+    <Shape>
+      <Appearance>
+        <Material
+            diffuseColor='1 1 0'/>
+      </Appearance>
+      <Text
+          string='"Hello World!"'>
+        <FontStyle
+            family='"my import family"'/>
+      </Text>
+    </Shape>
+    <IMPORT inlineDEF='I' importedDEF='MyFontLib' AS='FontLibFromInline'/>
   </Scene>
 </X3D>

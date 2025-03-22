@@ -5,10 +5,11 @@ DEF I Inline { url "import_child.x3dv" }
 IMPORT I.MyFontLib AS FontLibFromInline
 
 Shape {
-  Text {
+  appearance Appearance { material Material { diffuseColor 1 1 0 } }
+    geometry Text {
     string ["Hello World!"]
     fontStyle FontStyle {
-      family "my custom family name"
+      family "my import family name"
     }
   }
 }
