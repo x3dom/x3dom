@@ -6,7 +6,7 @@
     <meta name='modified' content='Fri, 21 Mar 2025 21:35:30 GMT'/>
   </head>
   <Scene>
-    <ExternProtoDeclare name='MyText' url='"proto.x3dv#MyText"'/>
+    <ExternProtoDeclare name='MyText' url='"proto.x3d#MyText"'/>
     <FontLibrary url='"../DejaVuSansMono.ttf"' family='DejaVuSansMono' />
     <ProtoInstance name='MyText'/>
   </Scene>

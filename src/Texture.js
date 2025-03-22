@@ -669,6 +669,11 @@ x3dom.Texture.prototype.updateText = function ()
         ( err ) => { x3dom.debug.logError( "font loading rejection:" + err ); }
         );
     }
+    
+    if ( this.texture === null )
+    {
+        this.texture = gl.createTexture();
+    }
 
     function proceed_with_font ()
     {
