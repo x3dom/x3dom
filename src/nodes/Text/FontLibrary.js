@@ -84,7 +84,7 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if ( x3dom.nodeTypes.FontLibray.reservedFamilies.includes( family.toUpperCase() )
+                if ( x3dom.nodeTypes.FontLibray.reservedFamilies.includes( family.toUpperCase() ))
                 {
                     x3dom.debug.logError( "FontLibrary cannot use this reserved family name: " + family );
                     return;
