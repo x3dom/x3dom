@@ -207,3 +207,4 @@ x3dom.nodeTypes.FontStyle.defaultNode = function ()
     }
     return x3dom.nodeTypes.FontStyle._defaultNode;
 };
+ 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <head>
+    <meta name='created' content='AP, Sat, 22 Mar 2025 10:56:32 GMT'/>
+  </head>
+  <Scene>
+    <Shape>
+      <Appearance>
+        <Material
+            diffuseColor='1 1 0'/>
+      </Appearance>
+      <Text
+          string='"TYPEWRITER or BoldOblique?"'>
+        <FontStyle
+            family='"TYPEWRITER"'/>
+      </Text>
+    </Shape>
+    <FontLibrary url='"../DejaVuSans-BoldOblique.ttf"' family='TYPEWRITER' />
+  </Scene>
+</X3D>

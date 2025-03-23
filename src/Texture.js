@@ -656,26 +656,27 @@ x3dom.Texture.prototype.updateText = function ()
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
+    // create empty texture early
+    if ( this.texture === null )
+    {
+        this.texture = gl.createTexture();
+    }
+    
     if ( document.fonts.check( text_ctx.font ) )
     {
-        proceed_with_font.bind( this )();
+        _proceed_with_font.bind( this )();
     }
     else
     {
         document.fonts.load( text_ctx.font ).then( () =>
         {
-            proceed_with_font.bind( this )();
+            _proceed_with_font.bind( this )();
         },
         ( err ) => { x3dom.debug.logError( "font loading rejection:" + err ); }
         );
     }
 
-    if ( this.texture === null )
-    {
-        this.texture = gl.createTexture();
-    }
-
-    function proceed_with_font ()
+    function _proceed_with_font ()
     {
         var maxWidth = 0,
             pWidth,

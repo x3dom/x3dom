@@ -53,8 +53,6 @@ x3dom.registerNodeType(
             nodeChanged : function ()
             {
                 this.addFont();
-                //this.font = new  FontFace ( this._vf.family, urls );
-                //document.fonts.add( this.font );
             },
 
             fieldChanged : function ( fieldName )
@@ -75,14 +73,20 @@ x3dom.registerNodeType(
                 const family = this._vf.family;
                 if ( family == "" )
                 {
-                    x3dom.debug.logWarning( "FontLibrary family is required but empty for url: " + urls );
+                    x3dom.debug.logError( "FontLibrary family is required but empty for url: " + urls );
                     return;
                 }
 
                 const urls = this._vf.url.map( ( url ) => "url(" + this._nameSpace.getURL( url ) + ")" ).join( "," );
                 if ( urls.length == 0 )
                 {
-                    x3dom.debug.logWarning( "FontLibrary url is required but empty for family: " + family );
+                    x3dom.debug.logError( "FontLibrary url is required but empty for family: " + family );
+                    return;
+                }
+
+                if ( x3dom.nodeTypes.FontLibray.reservedFamilies.includes( family.toUpperCase() )
+                {
+                    x3dom.debug.logError( "FontLibrary cannot use this reserved family name: " + family );
                     return;
                 }
 
@@ -103,3 +107,5 @@ x3dom.registerNodeType(
         }
     )
 );
+
+x3dom.nodeTypes.FontLibray.reservedFamilies = ['SERIF', 'SANS', 'TYPEWRITER'];
