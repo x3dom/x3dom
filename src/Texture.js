@@ -661,7 +661,7 @@ x3dom.Texture.prototype.updateText = function ()
     {
         this.texture = gl.createTexture();
     }
-    
+
     if ( document.fonts.check( text_ctx.font ) )
     {
         _proceed_with_font.bind( this )();

@@ -14,7 +14,7 @@ x3dom.registerNodeType(
     defineClass( x3dom.nodeTypes.X3DNode,
 
         /**
-         * Constructor for FontStyle
+         * Constructor for FontLibrary
          * @constructs x3dom.nodeTypes.FontLibrary
          * @x3d 4.1
          * @component Text
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if ( x3dom.nodeTypes.FontLibray.reservedFamilies.includes( family.toUpperCase() ))
+                if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( family.toUpperCase() ) )
                 {
                     x3dom.debug.logError( "FontLibrary cannot use this reserved family name: " + family );
                     return;
@@ -108,4 +108,4 @@ x3dom.registerNodeType(
     )
 );
 
-x3dom.nodeTypes.FontLibray.reservedFamilies = ['SERIF', 'SANS', 'TYPEWRITER'];
+x3dom.nodeTypes.FontLibrary.reservedFamilies = [ "SERIF", "SANS", "TYPEWRITER" ];
