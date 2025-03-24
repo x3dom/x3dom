@@ -646,6 +646,7 @@ x3dom.Texture.prototype.updateText = function ()
         x3dToPx = 32,
         textAlignment = font_justify;
     var text_canvas = document.createElement( "canvas" );
+    text_canvas.style = "display: none";
     text_canvas.dir = leftToRight;
     var textHeight = font_size * x3dToPx; // pixel size relative to local coordinate system
 
@@ -668,11 +669,32 @@ x3dom.Texture.prototype.updateText = function ()
     }
     else
     {
-        document.fonts.load( text_ctx.font ).then( () =>
+        //try to load each family individually for custom fallbacks to load fully in time
+        const families = fontStyleNode._vf.family;
+        const font_loaders = families.map( ( f ) =>
         {
+            var cssFont = font_style + " " + textHeight + "px " + f;
+            return document.fonts.load( cssFont );
+        } );
+        Promise.allSettled( font_loaders ).then( ( results ) =>
+        //document.fonts.load( text_ctx.font ).then( () =>
+        {
+            results.forEach( ( result, i ) =>
+            {
+                const ith_f = families[ i ];
+                if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( ith_f ) == false &&
+                    document.fonts.values().toArray().map( ( ff ) => ff.family ).includes( ith_f ) == false )
+                {
+                    x3dom.debug.logWarning( "font family " + ith_f + " not a defined scene font." );
+                }
+                if ( result.status == "rejected" )
+                {
+                    x3dom.debug.logWarning( "font family " + ith_f + " rejected: " + result.reason.message );
+                }
+            } );
             _proceed_with_font.bind( this )();
-        },
-        ( err ) => { x3dom.debug.logError( "font loading rejection:" + err ); }
+        }
+        //,( err ) => { x3dom.debug.logError( "never here: font loading rejection:" + err ); _proceed_with_font.bind( this )(); }
         );
     }
 
@@ -798,12 +820,12 @@ x3dom.Texture.prototype.updateText = function ()
             lengths      : lengths
         };
 
-        if ( this.texture === null )
-        {
-            this.texture = gl.createTexture();
-        }
+        // if ( this.texture === null )
+        // {
+        //     this.texture = gl.createTexture();
+        // }
 
-        this.renderScaledText( text_ctx, 1, renderConfig ).then( () =>
+        this.renderScaledText( text_ctx, 1, renderConfig );//.finally( () => //do even if load failed
         {
             gl.bindTexture( this.type, this.texture );
             this.uploadTextMipmap( text_ctx, renderConfig );
@@ -824,27 +846,34 @@ x3dom.Texture.prototype.updateText = function ()
                 node.setAllDirty();
             } );
             this.node.validateGLObject(); // undirty texture right away since async
-        } );
+        }
+        //);
     }
 };
 
 x3dom.Texture.prototype.renderScaledText = function ( ctx2d, pot, txt )
 {
     var font_spec = txt.font_style + " " + txt.textHeight / pot + "px " + txt.font_family;
-    if ( document.fonts.check( font_spec ) )
-    {
-        render();
-        return Promise.resolve( true );
-    }
+    // drawText();
+    // return// Promise.resolve( true );
+    // if ( document.fonts.check( font_spec ) )
+    // {
+    //     render();
+    //     return Promise.resolve( true );
+    // }
 
-    return document.fonts.load( font_spec ).then( () =>
-    {
-        render();
-    },
-    ( err ) => { x3dom.debug.logError( "font loading rejection:" + err ); }
-    );
+    // return document.fonts.load( font_spec ).then( () =>
+    // {
+    //     render();
+    // },
+    // ( err ) =>
+    //     {
+    //         x3dom.debug.logError( "font loading rejection:" + err );
+    //         render();
+    //     }
+    // );
 
-    function render ()
+    // function drawText ()
     {
         ctx2d.font = font_spec;
         var textYpos = txt.textY;
@@ -876,9 +905,9 @@ x3dom.Texture.prototype.uploadTextMipmap = function ( ctx2d, txt )
         if ( w2 == 1 && h2 == 1 ) {break;}
         w2 = Math.max( 1, w2 >> 1 );
         h2 = Math.max( 1, h2 >> 1 );
-        ctx2d.clearRect( 0, 0, w, h );
         pot *= 2;
+        ctx2d.clearRect( 0, 0, w, h );
         this.renderScaledText( ctx2d, pot, txt );
     }
-//    this.gl.generateMipmap( this.type );
+    //this.gl.generateMipmap( this.type );
 };
