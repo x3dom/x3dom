@@ -683,7 +683,7 @@ x3dom.Texture.prototype.updateText = function ()
             {
                 const f_i = families[ i ];
                 if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( f_i ) == false &&
-                    document.fonts.values().toArray().map( ( ff ) => ff.family ).includes( f_i ) == false )
+                    Array.from(document.fonts.values()).map( ( ff ) => ff.family ).includes( f_i ) == false )
                 {
                     x3dom.debug.logWarning( "font family " + f_i + " not a defined scene font." );
                 }
