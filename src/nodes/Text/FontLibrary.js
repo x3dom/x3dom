@@ -101,7 +101,7 @@ x3dom.registerNodeType(
                 }
                 catch ( error )
                 {
-                    x3dom.debug.logError( error.message );
+                    x3dom.debug.logError( "when adding font " + this._vf.family + " " + error.message );
                 }
             }
         }

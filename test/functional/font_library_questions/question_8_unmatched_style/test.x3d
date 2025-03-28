@@ -13,7 +13,7 @@
             diffuseColor='1 1 0'/>
       </Appearance>
       <Text
-          string='"Hello World!"'>
+          string='"Hello World boldoblique"'>
         <FontStyle
             family='"my boldoblique custom family"'/>
       </Text>
@@ -24,7 +24,7 @@
             diffuseColor='1 1 0'/>
       </Appearance>
       <Text
-          string='"" "Hello World 2!"'>
+          string='"" "Hello World2, bold or boldoblique?"'>
         <FontStyle
             family='"my boldoblique custom family"'
             style='BOLD'/>
