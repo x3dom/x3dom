@@ -669,7 +669,7 @@ x3dom.Texture.prototype.updateText = function ()
     }
     else
     {
-        //try to load each family individually for custom fallbacks to load fully in time
+        //need to load each family individually for custom fallbacks to load fully in time
         const families = fontStyleNode._vf.family;
         const font_loaders = families.map( ( f ) =>
         {
@@ -681,15 +681,15 @@ x3dom.Texture.prototype.updateText = function ()
         {
             results.forEach( ( result, i ) =>
             {
-                const ith_f = families[ i ];
-                if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( ith_f ) == false &&
-                    document.fonts.values().toArray().map( ( ff ) => ff.family ).includes( ith_f ) == false )
+                const f_i = families[ i ];
+                if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( f_i ) == false &&
+                    document.fonts.values().toArray().map( ( ff ) => ff.family ).includes( f_i ) == false )
                 {
-                    x3dom.debug.logWarning( "font family " + ith_f + " not a defined scene font." );
+                    x3dom.debug.logWarning( "font family " + f_i + " not a defined scene font." );
                 }
                 if ( result.status == "rejected" )
                 {
-                    x3dom.debug.logWarning( "font family " + ith_f + " rejected: " + result.reason.message );
+                    x3dom.debug.logWarning( "font family " + f_i + " rejected: " + result.reason.message );
                 }
             } );
             _proceed_with_font.bind( this )();
@@ -820,73 +820,45 @@ x3dom.Texture.prototype.updateText = function ()
             lengths      : lengths
         };
 
-        // if ( this.texture === null )
-        // {
-        //     this.texture = gl.createTexture();
-        // }
-
         this.renderScaledText( text_ctx, 1, renderConfig );//.finally( () => //do even if load failed
+
+        gl.bindTexture( this.type, this.texture );
+        this.uploadTextMipmap( text_ctx, renderConfig );
+        gl.bindTexture( this.type, null );
+
+        //remove canvas after Texture creation
+        document.body.removeChild( text_canvas );
+
+        this.node._mesh._positions[ 0 ] = [
+            0 + x_offset, -h + y_offset, 0,
+            w + x_offset, -h + y_offset, 0,
+            w + x_offset, 0 + y_offset, 0,
+            0 + x_offset, 0 + y_offset, 0 ];
+
+        this.node.invalidateVolume();
+        this.node._parentNodes.forEach( function ( node )
         {
-            gl.bindTexture( this.type, this.texture );
-            this.uploadTextMipmap( text_ctx, renderConfig );
-            gl.bindTexture( this.type, null );
-
-            //remove canvas after Texture creation
-            document.body.removeChild( text_canvas );
-
-            this.node._mesh._positions[ 0 ] = [
-                0 + x_offset, -h + y_offset, 0,
-                w + x_offset, -h + y_offset, 0,
-                w + x_offset, 0 + y_offset, 0,
-                0 + x_offset, 0 + y_offset, 0 ];
-
-            this.node.invalidateVolume();
-            this.node._parentNodes.forEach( function ( node )
-            {
-                node.setAllDirty();
-            } );
-            this.node.validateGLObject(); // undirty texture right away since async
-        }
-        //);
+            node.setAllDirty();
+        } );
+        this.node.validateGLObject(); // undirty texture right away since async
     }
 };
 
 x3dom.Texture.prototype.renderScaledText = function ( ctx2d, pot, txt )
 {
     var font_spec = txt.font_style + " " + txt.textHeight / pot + "px " + txt.font_family;
-    // drawText();
-    // return// Promise.resolve( true );
-    // if ( document.fonts.check( font_spec ) )
-    // {
-    //     render();
-    //     return Promise.resolve( true );
-    // }
 
-    // return document.fonts.load( font_spec ).then( () =>
-    // {
-    //     render();
-    // },
-    // ( err ) =>
-    //     {
-    //         x3dom.debug.logError( "font loading rejection:" + err );
-    //         render();
-    //     }
-    // );
+    ctx2d.font = font_spec;
+    var textYpos = txt.textY;
 
-    // function drawText ()
+    // create the multiline text always top down
+    for ( var i = 0; i < txt.paragraph.length; i++ )
     {
-        ctx2d.font = font_spec;
-        var textYpos = txt.textY;
-
-        // create the multiline text always top down
-        for ( var i = 0; i < txt.paragraph.length; i++ )
-        {
-            var j = txt.topToBottom ? i : txt.paragraph.length - 1 - i;
-            var paragraphj = txt.paragraph[ j ];
-            if ( txt.leftToRight == "rtl" ) {paragraphj = "\u202e" + paragraphj;} //force rtl unicode mark
-            ctx2d.fillText( paragraphj, txt.textX / pot, textYpos / pot, txt.lengths[ j ] / pot );
-            textYpos += txt.textHeight * txt.font_spacing;
-        }
+        var j = txt.topToBottom ? i : txt.paragraph.length - 1 - i;
+        var paragraphj = txt.paragraph[ j ];
+        if ( txt.leftToRight == "rtl" ) {paragraphj = "\u202e" + paragraphj;} //force rtl unicode mark
+        ctx2d.fillText( paragraphj, txt.textX / pot, textYpos / pot, txt.lengths[ j ] / pot );
+        textYpos += txt.textHeight * txt.font_spacing;
     }
 };
 
