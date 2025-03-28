@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Interchange' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <head>
+    <component name='Text' level='1'/>
+    <meta name='created' content='Sun, 02 Mar 2025 09:01:59 GMT'/>
+    <meta name='creator' content='Holger Seelig'/>
+    <meta name='modified' content='Fri, 28 Mar 2025 04:38:41 GMT'/>
+    <meta name='generator' content='Sunrize X3D Editor V1.7.61, https://create3000.github.io/sunrize/'/>
+    <meta name='generator' content='X_ITE V11.4.1, https://create3000.github.io/x_ite/'/>
+  </head>
+  <Scene>
+    <Background skyColor='"0 0 0"'/>
+    <Viewpoint
+        description='Initial View'/>
+    <Transform DEF='HeadLine_1'
+        translation='-6.5 1 0'>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Text
+            string='"X3D FontLibrary Node"'>
+          <FontStyle
+              family='"PT Sans Bold", "PT Sans", "SANS"'
+              style='BOLD'
+              size='0.4'/>
+        </Text>
+      </Shape>
+    </Transform>
+    <Transform DEF='Text1'
+        translation='-6.5 0 0'>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Text
+            string='"X3D Text (PT Sans Regular)"'>
+          <FontStyle
+              family='"PT Sans Regular", "PT Sans", "SANS"'
+              style='REGULAR'/>
+        </Text>
+      </Shape>
+    </Transform>
+    <Transform DEF='Text2_1'
+        translation='-6.5 -1 0'>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Text
+            string='"X3D Text (PT Sans Bold)"'>
+          <FontStyle
+              family='"PT Sans Bold", "PT Sans", "SANS"'
+              style='BOLD'/>
+        </Text>
+      </Shape>
+    </Transform>
+    <Transform DEF='Text3'
+        translation='-6.5 -2 0'>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Text
+            string='"X3D Text (PT Sans Italic)"'>
+          <FontStyle
+              family='"PT Sans Italic", "PT Sans", "SANS"'
+              style='ITALIC'/>
+        </Text>
+      </Shape>
+    </Transform>
+    <Transform DEF='Text4'
+        translation='-6.5 -3 0'>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Text
+            string='"X3D Text (PT Sans Bold Italic)"'>
+          <FontStyle
+              family='"PT Sans", "SANS"'
+              style='BOLDITALIC'/>
+        </Text>
+      </Shape>
+    </Transform>
+    <NULL/>
+    <NULL/>
+    <NULL/>
+    <NULL/>
+  </Scene>
+</X3D>

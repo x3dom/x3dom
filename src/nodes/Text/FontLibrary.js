@@ -4,10 +4,11 @@
  * http://www.x3dom.org
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * (c)2025 Andreas Plesch, Waltham, MA, U.S.A.
  * Dual licensed under the MIT and GPL
  */
 
-/* ### FontStyle ### */
+/* ### FontLibrary ### */
 x3dom.registerNodeType(
     "FontLibrary",
     "Text",
