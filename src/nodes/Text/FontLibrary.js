@@ -99,6 +99,14 @@ x3dom.registerNodeType(
                 try
                 {
                     document.fonts.add( this._fontFace );
+                    //check unresolved lateFontStyles
+                    const lateFontStyle = this._nameSpace.parent.lateFontStyles.get( family );
+                    if ( lateFontStyle )
+                    {
+                        this._nameSpace.parent.lateFontStyles.delete( family );
+                        lateFontStyle.fieldChanged( "family" );
+                        this._nameSpace.parent.doc.needRender = true;
+                    }
                 }
                 catch ( error )
                 {

@@ -663,7 +663,9 @@ x3dom.Texture.prototype.updateText = function ()
         this.texture = gl.createTexture();
     }
 
-    if ( document.fonts.check( text_ctx.font ) )
+    const doc_fonts = Array.from( document.fonts.values() );
+    const font_index = doc_fonts.findIndex( ( ff ) => ff.family == font_family );
+    if ( font_index > -1 && doc_fonts[ font_index ].status == "loaded"  ) //document.fonts.check( text_ctx.font ) )
     {
         _proceed_with_font.bind( this )();
     }
@@ -676,6 +678,7 @@ x3dom.Texture.prototype.updateText = function ()
             var cssFont = font_style + " " + textHeight + "px " + f;
             return document.fonts.load( cssFont );
         } );
+        var that = this;
         Promise.allSettled( font_loaders ).then( ( results ) =>
         //document.fonts.load( text_ctx.font ).then( () =>
         {
@@ -685,14 +688,15 @@ x3dom.Texture.prototype.updateText = function ()
                 if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( f_i ) == false &&
                     Array.from( document.fonts.values() ).map( ( ff ) => ff.family ).includes( f_i ) == false )
                 {
+                    that.node._nameSpace.lateFontStyles.set( f_i, that.node._cf.fontStyle.node );
                     x3dom.debug.logWarning( "font family " + f_i + " not a defined scene font." );
                 }
                 if ( result.status == "rejected" )
                 {
                     x3dom.debug.logWarning( "font family " + f_i + " rejected: " + result.reason.message );
                 }
-            } );
-            _proceed_with_font.bind( this )();
+            }, that );
+            _proceed_with_font.bind( that )();
         }
         //,( err ) => { x3dom.debug.logError( "never here: font loading rejection:" + err ); _proceed_with_font.bind( this )(); }
         );
