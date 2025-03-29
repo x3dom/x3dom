@@ -100,12 +100,18 @@ x3dom.registerNodeType(
                 {
                     document.fonts.add( this._fontFace );
                     //check unresolved lateFontStyles
-                    const lateFontStyle = this._nameSpace.parent.lateFontStyles.get( family );
-                    if ( lateFontStyle )
+                    let _ns = this._nameSpace,
+                        lateFontStyle;
+                    while ( _ns.parent )
                     {
-                        this._nameSpace.parent.lateFontStyles.delete( family );
-                        lateFontStyle.fieldChanged( "family" );
-                        this._nameSpace.parent.doc.needRender = true;
+                        lateFontStyle = _ns.parent.lateFontStyles.get( family );
+                        if ( lateFontStyle )
+                        {
+                            _ns.parent.lateFontStyles.delete( family );
+                            lateFontStyle.fieldChanged( "family" );
+                            _ns.parent.doc.needRender = true;
+                        }
+                        _ns = _ns.parent;
                     }
                 }
                 catch ( error )
