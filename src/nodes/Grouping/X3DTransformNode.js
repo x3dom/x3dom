@@ -158,35 +158,22 @@ x3dom.registerNodeType(
 
             parentRemoved : function ( parent )
             {
-                var i,
-                    n;
-
                 //This check prevented removal of Transform nodes in removed Inlines.
                 //Should not be necessary and may have been an attempt to speed up removal.
                 //Make permanent if no issues.
 
-                //if (this._parentNodes.length == 0) {
-                var doc = this.findX3DDoc();
-
-                if ( doc )
+                //I re-enabled this check because an x3domNode can be referenced by multiple USE elements,
+                //and it shouldn't be cleaned up until this x3domNode is no longer referenced(this._parentNodes.length === 0).
+                //    ———— microaaron(https://github.com/microaaron), Aug.2022
+                if ( this._parentNodes.length === 0 )
                 {
-                    for ( i = 0, n = doc._nodeBag.trans.length; i < n; i++ )
+                    var doc = this.findX3DDoc();
+                    if ( doc )
                     {
-                        if ( doc._nodeBag.trans[ i ] === this )
-                        {
-                            doc._nodeBag.trans.splice( i, 1 );
-                        }
+                        this.cleanNodeBag( doc._nodeBag.trans );  //X3DNode.cleanNodeBag()
                     }
                 }
-                //}
-
-                for ( i = 0, n = this._childNodes.length; i < n; i++ )
-                {
-                    if ( this._childNodes[ i ] )
-                    {
-                        this._childNodes[ i ].parentRemoved( this );
-                    }
-                }
+                x3dom.nodeTypes.X3DGroupingNode.prototype.parentRemoved.call( this, parent );
             }
         }
     )
