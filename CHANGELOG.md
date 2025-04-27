@@ -77,6 +77,7 @@
   * allow picking of Points which have pointProperties
   * remove duplicate codes for x3dom-full-physics.js/x3dom-physics.debug.js
   * verify doc is available (not null), before manipulations
+  * introduce Clock from three.js for step simulation of  bullet world
 * Features
   * add basic webXR support
   * baseURL parameter
