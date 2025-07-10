@@ -9,11 +9,11 @@ behavior declaratively, without any low-level JavaScript or GLSL coding.
 
 Please have a look at the official documentation in order to get started:
 
-https://doc.x3dom.org (or https://x3dom.netlify.com/doc/index.html for doc. development)
+https://doc.x3dom.org (or https://x3dom.github.io/x3dom-dev/dist/doc/ for doc. development)
 
 https://doc.x3dom.org/tutorials/basics/hello/index.html describes a minimal starter scene.
 
-https://www.x3dom.org/download (or https://x3dom.netlify.com/ for latest development) serves various versions of the x3dom framework. 
+https://www.x3dom.org/download (or https://github.com/x3dom/x3dom-dev for latest development, see [CHANGELOG](https://github.com/x3dom/x3dom/blob/master/CHANGELOG.md)) serves various versions of the x3dom framework. 
 
 ## Need Help?
 
