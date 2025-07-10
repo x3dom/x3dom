@@ -1,0 +1,1 @@
+The folder has examples from https://github.com/create3000/x_ite and https://github.com/michaliskambi/x3d-tests/tree/master/font_library_questions.

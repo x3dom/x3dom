@@ -27,6 +27,7 @@ x3dom.NodeNameSpace = function ( name, document )
     this.childSpaces = [];
     this.protos = []; // the ProtoDeclarationArray
     this.lateRoutes = [];
+    this.lateFontStyles = new Map();
     this.imports = new Map(); //{inlineDEF => {AS => importedDEF}}
     this.exports = new Map(); //{AS => localDEF}
     this.superInlineNode = null;
