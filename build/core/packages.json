@@ -213,6 +213,7 @@
         ],
         "src/nodes/Text/":
         [
+            "FontLibrary.js",
             "X3DFontStyleNode.js",
             "FontStyle.js",
             "Text.js"
