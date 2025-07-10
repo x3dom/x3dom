@@ -566,50 +566,9 @@ x3dom.Texture.prototype.updateText = function ()
 
     if ( fontStyleNode !== null )
     {
-        var fonts = fontStyleNode._vf.family.toString();
-
-        // clean attribute values and split in array
-        fonts = fonts.trim().replace( /\'/g, "" ).replace( /\,/, " " );
-        fonts = fonts.split( " " );
-
-        font_family = fonts.map( function ( s )
-        {
-            if ( s == "SANS" )
-            {
-                return "Verdana, sans-serif";
-            }
-            else if ( s == "SERIF" )
-            {
-                return "Georgia, serif";
-            }
-            else if ( s == "TYPEWRITER" )
-            {
-                return "monospace";
-            }
-            else
-            {
-                return "" + s + "";
-            }  // 'Verdana'
-        } ).join( "," );
-
-        font_style = fontStyleNode._vf.style.toString().replace( /\'/g, "" );
-        switch ( font_style.toUpperCase() )
-        {
-            case "PLAIN":
-                font_style = "normal";
-                break;
-            case "BOLD":
-                font_style = "bold";
-                break;
-            case "ITALIC":
-                font_style = "italic";
-                break;
-            case "BOLDITALIC":
-                font_style = "italic bold";
-                break;
-            default:
-                font_style = "normal";
-        }
+        font_family = fontStyleNode.getCSSFamily();
+        const { "style": _style, "weight": _weight } = fontStyleNode.getCSSStyleWeight();
+        font_style = _style + " " + _weight;
 
         var leftToRight = fontStyleNode._vf.leftToRight ? "ltr" : "rtl";
         var topToBottom = fontStyleNode._vf.topToBottom;
@@ -687,166 +646,213 @@ x3dom.Texture.prototype.updateText = function ()
         x3dToPx = 32,
         textAlignment = font_justify;
     var text_canvas = document.createElement( "canvas" );
+    text_canvas.style = "display: none";
     text_canvas.dir = leftToRight;
     var textHeight = font_size * x3dToPx; // pixel size relative to local coordinate system
 
     // needed to make webfonts work
     document.body.appendChild( text_canvas );
 
-    var text_ctx = text_canvas.getContext( "2d" );
+    var text_ctx = text_canvas.getContext( "2d", { willReadFrequently: true } );
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
-    var maxWidth = 0,
-        pWidth,
-        pLength,
-        i,
-        j;
-
-    // calculate maxWidth and length scaling; sanitize lengths
-    for ( i = 0; i < paragraph.length; i++ )
-    {
-        pWidth = text_ctx.measureText( paragraph[ i ] ).width;
-        if ( pWidth > maxWidth )
-        {
-            maxWidth = pWidth;
-        }
-
-        pLength = this.node._vf.length[ i ] | 0;
-        if ( maxExtent > 0 && ( pLength > maxExtent || pLength == 0 ) )
-        {
-            pLength = maxExtent;
-        }
-        lengths[ i ] = pLength <= 0 ? pWidth : pLength * x3dToPx;
-    }
-
-    var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
-    var txtW = maxWidth + canvas_extra; // needed for italic since textMetrics.width ignores that
-    var txtH = textHeight + textHeight * font_spacing * ( paragraph.length - 1 ) + canvas_extra;
-
-    textX = 0;
-    textY = 0;
-
-    var x_offset = 0,
-        y_offset = 0,
-        baseLine = "alphabetic";
-
-    // x_offset and starting X
-    switch ( font_justify )
-    {
-        case "center":
-            x_offset = -txtW / 2;
-            textX = txtW / 2;
-            break;
-        case "left":
-            x_offset = 0;
-            textX = 0;
-            break;
-        case "right":
-            x_offset = -txtW;
-            textX = txtW;
-            break;
-    }
-
-    // y_offset, baseline and first Y
-    switch ( minor_alignment )
-    {
-        case "MIDDLE":
-            y_offset = txtH / 2 - canvas_extra / 2;
-            baseLine = "middle";
-            textY = topToBottom ? textHeight / 2 : textHeight / 2;
-            break;
-        case "BEGIN":
-            y_offset = topToBottom ? 0 : txtH - canvas_extra;
-            baseLine = topToBottom ? "top" : "bottom";
-            textY = topToBottom ? 0 : textHeight; // adjust for baseline
-            break;
-        case "FIRST":
-            //special case of BEGIN
-            y_offset = topToBottom ? textHeight : txtH - canvas_extra;
-            baseLine = topToBottom ? "alphabetic" : "bottom";
-            textY = topToBottom ? textHeight : textHeight;
-            break;
-        case "END":
-            y_offset = topToBottom ? txtH - canvas_extra : 0;
-            baseLine = topToBottom ? "bottom" : "top";
-            textY = topToBottom ? textHeight : 0;
-            break;
-    }
-
-    var pxToX3d = 1 / x3dToPx;
-    var w = txtW * pxToX3d;
-    var h = txtH * pxToX3d;
-    var max_texture_size = x3dom.caps.MAX_TEXTURE_SIZE >> 2;
-
-    x_offset *= pxToX3d;
-    y_offset *= pxToX3d;
-
-    text_canvas.width = Math.min(
-        x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
-        max_texture_size );
-    text_canvas.height = Math.min(
-        x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
-        max_texture_size );
-    text_canvas.dir = leftToRight;
-
-    text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
-
-    // transparent background
-    text_ctx.fillStyle = "rgba(0,0,0,0)";
-    text_ctx.fillRect( 0, 0, text_ctx.canvas.width, text_ctx.canvas.height );
-
-    // write white text with black border
-    text_ctx.fillStyle = "white";
-
-    text_ctx.textBaseline = baseLine;
-
-    text_ctx.font = font_style + " " + textHeight + "px " + font_family;
-    text_ctx.textAlign = textAlignment;
-
-    var renderConfig = {
-        font_style   : font_style,
-        font_family  : font_family,
-        font_spacing : font_spacing,
-        paragraph    : paragraph,
-        topToBottom  : topToBottom,
-        leftToRight  : leftToRight,
-        textX        : textX,
-        textY        : textY,
-        textHeight   : textHeight,
-        lengths      : lengths
-    };
-
-    this.renderScaledText( text_ctx, 1, renderConfig );
-
+    // create empty texture early
     if ( this.texture === null )
     {
         this.texture = gl.createTexture();
     }
 
-    gl.bindTexture( this.type, this.texture );
-    this.uploadTextMipmap( text_canvas, renderConfig );
-    gl.bindTexture( this.type, null );
-
-    //remove canvas after Texture creation
-    document.body.removeChild( text_canvas );
-
-    this.node._mesh._positions[ 0 ] = [
-        0 + x_offset, -h + y_offset, 0,
-        w + x_offset, -h + y_offset, 0,
-        w + x_offset, 0 + y_offset, 0,
-        0 + x_offset, 0 + y_offset, 0 ];
-
-    this.node.invalidateVolume();
-    this.node._parentNodes.forEach( function ( node )
+    const doc_fonts = Array.from( document.fonts.values() );
+    const font_index = doc_fonts.findIndex( ( ff ) => ff.family == font_family );
+    if ( font_index > -1 && doc_fonts[ font_index ].status == "loaded"  ) //document.fonts.check( text_ctx.font ) )
     {
-        node.setAllDirty();
-    } );
+        _proceed_with_font.bind( this )();
+    }
+    else
+    {
+        //need to load each family individually for custom fallbacks to load fully in time
+        const families = fontStyleNode._vf.family;
+        const font_loaders = families.map( ( f ) =>
+        {
+            var cssFont = font_style + " " + textHeight + "px " + f;
+            return document.fonts.load( cssFont );
+        } );
+        var that = this;
+        Promise.allSettled( font_loaders ).then( ( results ) =>
+        //document.fonts.load( text_ctx.font ).then( () =>
+        {
+            results.forEach( ( result, i ) =>
+            {
+                const f_i = families[ i ];
+                if ( x3dom.nodeTypes.FontLibrary.reservedFamilies.includes( f_i ) == false &&
+                    Array.from( document.fonts.values() ).map( ( ff ) => ff.family ).includes( f_i ) == false )
+                {
+                    that.node._nameSpace.lateFontStyles.set( f_i, that.node._cf.fontStyle.node );
+                    x3dom.debug.logWarning( "font family " + f_i + " not a defined scene font." );
+                }
+                if ( result.status == "rejected" )
+                {
+                    x3dom.debug.logWarning( "font family " + f_i + " rejected: " + result.reason.message );
+                }
+            }, that );
+            _proceed_with_font.bind( that )();
+        }
+        //,( err ) => { x3dom.debug.logError( "never here: font loading rejection:" + err ); _proceed_with_font.bind( this )(); }
+        );
+    }
+
+    function _proceed_with_font ()
+    {
+        var maxWidth = 0,
+            pWidth,
+            pLength,
+            i,
+            j;
+
+        // calculate maxWidth and length scaling; sanitize lengths
+        for ( i = 0; i < paragraph.length; i++ )
+        {
+            pWidth = text_ctx.measureText( paragraph[ i ] ).width;
+            if ( pWidth > maxWidth )
+            {
+                maxWidth = pWidth;
+            }
+
+            pLength = this.node._vf.length[ i ] | 0;
+            if ( maxExtent > 0 && ( pLength > maxExtent || pLength == 0 ) )
+            {
+                pLength = maxExtent;
+            }
+            lengths[ i ] = pLength <= 0 ? pWidth : pLength * x3dToPx;
+        }
+
+        var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
+        var txtW = maxWidth + canvas_extra; // needed for italic since textMetrics.width ignores that
+        var txtH = textHeight + textHeight * font_spacing * ( paragraph.length - 1 ) + canvas_extra;
+
+        textX = 0;
+        textY = 0;
+
+        var x_offset = 0,
+            y_offset = 0,
+            baseLine = "alphabetic";
+
+        // x_offset and starting X
+        switch ( font_justify )
+        {
+            case "center":
+                x_offset = -txtW / 2;
+                textX = txtW / 2;
+                break;
+            case "left":
+                x_offset = 0;
+                textX = 0;
+                break;
+            case "right":
+                x_offset = -txtW;
+                textX = txtW;
+                break;
+        }
+
+        // y_offset, baseline and first Y
+        switch ( minor_alignment )
+        {
+            case "MIDDLE":
+                y_offset = txtH / 2 - canvas_extra / 2;
+                baseLine = "middle";
+                textY = topToBottom ? textHeight / 2 : textHeight / 2;
+                break;
+            case "BEGIN":
+                y_offset = topToBottom ? 0 : txtH - canvas_extra;
+                baseLine = topToBottom ? "top" : "bottom";
+                textY = topToBottom ? 0 : textHeight; // adjust for baseline
+                break;
+            case "FIRST":
+                //special case of BEGIN
+                y_offset = topToBottom ? textHeight : txtH - canvas_extra;
+                baseLine = topToBottom ? "alphabetic" : "bottom";
+                textY = topToBottom ? textHeight : textHeight;
+                break;
+            case "END":
+                y_offset = topToBottom ? txtH - canvas_extra : 0;
+                baseLine = topToBottom ? "bottom" : "top";
+                textY = topToBottom ? textHeight : 0;
+                break;
+        }
+
+        var pxToX3d = 1 / x3dToPx;
+        var w = txtW * pxToX3d;
+        var h = txtH * pxToX3d;
+        var max_texture_size = x3dom.caps.MAX_TEXTURE_SIZE >> 2;
+
+        x_offset *= pxToX3d;
+        y_offset *= pxToX3d;
+
+        text_canvas.width = Math.min(
+            x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
+            max_texture_size );
+        text_canvas.height = Math.min(
+            x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
+            max_texture_size );
+        text_canvas.dir = leftToRight;
+
+        text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
+
+        // transparent background
+        text_ctx.fillStyle = "rgba(0,0,0,0)";
+        text_ctx.fillRect( 0, 0, text_ctx.canvas.width, text_ctx.canvas.height );
+
+        // write white text with black border
+        text_ctx.fillStyle = "white";
+
+        text_ctx.textBaseline = baseLine;
+
+        text_ctx.font = font_style + " " + textHeight + "px " + font_family;
+        text_ctx.textAlign = textAlignment;
+
+        var renderConfig = {
+            font_style   : font_style,
+            font_family  : font_family,
+            font_spacing : font_spacing,
+            paragraph    : paragraph,
+            topToBottom  : topToBottom,
+            leftToRight  : leftToRight,
+            textX        : textX,
+            textY        : textY,
+            textHeight   : textHeight,
+            lengths      : lengths
+        };
+
+        this.renderScaledText( text_ctx, 1, renderConfig );//.finally( () => //do even if load failed
+
+        gl.bindTexture( this.type, this.texture );
+        this.uploadTextMipmap( text_ctx, renderConfig );
+        gl.bindTexture( this.type, null );
+
+        //remove canvas after Texture creation
+        document.body.removeChild( text_canvas );
+
+        this.node._mesh._positions[ 0 ] = [
+            0 + x_offset, -h + y_offset, 0,
+            w + x_offset, -h + y_offset, 0,
+            w + x_offset, 0 + y_offset, 0,
+            0 + x_offset, 0 + y_offset, 0 ];
+
+        this.node.invalidateVolume();
+        this.node._parentNodes.forEach( function ( node )
+        {
+            node.setAllDirty();
+        } );
+        this.node.validateGLObject(); // undirty texture right away since async
+    }
 };
 
 x3dom.Texture.prototype.renderScaledText = function ( ctx2d, pot, txt )
 {
-    ctx2d.font = txt.font_style + " " + txt.textHeight / pot + "px " + txt.font_family;
+    var font_spec = txt.font_style + " " + txt.textHeight / pot + "px " + txt.font_family;
+
+    ctx2d.font = font_spec;
     var textYpos = txt.textY;
 
     // create the multiline text always top down
@@ -860,25 +866,24 @@ x3dom.Texture.prototype.renderScaledText = function ( ctx2d, pot, txt )
     }
 };
 
-x3dom.Texture.prototype.uploadTextMipmap = function ( canvas, txt )
+x3dom.Texture.prototype.uploadTextMipmap = function ( ctx2d, txt )
 {
     var gl = this.gl,
-        w = canvas.width,
-        h = canvas.height,
+        w = ctx2d.canvas.width,
+        h = ctx2d.canvas.height,
         level = 0,
         pot = 1,
         w2 = w,
-        h2 = h,
-        ctx2d = canvas.getContext( "2d" );
+        h2 = h;
     while ( true )
     {
         gl.texImage2D( this.type, level++, this.format, this.format, gl.UNSIGNED_BYTE, ctx2d.getImageData( 0, 0, w2, h2 ) );
         if ( w2 == 1 && h2 == 1 ) {break;}
         w2 = Math.max( 1, w2 >> 1 );
         h2 = Math.max( 1, h2 >> 1 );
-        ctx2d.clearRect( 0, 0, w, h );
         pot *= 2;
+        ctx2d.clearRect( 0, 0, w, h );
         this.renderScaledText( ctx2d, pot, txt );
     }
-//    this.gl.generateMipmap( this.type );
+    //this.gl.generateMipmap( this.type );
 };

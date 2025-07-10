@@ -62,6 +62,16 @@ x3dom.registerNodeType(
              */
             this.addField_SFString( ctx, "shadowObjectIdMapping", "" );
 
+            /**
+             * The fontLibrary field is used to add a custom font to the scene
+             * @var {x3dom.fields.SFNode} fontLibrary
+             * @memberof x3dom.nodeTypes.FontLibrary
+             * @initvalue x3dom.nodeTypes.FontLibrary
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode( "fontLibrary", x3dom.nodeTypes.FontLibrary );
+
             this._lastMin = new x3dom.fields.SFVec3f( 0, 0, 0 );
             this._lastMax = new x3dom.fields.SFVec3f( 1, 1, 1 );
 

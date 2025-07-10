@@ -1,0 +1,59 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Inline fonts test</title>
+    <script type="text/javascript" src="../../x3dom-include.js?full"></script>
+    <style>
+        label {margin: 5px;}
+        select {
+            padding: 5px;
+            border-width: thick;
+            borderr-radius: 5px;
+        }
+        option {
+            font-style: italic;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="false" width="640px" height="480px">
+        <Scene>
+            <Background skyColor='"0 0 0"'></Background>
+            <Transform>
+                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="fonts" url="question_2/inline_parent.x3d" ></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+    <label _style='margin: 5px;' for="x3d-select">Choose an example:</label>
+    <select _style='padding: 5px;
+            border-width: thick;
+            _border-radius: 5px;'
+            id="x3d-select" onchange='handleChange(event)'>
+        <option>question_1/inline_parent</option>
+        <option>question_2/inline_parent</option>
+        <option>question_3/font_library_search</option>
+        <option>question_4/proto_user</option>
+        <option>question_5_order/test</option>
+        <option>question_6_order_and_duplicate_family_names/test</option>
+        <option>question_7_import_export/import_parent</option>
+        <option>question_8_unmatched_style/test</option>
+        <option>question_9_reserved_name/test</option>
+        <option>fallbacks/test</option>
+        <option>dataurl/FontLibrary</option>
+        <option value="none" selected>--Please choose a x3d scene--</option>
+    </select>
+</body>
+<script>
+    const inline = document.querySelector('#Inline');
+    const ext = '.x3d';
+    function handleChange(event) {
+        document.fonts.clear();
+        inline.setAttribute('url', event.target.options[event.target.selectedIndex].value + ext);
+    }
+    function handleLoad(event) {
+        setTimeout(()=>{document.querySelector('X3D').runtime.showAll('negZ');}, 3000);
+    }
+</script>
+</html>

@@ -148,6 +148,51 @@ x3dom.registerNodeType(
                         } );
                     } );
                 }
+            },
+
+            getCSSFamily : function ()
+            {
+                const font_family = this._vf.family.map( function ( s )
+                {
+                    s = s.trim().replace( /\'/g, "" ).replace( /\"/g, "" );
+                    switch ( s )
+                    {
+                        case "SANS":
+                            return "Verdana, sans-serif";
+                        case "SERIF":
+                            return "Georgia, serif";
+                        case "TYPEWRITER":
+                            return "monospace";
+                        default:
+                            return s;
+                    }
+                } ).join( "," );
+                return font_family;
+            },
+
+            getCSSStyleWeight : function ()
+            {
+                const font_style = this._vf.style.toString().replace( /\'/g, "" );
+                let weight = "normal";
+                let style = "normal";
+                switch ( font_style.toUpperCase() )
+                {
+                    case "PLAIN":
+                        break;
+                    case "BOLD":
+                        weight = "bold";
+                        break;
+                    case "ITALIC":
+                        style = "italic";
+                        break;
+                    case "BOLDITALIC":
+                        style = "italic";
+                        weight = "bold";
+                        break;
+                    default:
+                        style = "normal";
+                }
+                return { "style": style, "weight": weight };
             }
         }
     )

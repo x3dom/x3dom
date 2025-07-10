@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.1//EN" "https://www.web3d.org/specifications/x3d-4.1.dtd">
+<X3D profile='Full' version='4.1' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.1.xsd'>
+  <head>
+    <meta name='modified' content='AP, Sat, 22 Mar 2025 23:00:35 GMT'/>
+  </head>
+  <Scene>
+    <FontLibrary DEF='FL1' url='"noaccess/DejaVuSansMono-Oblique.ttf"' family='mono-oblique' />
+    <FontLibrary DEF='FL2' url='"noaccess/DejaVuSansMono.ttf"' family='mono' />
+    <Shape>
+      <Appearance DEF='app'>
+        <Material
+            diffuseColor='1 1 0'/>
+      </Appearance>
+      <Text
+          string='"Hello World in SANS!"'>
+        <FontStyle
+          family='"mono" "mono-oblique" "SANS"'/>
+      </Text>
+    </Shape>
+    <Shape>
+      <Appearance USE='app'/>
+      <Text
+          string='"" "Hello World in bold-oblique!"'>
+        <FontStyle
+          family='"mono" "bold-oblique" "SANS"'/>
+      </Text>
+    </Shape>
+    <FontLibrary DEF='FL3' url='"../DejaVuSans-BoldOblique.ttf"' family='bold-oblique' />
+  </Scene>
+</X3D>
