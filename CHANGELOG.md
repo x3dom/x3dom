@@ -3,6 +3,7 @@
 ## Version 1.8.4-dev
 
 * Features
+  * draft X3D 4.1 FontLibrary support for custom fonts
   * full support for HAnimDisplacer
   * ImageTexture colorSpaceConversion field
   * support for glTF extensions:
