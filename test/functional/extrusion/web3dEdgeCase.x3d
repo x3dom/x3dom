@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+    <head>
+        <meta content='Vsevolod Alekseyev, Vince Marchetti, Roy Walmsley, Leonard Daly, Dick Puk, Joe Williams, Don Brutzman' name='creator'/>
+        <meta content='29 January 2016' name='created'/>
+        <meta content='28 October 2019' name='modified'/>
+        <meta content='https://www.web3d.org/wiki/index.php/Extrusion_Edge_Cases' name='reference'/>
+    </head>
+    <Scene>
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='0.1 0 0.8'/>
+          </Appearance>
+          <!-- spine is closed with only 3 points, thus 2 independent points. Sounds like a potential problem but is actually legitimate (i.e. not geometrically degenerate) for many cases. -->
+          <Extrusion beginCap='false' endCap='false' scale='1 1 1.2 1.2 1.4 1.4' solid='false' spine='0 0 0 0 1 0 0 0 0'>
+            <!-- spine is closed, crossSection is closed -->
+          </Extrusion>
+        </Shape>
+    </Scene>
+</X3D>

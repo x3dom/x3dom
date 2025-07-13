@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <head>
+    <meta name='comment' content='World of Titania'/>
+    <meta name='created' content='Sat, 06 Aug 2016 06:44:36 GMT'/>
+    <meta name='creator' content='holger'/>
+    <meta name='generator' content='Titania V1.4.8, http://titania.create3000.de'/>
+    <meta name='identifier' content='file:///home/holger/Projekte/Titania/Library/Tests/Extrusion/Rotations.x3d'/>
+    <meta name='modified' content='Sat, 06 Aug 2016 19:29:42 GMT'/>
+  </head>
+  <Scene>
+    <Transform DEF='Extrusion'
+        translation='-2 0 0'>
+      <Shape>
+        <Appearance DEF='rockgold'>
+          <Material/>
+          <ImageTexture
+              url='"https://cdn.rawgit.com/create3000/Library/master/Textures/Game/rockgold.png", "https://cdn.rawgit.com/create3000/Library/master/Textures/Game/rockgold.png", "http://rawgit.com/create3000/Library/master/Textures/Game/rockgold.png", "https://rawgit.com/create3000/Library/master/Textures/Game/rockgold.png"'
+              repeatS='false'
+              repeatT='false'/>
+        </Appearance>
+        <Extrusion DEF='Extrusion1'
+            crossSection='0 1, 1 0, 0 -1'
+            orientation='0 0 1 0, 0 0 1 0.2, 0 0 1 0.4, 0 0 1 0.6, 0 0 1 0.8'
+            spine='0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0'/>
+      </Shape>
+    </Transform>
+    <Transform DEF='Extrusion_1'
+        translation='2 0 0'>
+      <Shape>
+        <Appearance USE='rockgold'/> 
+        <Extrusion DEF='Extrusion2'
+            creaseAngle='0.580624'
+            crossSection='0 1, 1 0, 0 -1'
+            orientation='0 0 1 0, 0 0 1 0.196349540624999, 0 0 1 0.39269908125, 0 0 1 0.589048621875, 0 0 1 0.7853981625, 0 0 1 0.981747703125, 0 0 1 1.17809724375, 0 0 1 1.374446784375, 0 0 1 1.570796325, 0 0 1 1.767145865625, 0 0 1 1.96349540625, 0 0 1 2.159844946875, 0 0 1 2.3561944875, 0 0 1 2.552544028125, 0 0 1 2.74889356875, 0 0 1 2.945243109375, 0 0 1 3.14159265, 0 0 1 3.337942190625, 0 0 1 3.53429173125, 0 0 1 3.730641271875, 0 0 1 3.9269908125, 0 0 1 4.123340353125, 0 0 1 4.31968989375, 0 0 1 4.516039434375, 0 0 1 4.712388975, 0 0 1 4.908738515625, 0 0 1 5.10508805625, 0 0 1 5.301437596875, 0 0 1 5.4977871375, 0 0 1 5.694136678125, 0 0 1 5.89048621875, 0 0 1 6.086835759375, 0 0 1 0'
+            spine='0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0'/>
+      </Shape>
+    </Transform>
+    <Transform DEF='Extrusion_2'
+        translation='0 0 -2'>
+      <Shape>
+        <Appearance USE='rockgold'/> 
+        <Extrusion DEF='Extrusion3'
+            creaseAngle='0.580624'
+            crossSection='0 1, 0.19509 0.980785, 0.382683 0.92388, 0.55557 0.83147, 0.707107 0.707107, 0.83147 0.55557, 0.92388 0.382683, 0.980785 0.19509, 1 -2.32051e-8, 0.980785 -0.19509, 0.92388 -0.382683, 0.83147 -0.55557, 0.707107 -0.707107, 0.55557 -0.83147, 0.382683 -0.92388, 0.19509 -0.980785, -4.64102e-8 -1'
+            orientation='0 0 1 0, 0 0 1 0.196349540624999, 0 0 1 0.39269908125, 0 0 1 0.589048621875, 0 0 1 0.7853981625, 0 0 1 0.981747703125, 0 0 1 1.17809724375, 0 0 1 1.374446784375, 0 0 1 1.570796325, 0 0 1 1.767145865625, 0 0 1 1.96349540625, 0 0 1 2.159844946875, 0 0 1 2.3561944875, 0 0 1 2.552544028125, 0 0 1 2.74889356875, 0 0 1 2.945243109375, 0 0 1 3.14159265, 0 0 1 3.337942190625, 0 0 1 3.53429173125, 0 0 1 3.730641271875, 0 0 1 3.9269908125, 0 0 1 4.123340353125, 0 0 1 4.31968989375, 0 0 1 4.516039434375, 0 0 1 4.712388975, 0 0 1 4.908738515625, 0 0 1 5.10508805625, 0 0 1 5.301437596875, 0 0 1 5.4977871375, 0 0 1 5.694136678125, 0 0 1 5.89048621875, 0 0 1 6.086835759375, 0 0 1 0'
+            spine='0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0'/>
+      </Shape>
+    </Transform>
+    <Viewpoint USE='_1'/>
+  </Scene>
+</X3D>

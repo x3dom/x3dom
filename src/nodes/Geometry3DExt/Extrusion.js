@@ -135,6 +135,12 @@ x3dom.registerNodeType(
             this.rebuildGeometry();
         },
         {
+            // this is called when the node is added to the scene graph
+            // nodeChanged: function ()
+            // {
+            //     this.rebuildGeometry();
+            // },
+
             rebuildGeometry : function ()
             {
                 this._mesh._positions[ 0 ] = [];
@@ -159,6 +165,9 @@ x3dom.registerNodeType(
                 m = spine.length;
                 n = crossSection.length;
 
+                //x3dom.debug.logInfo( "Extrusion: m = " + m + ", n = " + n );
+                x3dom.debug.logError( "spine: " + spine.toString()  );
+
                 if ( /*m == 0 &&*/ this._vf.height > 0 )
                 {
                     spine[ 0 ] = new x3dom.fields.SFVec3f( 0, 0, 0 );
@@ -166,30 +175,27 @@ x3dom.registerNodeType(
                     m = 2;
                 }
 
-                var x,
-                    y,
-                    z;
+                var x = new x3dom.fields.SFVec3f( 1, 0, 0 ),
+                    y = new x3dom.fields.SFVec3f( 0, 1, 0 ),
+                    z = new x3dom.fields.SFVec3f( 0, 0, 1 );
                 var last_z = new x3dom.fields.SFVec3f( 0, 0, 1 );
-
-                if ( m > 2 )
-                {
-                    for ( i = 1; i < m - 1; i++ )
-                    {
-                        var last_z_candidate = spine[ i + 1 ].subtract( spine[ i ] ).cross( spine[ i - 1 ].subtract( spine[ i ] ) );
-                        if ( last_z_candidate.length() > x3dom.fields.Eps )
-                        {
-                            last_z = x3dom.fields.SFVec3f.copy( last_z_candidate.normalize() );
-                            break;
-                        }
-                    }
-                }
+                var last_z_candidate,
+                    last_y,
+                    rotYtoy;
+                var yAxis = new x3dom.fields.SFVec3f( 0, 1, 0 );
+                var zAxis = new x3dom.fields.SFVec3f( 0, 0, 1 );
 
                 var texCoordV = 0;
                 var texCoordsV = [ 0 ];
 
+                var allCoincident = !spine.some( function ( p )
+                { // check if all points in spine are coincident
+                    return !p.equals( spine[ 0 ], x3dom.fields.Eps );
+                } );
+
                 for ( i = 1; i < m; i++ )
                 {
-                    var v = spine[ i ].subtract( spine[ i - 1 ] ).length();
+                    var v = allCoincident ? i : spine[ i ].subtract( spine[ i - 1 ] ).length();
                     texCoordV = texCoordV + v;
                     texCoordsV[ i ] = texCoordV;
                 }
@@ -245,6 +251,31 @@ x3dom.registerNodeType(
                 var diffTexU_x = Math.abs( maxTexU_x - minTexU_x );
                 var diffTexU_z = Math.abs( maxTexU_z - minTexU_z );
 
+                if ( m > 2 && !allCoincident )
+                {
+                    for ( i = 1; i < m - 1; i++ )
+                    {
+                        last_y = spine[ i + 1 ].subtract( spine[ i ] );
+                        last_z_candidate = last_y.cross( spine[ i - 1 ].subtract( spine[ i ] ) );
+                        if ( last_z_candidate.length() > x3dom.fields.Eps )
+                        {
+                            last_z = x3dom.fields.SFVec3f.copy( last_z_candidate.normalize() );
+                            break;
+                        }
+                    }
+                    if ( last_z_candidate.length() < x3dom.fields.Eps ) // if no valid last_z_candidate was found, spine is a straight line
+                    {
+                        i = spine.findIndex( function ( p, index ) // find first point that is not equal to the first point
+                        {
+                            return !p.equals( spine[ 0 ], x3dom.fields.Eps );
+                        } );
+                        last_y = spine[ i ].subtract( spine[ 0 ] );
+                        rotYtoy = x3dom.fields.Quaternion.rotateFromTo( yAxis, last_y ).toMatrix();
+                        last_z = rotYtoy.multMatrixVec( zAxis );
+                    }
+                    last_y = last_y.normalize();
+                }
+
                 var spineClosed = ( m > 2 ) ? spine[ 0 ].equals( spine[ spine.length - 1 ], x3dom.fields.Eps ) : false;
 
                 for ( i = 0; i < m; i++ )
@@ -263,13 +294,16 @@ x3dom.registerNodeType(
                         }
                     }
 
-                    for ( j = 0; j < n; j++ )
+                    //SCP
+                    if ( allCoincident )
                     {
-                        var pos = new x3dom.fields.SFVec3f(
-                            crossSection[ j ].x * sx + spine[ i ].x,
-                            spine[ i ].y,
-                            crossSection[ j ].y * sy + spine[ i ].z );
-
+                        // redundant, for clarity
+                        x.set( 1, 0, 0 );
+                        y.set( 0, 1, 0 );
+                        z.set( 0, 0, 1 );
+                    }
+                    else
+                    {
                         if ( m > 2 )
                         {
                             if ( i == 0 )
@@ -299,7 +333,7 @@ x3dom.registerNodeType(
                                 else
                                 {
                                     y = spine[ m - 1 ].subtract( spine[ m - 2 ] );
-                                    z = x3dom.fields.SFVec3f.copy( last_z );
+                                    z = y.cross( spine[ i - 1 ].subtract( spine[ i ] ) );
                                 }
                             }
                             else
@@ -307,35 +341,59 @@ x3dom.registerNodeType(
                                 y = spine[ i + 1 ].subtract( spine[ i - 1 ] );
                                 z = y.cross( spine[ i - 1 ].subtract( spine[ i ] ) );
                             }
-                            if ( z.dot( last_z ) < 0 )
-                            {
-                                z = z.negate();
-                            }
-
-                            y = y.normalize();
-                            z = z.normalize();
-
-                            if ( z.length() <= x3dom.fields.Eps )
-                            {
-                                z = x3dom.fields.SFVec3f.copy( last_z );
-                            }
-
-                            if ( i != 0 )
-                            {
-                                last_z = x3dom.fields.SFVec3f.copy( z );
-                            }
-                            x = y.cross( z ).normalize();
-
-                            var baseMat = x3dom.fields.SFMatrix4f.identity();
-                            baseMat.setValue( x, y, z );
-                            var rotMat = ( i < orientation.length ) ? orientation[ i ].toMatrix() :
-                                ( ( orientation.length > 0 ) ? orientation[ orientation.length - 1 ].toMatrix() :
-                                    x3dom.fields.SFMatrix4f.identity() );
-
-                            pos = pos.subtract( spine[ i ] );
-                            pos = baseMat.multMatrixPnt( rotMat.multMatrixPnt( pos ) );
-                            pos = pos.add( spine[ i ] );
                         }
+                        else if ( m == 2 )
+                        {
+                            y = spine[ 1 ].subtract( spine[ 0 ] );
+                            rotYtoy = x3dom.fields.Quaternion.rotateFromTo( yAxis, y ).toMatrix();
+                            z = rotYtoy.multMatrixVec( zAxis );
+                        }
+                        else
+                        {
+                            x3dom.debug.logError( "Extrusion: Invalid spine length: " + m + ". At least two points are required." );
+                            return;
+                        }
+
+                        if ( z.dot( last_z ) < 0 )
+                        {
+                            z = z.negate();
+                        }
+
+                        y = y.normalize();
+                        z = z.normalize();
+
+                        if ( z.length() <= x3dom.fields.Eps ) // is collinear with last scp
+                        {
+                            z = x3dom.fields.SFVec3f.copy( last_z );
+                            y = x3dom.fields.SFVec3f.copy( last_y ); // also use last_y to avoid flipping
+                        }
+
+                        if ( i != 0 )
+                        {
+                            last_z = x3dom.fields.SFVec3f.copy( z );
+                            last_y = x3dom.fields.SFVec3f.copy( y );
+                        }
+
+                        x = y.cross( z ).normalize();
+                    }
+
+                    var baseMat = x3dom.fields.SFMatrix4f.identity();
+                    baseMat.setValue( x, y, z );
+                    var rotMat = ( i < orientation.length ) ? orientation[ i ].toMatrix() :
+                        ( ( orientation.length > 0 ) ? orientation[ orientation.length - 1 ].toMatrix() :
+                            x3dom.fields.SFMatrix4f.identity() );
+
+                    // cross section instances
+                    for ( j = 0; j < n; j++ )
+                    {
+                        var pos = new x3dom.fields.SFVec3f(
+                            crossSection[ j ].x * sx,
+                            0,
+                            crossSection[ j ].y * sy );
+
+                        pos = baseMat.multMatrixPnt( rotMat.multMatrixPnt( pos ) );
+                        pos = pos.add( spine[ i ] );
+
                         pos.crossSection = crossSection[ j ];
                         positions.push( pos );
 
