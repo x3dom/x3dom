@@ -166,7 +166,7 @@ x3dom.registerNodeType(
                 n = crossSection.length;
 
                 //x3dom.debug.logInfo( "Extrusion: m = " + m + ", n = " + n );
-                x3dom.debug.logError( "spine: " + spine.toString()  );
+                // x3dom.debug.logError( "spine: " + spine.toString()  );
 
                 if ( /*m == 0 &&*/ this._vf.height > 0 )
                 {
@@ -311,6 +311,10 @@ x3dom.registerNodeType(
                                 if ( spineClosed )
                                 {
                                     y = spine[ 1 ].subtract( spine[ m - 2 ] );
+                                    if ( y.length() > x3dom.fields.Eps )
+                                    {
+                                        last_y = x3dom.fields.SFVec3f.copy( y );
+                                    }
                                     z = spine[ 1 ].subtract( spine[ 0 ] ).cross( spine[ m - 2 ].subtract( spine[ 0 ] ) );
                                 }
                                 else
@@ -328,12 +332,16 @@ x3dom.registerNodeType(
                                 if ( spineClosed )
                                 {
                                     y = spine[ 1 ].subtract( spine[ m - 2 ] );
+                                    if ( y.length() > x3dom.fields.Eps )
+                                    {
+                                        last_y = x3dom.fields.SFVec3f.copy( y );
+                                    }
                                     z = spine[ 1 ].subtract( spine[ 0 ] ).cross( spine[ m - 2 ].subtract( spine[ 0 ] ) );
                                 }
                                 else
                                 {
                                     y = spine[ m - 1 ].subtract( spine[ m - 2 ] );
-                                    z = y.cross( spine[ i - 1 ].subtract( spine[ i ] ) );
+                                    z = x3dom.fields.SFVec3f.copy( last_z );
                                 }
                             }
                             else
@@ -362,10 +370,17 @@ x3dom.registerNodeType(
                         y = y.normalize();
                         z = z.normalize();
 
-                        if ( z.length() <= x3dom.fields.Eps ) // is collinear with last scp
+                        if ( z.length() < x3dom.fields.Eps ) // is collinear with last scp
                         {
                             z = x3dom.fields.SFVec3f.copy( last_z );
                             y = x3dom.fields.SFVec3f.copy( last_y ); // also use last_y to avoid flipping
+                        }
+
+                        //extra collinearity check for last point
+                        if ( m > 2 && i == m - 1 &&
+                             y.cross( spine[ i - 1 ].subtract( spine[ i - 2 ] ) ).length() < x3dom.fields.Eps )
+                        {
+                            y = x3dom.fields.SFVec3f.copy( last_y ); // restore last scp
                         }
 
                         if ( i != 0 )
