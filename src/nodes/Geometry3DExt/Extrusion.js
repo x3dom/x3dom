@@ -180,7 +180,7 @@ x3dom.registerNodeType(
                     z = new x3dom.fields.SFVec3f( 0, 0, 1 );
                 var last_z = new x3dom.fields.SFVec3f( 0, 0, 1 );
                 var last_z_candidate,
-                    last_y,
+                    y_collinear,
                     rotYtoy;
                 var yAxis = new x3dom.fields.SFVec3f( 0, 1, 0 );
                 var zAxis = new x3dom.fields.SFVec3f( 0, 0, 1 );
@@ -255,8 +255,7 @@ x3dom.registerNodeType(
                 {
                     for ( i = 1; i < m - 1; i++ )
                     {
-                        last_y = spine[ i + 1 ].subtract( spine[ i ] );
-                        last_z_candidate = last_y.cross( spine[ i - 1 ].subtract( spine[ i ] ) );
+                        last_z_candidate = spine[ i + 1 ].subtract( spine[ i ] ).cross( spine[ i - 1 ].subtract( spine[ i ] ) );
                         if ( last_z_candidate.length() > x3dom.fields.Eps )
                         {
                             last_z = x3dom.fields.SFVec3f.copy( last_z_candidate.normalize() );
@@ -269,11 +268,10 @@ x3dom.registerNodeType(
                         {
                             return !p.equals( spine[ 0 ], x3dom.fields.Eps );
                         } );
-                        last_y = spine[ i ].subtract( spine[ 0 ] );
-                        rotYtoy = x3dom.fields.Quaternion.rotateFromTo( yAxis, last_y ).toMatrix();
+                        y_collinear = spine[ i ].subtract( spine[ 0 ] ).normalize();
+                        rotYtoy = x3dom.fields.Quaternion.rotateFromTo( yAxis, y_collinear ).toMatrix();
                         last_z = rotYtoy.multMatrixVec( zAxis );
                     }
-                    last_y = last_y.normalize();
                 }
 
                 var spineClosed = ( m > 2 ) ? spine[ 0 ].equals( spine[ spine.length - 1 ], x3dom.fields.Eps ) : false;
@@ -311,10 +309,6 @@ x3dom.registerNodeType(
                                 if ( spineClosed )
                                 {
                                     y = spine[ 1 ].subtract( spine[ m - 2 ] );
-                                    if ( y.length() > x3dom.fields.Eps )
-                                    {
-                                        last_y = x3dom.fields.SFVec3f.copy( y );
-                                    }
                                     z = spine[ 1 ].subtract( spine[ 0 ] ).cross( spine[ m - 2 ].subtract( spine[ 0 ] ) );
                                 }
                                 else
@@ -324,6 +318,10 @@ x3dom.registerNodeType(
                                 }
                                 if ( z.length() > x3dom.fields.Eps )
                                 {
+                                    if ( z.dot( last_z ) < 0 )
+                                    {
+                                        z = z.negate();
+                                    }
                                     last_z = x3dom.fields.SFVec3f.copy( z );
                                 }
                             }
@@ -332,22 +330,18 @@ x3dom.registerNodeType(
                                 if ( spineClosed )
                                 {
                                     y = spine[ 1 ].subtract( spine[ m - 2 ] );
-                                    if ( y.length() > x3dom.fields.Eps )
-                                    {
-                                        last_y = x3dom.fields.SFVec3f.copy( y );
-                                    }
                                     z = spine[ 1 ].subtract( spine[ 0 ] ).cross( spine[ m - 2 ].subtract( spine[ 0 ] ) );
                                 }
                                 else
                                 {
                                     y = spine[ m - 1 ].subtract( spine[ m - 2 ] );
-                                    z = x3dom.fields.SFVec3f.copy( last_z );
+                                    z = spine[ i ].subtract( spine[ i - 1 ] ).cross( spine[ i - 2 ].subtract( spine[ i - 1 ] ) );//x3dom.fields.SFVec3f.copy( last_z );
                                 }
                             }
                             else
                             {
                                 y = spine[ i + 1 ].subtract( spine[ i - 1 ] );
-                                z = y.cross( spine[ i - 1 ].subtract( spine[ i ] ) );
+                                z = spine[ i + 1 ].subtract( spine[ i ] ).cross( spine[ i - 1 ].subtract( spine[ i ] ) );
                             }
                         }
                         else if ( m == 2 )
@@ -373,20 +367,15 @@ x3dom.registerNodeType(
                         if ( z.length() < x3dom.fields.Eps ) // is collinear with last scp
                         {
                             z = x3dom.fields.SFVec3f.copy( last_z );
-                            y = x3dom.fields.SFVec3f.copy( last_y ); // also use last_y to avoid flipping
-                        }
-
-                        //extra collinearity check for last point
-                        if ( m > 2 && i == m - 1 &&
-                             y.cross( spine[ i - 1 ].subtract( spine[ i - 2 ] ) ).length() < x3dom.fields.Eps )
-                        {
-                            y = x3dom.fields.SFVec3f.copy( last_y ); // restore last scp
+                            if ( last_z_candidate.length() < x3dom.fields.Eps ) // all collinear
+                            {
+                                y = x3dom.fields.SFVec3f.copy( y_collinear );
+                            }
                         }
 
                         if ( i != 0 )
                         {
                             last_z = x3dom.fields.SFVec3f.copy( z );
-                            last_y = x3dom.fields.SFVec3f.copy( y );
                         }
 
                         x = y.cross( z ).normalize();

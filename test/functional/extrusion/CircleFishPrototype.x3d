@@ -17,7 +17,7 @@
     <WorldInfo title='CircleFishPrototype.x3d'/>
     <ProtoDeclare appinfo='Simple model of a fish swimming in a circle' name='CircleFish'>
       <ProtoInterface>
-        <field accessType='inputOutput' name='skinTextureUrl' type='MFString'/>
+        <!-- <field accessType='inputOutput' name='skinTextureUrl' type='MFString'/> -->
         <field accessType='inputOutput' name='fishScale' type='SFVec3f' value='1 1 1'/>
         <field accessType='inputOutput' name='fishColor' type='SFColor' value='0.5 0.5 0.5'/>
         <field accessType='inputOutput' name='finColor' type='SFColor' value='0.5 0.5 0.5'/>
@@ -41,11 +41,11 @@
                       <connect nodeField='diffuseColor' protoField='fishColor'/>
                     </IS>
                   </Material>
-                  <ImageTexture DEF='FishTexture'>
+                  <!-- <ImageTexture DEF='FishTexture'>
                     <IS>
                       <connect nodeField='url' protoField='skinTextureUrl'/>
                     </IS>
-                  </ImageTexture>
+                  </ImageTexture> -->
                 </Appearance>
                 <Extrusion DEF='FishBodyExtrusion' creaseAngle='0.57' crossSection='-0.1 1.0 0.1 1 0.5 0.5 0.5 -0.5 0.1 -1 -0.1 -1 -0.5 -0.5 -0.5 0.5 -0.1 1' scale='0.03 0.03 0.05 0.3 0.05 0.45 0.1 0.5 0.05 0.45 0.05 0.2 0.03 0.4' spine='0 1 0 0 0.8 0 0 0.6 0 0 0.5 0 0 0.3 0 0 0.2 0 0 0 0'/>
               </Shape>
