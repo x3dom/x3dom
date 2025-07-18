@@ -143,23 +143,30 @@ x3dom.registerNodeType(
 
             rebuildGeometry : function ()
             {
-                this._mesh._positions[ 0 ] = [];
-                this._mesh._normals[ 0 ]   = [];
-                this._mesh._texCoords[ 0 ] = [];
-                this._mesh._indices[ 0 ]   = [];
+                var positions0 = this._mesh._positions[ 0 ] = [],
+                    texCoords0 = this._mesh._texCoords[ 0 ] = [],
+                    indices0 = this._mesh._indices[ 0 ]     = [];
 
                 var i,
+                    im1,
                     j,
+                    jm1,
                     n,
                     m,
                     len,
                     sx = 1,
                     sy = 1;
+
                 var spine = this._vf.spine,
                     scale = this._vf.scale,
                     orientation = this._vf.orientation,
                     crossSection = this._vf.crossSection;
+
                 var positions = [],
+                    seamMergers = [],
+                    seamRing = [],
+                    seamIndices = [],
+                    startIndex = 0,
                     index = 0;
 
                 m = spine.length;
@@ -182,11 +189,22 @@ x3dom.registerNodeType(
                 var last_z_candidate,
                     y_collinear,
                     rotYtoy;
-                var yAxis = new x3dom.fields.SFVec3f( 0, 1, 0 );
-                var zAxis = new x3dom.fields.SFVec3f( 0, 0, 1 );
+                var yAxis = new x3dom.fields.SFVec3f( 0, 1, 0 ),
+                    zAxis = new x3dom.fields.SFVec3f( 0, 0, 1 ),
+                    pos = new x3dom.fields.SFVec3f( 0, 0, 0 ),
+                    baseMat = x3dom.fields.SFMatrix4f.identity(),
+                    rotMat = x3dom.fields.SFMatrix4f.identity();
 
                 var texCoordV = 0;
                 var texCoordsV = [ 0 ];
+                var texCoordU = 0;
+                var texCoordsU = [ 0 ];
+                var texCoordUj = 0,
+                    texCoordVi = 0,
+                    texCoordUjm1 = 0,
+                    texCoordVim1 = 0,
+                    u = 0,
+                    v = 0;
 
                 var allCoincident = !spine.some( function ( p )
                 { // check if all points in spine are coincident
@@ -195,22 +213,21 @@ x3dom.registerNodeType(
 
                 for ( i = 1; i < m; i++ )
                 {
-                    var v = allCoincident ? i : spine[ i ].subtract( spine[ i - 1 ] ).length();
+                    v = allCoincident ? i : spine[ i ].subtract( spine[ i - 1 ] ).length();
                     texCoordV = texCoordV + v;
                     texCoordsV[ i ] = texCoordV;
                 }
 
-                var texCoordU = 0;
-                var texCoordsU = [ 0 ];
-
                 var maxTexU_x = 0,
-                    minTexU_x = 0;
+                    minTexU_x = 0,
+                    helpMax;
                 var maxTexU_z = 0,
-                    minTexU_z = 0;
+                    minTexU_z = 0,
+                    helpMin;
 
                 for ( j = 1; j < n; j++ )
                 {
-                    var u = crossSection[ j ].subtract( crossSection[ j - 1 ] ).length();
+                    u = crossSection[ j ].subtract( crossSection[ j - 1 ] ).length();
                     texCoordU = texCoordU + u;
                     texCoordsU[ j ] = texCoordU;
 
@@ -240,8 +257,8 @@ x3dom.registerNodeType(
 
                 if ( Math.abs( maxTexU_x - minTexU_x ) < Math.abs( maxTexU_z - minTexU_z ) )
                 {
-                    var helpMax = maxTexU_x;
-                    var helpMin = minTexU_x;
+                    helpMax = maxTexU_x;
+                    helpMin = minTexU_x;
                     maxTexU_x = maxTexU_z;
                     minTexU_x = minTexU_z;
                     maxTexU_z = helpMax;
@@ -262,19 +279,22 @@ x3dom.registerNodeType(
                             break;
                         }
                     }
+
                     if ( last_z_candidate.length() < x3dom.fields.Eps ) // if no valid last_z_candidate was found, spine is a straight line
                     {
                         i = spine.findIndex( function ( p, index ) // find first point that is not equal to the first point
                         {
                             return !p.equals( spine[ 0 ], x3dom.fields.Eps );
                         } );
+
                         y_collinear = spine[ i ].subtract( spine[ 0 ] ).normalize();
                         rotYtoy = x3dom.fields.Quaternion.rotateFromTo( yAxis, y_collinear ).toMatrix();
                         last_z = rotYtoy.multMatrixVec( zAxis );
                     }
                 }
 
-                var spineClosed = ( m > 2 ) ? spine[ 0 ].equals( spine[ spine.length - 1 ], x3dom.fields.Eps ) : false;
+                var spineClosed = ( m > 2 ) ? spine[ 0 ].equals( spine[ m - 1 ], x3dom.fields.Eps ) : false;
+                var xsClosed = ( n > 2 ) ? crossSection[ 0 ].equals( crossSection[ n - 1 ], x3dom.fields.Eps ) : false;
 
                 for ( i = 0; i < m; i++ )
                 {
@@ -381,16 +401,15 @@ x3dom.registerNodeType(
                         x = y.cross( z ).normalize();
                     }
 
-                    var baseMat = x3dom.fields.SFMatrix4f.identity();
                     baseMat.setValue( x, y, z );
-                    var rotMat = ( i < orientation.length ) ? orientation[ i ].toMatrix() :
+                    rotMat = ( i < orientation.length ) ? orientation[ i ].toMatrix() :
                         ( ( orientation.length > 0 ) ? orientation[ orientation.length - 1 ].toMatrix() :
                             x3dom.fields.SFMatrix4f.identity() );
 
                     // cross section instances
                     for ( j = 0; j < n; j++ )
                     {
-                        var pos = new x3dom.fields.SFVec3f(
+                        pos = new x3dom.fields.SFVec3f(
                             crossSection[ j ].x * sx,
                             0,
                             crossSection[ j ].y * sy );
@@ -401,43 +420,99 @@ x3dom.registerNodeType(
                         pos.crossSection = crossSection[ j ];
                         positions.push( pos );
 
+                        texCoordUj = texCoordsU[ j ] / texCoordU;
+                        texCoordVi = texCoordsV[ i ] / texCoordV;
+
+                        im1 = i - 1;
+                        jm1 = j - 1;
+
                         if ( this._vf.creaseAngle <= x3dom.fields.Eps )
                         {
                             if ( i > 0 && j > 0 )
                             {
-                                var iPos = ( i - 1 ) * n + ( j - 1 );
-                                this._mesh._positions[ 0 ].push( positions[ iPos ].x, positions[ iPos ].y, positions[ iPos ].z );
-                                this._mesh._texCoords[ 0 ].push( texCoordsU[ j - 1 ] / texCoordU, texCoordsV[ i - 1 ] / texCoordV );
-                                iPos = ( i - 1 ) * n + j;
-                                this._mesh._positions[ 0 ].push( positions[ iPos ].x, positions[ iPos ].y, positions[ iPos ].z );
-                                this._mesh._texCoords[ 0 ].push( texCoordsU[ j ] / texCoordU, texCoordsV[ i - 1 ] / texCoordV );
-                                iPos = i * n + j;
-                                this._mesh._positions[ 0 ].push( positions[ iPos ].x, positions[ iPos ].y, positions[ iPos ].z );
-                                this._mesh._texCoords[ 0 ].push( texCoordsU[ j ] / texCoordU, texCoordsV[ i ] / texCoordV );
+                                texCoordUjm1 = texCoordsU[ jm1 ] / texCoordU;
+                                texCoordVim1 = texCoordsV[ im1 ] / texCoordV;
 
-                                this._mesh._indices[ 0 ].push( index++, index++, index++ );
+                                pos = positions[ ( im1 ) * n + ( jm1 ) ];
+                                positions0.push( pos.x, pos.y, pos.z );
+                                texCoords0.push( texCoordUjm1, texCoordVim1 );
 
-                                this._mesh._positions[ 0 ].push( positions[ iPos ].x, positions[ iPos ].y, positions[ iPos ].z );
-                                this._mesh._texCoords[ 0 ].push( texCoordsU[ j ] / texCoordU, texCoordsV[ i ] / texCoordV );
-                                iPos = i * n + ( j - 1 );
-                                this._mesh._positions[ 0 ].push( positions[ iPos ].x, positions[ iPos ].y, positions[ iPos ].z );
-                                this._mesh._texCoords[ 0 ].push( texCoordsU[ j - 1 ] / texCoordU, texCoordsV[ i ] / texCoordV );
-                                iPos = ( i - 1 ) * n + ( j - 1 );
-                                this._mesh._positions[ 0 ].push( positions[ iPos ].x, positions[ iPos ].y, positions[ iPos ].z );
-                                this._mesh._texCoords[ 0 ].push( texCoordsU[ j - 1 ] / texCoordU, texCoordsV[ i - 1 ] / texCoordV );
+                                pos = positions[ ( im1 ) * n + j ];
+                                positions0.push( pos.x, pos.y, pos.z );
+                                texCoords0.push( texCoordUj, texCoordVim1 );
 
-                                this._mesh._indices[ 0 ].push( index++, index++, index++ );
+                                pos = positions[ i * n + j ];
+                                positions0.push( pos.x, pos.y, pos.z );
+                                texCoords0.push( texCoordUj, texCoordVi );
+
+                                indices0.push( index++, index++, index++ );
+
+                                positions0.push( pos.x, pos.y, pos.z );
+                                texCoords0.push( texCoordUj, texCoordVi );
+
+                                pos = positions[ i * n + ( jm1 ) ];
+                                positions0.push( pos.x, pos.y, pos.z );
+                                texCoords0.push( texCoordUjm1, texCoordVi );
+
+                                pos = positions[ ( im1 ) * n + ( jm1 ) ];
+                                positions0.push( pos.x, pos.y, pos.z );
+                                texCoords0.push( texCoordUjm1, texCoordVim1 );
+
+                                indices0.push( index++, index++, index++ );
                             }
                         }
                         else
                         {
-                            this._mesh._positions[ 0 ].push( pos.x, pos.y, pos.z );
-                            this._mesh._texCoords[ 0 ].push( texCoordsU[ j ] / texCoordU, texCoordsV[ i ] / texCoordV );
+                            positions0.push( pos.x, pos.y, pos.z );
+                            texCoords0.push( texCoordUj, texCoordVi );
 
                             if ( i > 0 && j > 0 )
                             {
-                                this._mesh._indices[ 0 ].push( ( i - 1 ) * n + ( j - 1 ), ( i - 1 ) * n + j,  i   * n + j   );
-                                this._mesh._indices[ 0 ].push( i   * n + j,  i   * n + ( j - 1 ), ( i - 1 ) * n + ( j - 1 ) );
+                                //    j-1   j
+                                // i   4----2=3  cross-section
+                                //     |     /|
+                                //     |    / |
+                                //     |   /  |
+                                //     |  /   |
+                                // i-1 0=5----1
+                                {
+                                    indices0.push( ( im1 ) * n + ( jm1 ), ( im1 ) * n + j,  i   * n + j );
+                                    indices0.push( i   * n + j,  i   * n + ( jm1 ), ( im1 ) * n + ( jm1 ) );
+                                    startIndex = indices0.length - 6; // first point of first added triangle
+                                    if ( xsClosed && j == 1 ) // add seam first indices
+                                    {
+                                        seamMergers.push( [ startIndex, startIndex + 5 ] );
+                                        if ( i == 1 ) // also cover first ring
+                                        {
+                                            seamIndices = [ startIndex + 4 ];
+                                        }
+                                    }
+                                    if ( xsClosed && j == n - 1 ) // add seam second indices
+                                    {
+                                        seamMergers[ seamMergers.length - 1 ].push( startIndex + 1 );
+                                        if ( i == 1 )
+                                        {
+                                            seamIndices.push( startIndex + 2, startIndex + 3 );
+                                            seamMergers.push( seamIndices );
+                                        }
+                                    }
+                                    if ( spineClosed && i == 1 ) // add first cross-section
+                                    {
+                                        seamRing.push( [ startIndex, startIndex + 5 ] ); // first points on i-1
+                                        if ( j == n - 1 )
+                                        {
+                                            seamRing.push( [ startIndex + 1 ] );
+                                        }
+                                    }
+                                    if ( spineClosed && i == m - 1 ) // add last cross-section to first
+                                    {
+                                        seamRing[ j - 1 ].push( startIndex + 4 );
+                                        if ( j == n - 1 )
+                                        {
+                                            seamRing[ j ].push( startIndex + 2, startIndex + 3 );
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -454,7 +529,7 @@ x3dom.registerNodeType(
                         if ( this._vf.beginCap )
                         {
                             linklist = new x3dom.DoublyLinkedList();
-                            l = this._mesh._positions[ 0 ].length / 3;
+                            l = positions0.length / 3;
 
                             for ( j = 0; j < n; j++ )
                             {
@@ -463,8 +538,8 @@ x3dom.registerNodeType(
                                 if ( this._vf.creaseAngle > x3dom.fields.Eps )
                                 {
                                     p0 = positions[ j ];
-                                    this._mesh._positions[ 0 ].push( p0.x, p0.y, p0.z );
-                                    this._mesh._texCoords[ 0 ].push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
+                                    positions0.push( p0.x, p0.y, p0.z );
+                                    texCoords0.push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
                                         ( p0.crossSection.y - minTexU_z ) / diffTexU_z );
                                 }
                             }
@@ -477,15 +552,15 @@ x3dom.registerNodeType(
                             {
                                 if ( this._vf.creaseAngle > x3dom.fields.Eps )
                                 {
-                                    this._mesh._indices[ 0 ].push( l + linklist_indices[ j ] );
+                                    indices0.push( l + linklist_indices[ j ] );
                                 }
                                 else
                                 {
                                     p0 = positions[ linklist_indices[ j ] ];
-                                    this._mesh._positions[ 0 ].push( p0.x, p0.y, p0.z );
-                                    this._mesh._texCoords[ 0 ].push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
+                                    positions0.push( p0.x, p0.y, p0.z );
+                                    texCoords0.push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
                                         ( p0.crossSection.y - minTexU_z ) / diffTexU_z );
-                                    this._mesh._indices[ 0 ].push( index++ );
+                                    indices0.push( index++ );
                                 }
                             }
                         }
@@ -495,7 +570,7 @@ x3dom.registerNodeType(
                         {
                             linklist = new x3dom.DoublyLinkedList();
                             startPos = ( m - 1 ) * n;
-                            l = this._mesh._positions[ 0 ].length / 3;
+                            l = positions0.length / 3;
 
                             for ( j = 0; j < n; j++ )
                             {
@@ -504,8 +579,8 @@ x3dom.registerNodeType(
                                 if ( this._vf.creaseAngle > x3dom.fields.Eps )
                                 {
                                     p0 = positions[ startPos + j ];
-                                    this._mesh._positions[ 0 ].push( p0.x, p0.y, p0.z );
-                                    this._mesh._texCoords[ 0 ].push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
+                                    positions0.push( p0.x, p0.y, p0.z );
+                                    texCoords0.push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
                                         ( p0.crossSection.y - minTexU_z ) / diffTexU_z );
                                 }
                             }
@@ -519,15 +594,15 @@ x3dom.registerNodeType(
                             {
                                 if ( this._vf.creaseAngle > x3dom.fields.Eps )
                                 {
-                                    this._mesh._indices[ 0 ].push( l + ( linklist_indices[ j ] - startPos ) );
+                                    indices0.push( l + ( linklist_indices[ j ] - startPos ) );
                                 }
                                 else
                                 {
                                     p0 = positions[ linklist_indices[ j ] ];
-                                    this._mesh._positions[ 0 ].push( p0.x, p0.y, p0.z );
-                                    this._mesh._texCoords[ 0 ].push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
+                                    positions0.push( p0.x, p0.y, p0.z );
+                                    texCoords0.push( ( p0.crossSection.x - minTexU_x ) / diffTexU_x,
                                         ( p0.crossSection.y - minTexU_z ) / diffTexU_z );
-                                    this._mesh._indices[ 0 ].push( index++ );
+                                    indices0.push( index++ );
                                 }
                             }
                         }
@@ -535,10 +610,36 @@ x3dom.registerNodeType(
                 }
 
                 this._mesh.calcNormals( this._vf.creaseAngle, this._vf.ccw );
-
+                // adjust normals at seams for closed spines and cross-sections
+                var normals = this._mesh._normals[ 0 ];
+                var merged_normal = new x3dom.fields.SFVec3f( 0, 0, 0 );
+                if ( seamMergers.length > 0 )
+                {
+                    seamMergers.concat( seamRing ).forEach( function ( seamIndices )
+                    {
+                        merged_normal.set( 0, 0, 0 );
+                        seamIndices.forEach( function ( index )
+                        {
+                        // get average normal of all seam vertices
+                            startIndex = indices0[ index ] * 3 ;
+                            merged_normal.x += normals[ startIndex ];
+                            merged_normal.y += normals[ startIndex + 1 ];
+                            merged_normal.z += normals[ startIndex + 2 ];
+                        }, this );
+                        merged_normal.normalize();
+                        seamIndices.forEach( function ( index )
+                        {
+                        // assign average normal of all seam vertices
+                            startIndex = indices0[ index ] * 3 ;
+                            normals[ startIndex ] = merged_normal.x;
+                            normals[ startIndex + 1 ] = merged_normal.y;
+                            normals[ startIndex + 2 ] = merged_normal.z;
+                        }, this );
+                    }, this );
+                }
                 this.invalidateVolume();
-                this._mesh._numFaces = this._mesh._indices[ 0 ].length / 3;
-                this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
+                numFaces = indices0.length / 3;
+                numCoords = positions0.length / 3;
             },
 
             fieldChanged : function ( fieldName )
