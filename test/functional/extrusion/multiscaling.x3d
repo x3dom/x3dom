@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "https://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='test_multscaling.x3d' name='title'/>
+    <meta content='test-multscaling-front.jpg' name='Image'/>
+    <meta content='test-multscaling-rear.jpg' name='Image'/>
+    <meta content='test-multscaling-top.jpg' name='Image'/>
+    <meta content='test-multscaling-bottom.jpg' name='Image'/>
+    <meta content='test-multscaling-left.jpg' name='Image'/>
+    <meta content='test-multscaling-right.jpg' name='Image'/>
+    <meta content='http://www.nist.gov/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/members.html' name='creator'/>
+    <meta content='This file was provided by the National Institute of Standards and Technology, and is part of the X3D Conformance Test Suite, available at http://www.nist.gov/vrml.html The information contained within this file is provided for use in establishing conformance to the ISO VRML97 Specification. Conformance to this test does not imply recommendation or endorsement by the National Institute of Standards and Technology (NIST). This software can be redistributed and/or modified freely provided that any derivative works bear some notice that they are derived from it, and any modified versions bear some notice that they have been modified.' name='disclaimer'/>
+    <meta content='Original NIST Conformance Testing Group, https://www.itl.nist.gov/div897/ctg/vrml' name='reference'/>
+    <meta content='Interactive Conformance Testing for VRML, Mary Brady and Lynn Rosenthal, NIST, created 8 September 2010 and updated 25 August 2016, https://www.nist.gov/itl/ssd/information-systems-group/interactive-conformance-testing-vrml' name='reference'/>
+    <meta content='Correct definition and compliance of this conformance scene is maintained by the X3D Working Group, https://www.web3d.org/working-groups/x3d' name='info'/>
+    <meta content='Michael Kass NIST' name='creator'/>
+    <meta content='Don Brutzman' name='translator'/>
+    <meta content='21 January 2001' name='translated'/>
+    <meta content='28 August 2023' name='modified'/>
+    <meta content='This test draws an Extruded circle of radius one along the Y axis. A different scale factor is applied to each point in the spine field. The test should generate an extruded circle that looks like a champange cope.' name='description'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/ConformanceNist/Geometry/Extrusion/test_multscaling.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit 4.0, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='test_multscaling.x3d'/>
+    <NavigationInfo type='"EXAMINE" "WALK" "FLY" "ANY"'/>
+    <Transform rotation='0 1 0 0.9' translation='0 -1 0'>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Extrusion creaseAngle='0.01'
+            crossSection='1 0 0.75 0.66 0.5 0.87 0.25 0.97 0 1 -0.25 0.97 -0.5 0.87 -0.75 0.66 -1 0 -0.75 -0.66 -0.5 -0.87 -0.25 -0.97 0.25 -0.97 0.5 -0.87 0.75 -0.66 1 0' 
+            endCap='false' 
+            scale='2 2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.4 0.4 0.6 0.6 0.8 0.8 1 1 1.2 1.2 1.4 1.4 1.8 1.8 2 2 2 2' 
+            solid='false'
+            spine='0 0 0 0 0.2 0 0 0.4 0 0 0.6 0 0 0.8 0 0 1 0 0 1.2 0 0 1.4 0 0 1.6 0 0 1.8 0 0 2 0 0 2.2 0 0 2.4 0 0 2.6 0 0 2.8 0 0 3 0'/>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

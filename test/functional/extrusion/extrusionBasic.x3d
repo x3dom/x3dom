@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+		<!-- Variations on basic geometry -->
+		<Transform translation="0 0 0">
+			<Shape><Appearance DEF="Teal"><Material diffuseColor="0 0.5 0.5"/></Appearance></Shape>
+			
+			<!-- Closed cross, open spine -->
+			<Transform translation="0 0 0">
+				<Shape>
+					<Appearance DEF="Teal">
+						<Material diffuseColor="0 0.5 0.5"/>
+					</Appearance>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 0 5 0 5 5 0"/>
+				</Shape>
+			</Transform>
+
+			<!-- Open cross, open spine -->
+			<Transform translation="0 10 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="-1 0 0 -1 1 0" spine="0 0 0 0 5 0 5 5 0"/>
+				</Shape>
+			</Transform>
+			
+			<!-- Open cross, closed spine -->
+			<Transform translation="0 20 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="-1 0 0 -1 1 0" spine="0 0 0 0 5 0 5 5 0 5 0 0 0 0 0"/>
+				</Shape>
+			</Transform>
+			
+		    <!-- Closed cross, closed spine -->
+			<Transform translation="0 30 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="-1 0 0 -1 1 0 1 1 -1 0" spine="0 0 0 0 5 0 5 5 0 5 0 0 0 0 0"/>
+				</Shape>
+			</Transform>
+		</Transform>
+	</Scene>
+</X3D>

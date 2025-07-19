@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "https://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Full' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='https://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <Scene>
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Extrusion beginCap='true' crossSection='1 0 0.75 0.66 0.5 0.87 0.25 0.97 0 1 -0.25 0.97 -0.5 0.87 -0.75 0.66 -1 0 -0.75 -0.66 -0.5 -0.87 -0.25 -0.97 0.25 -0.97 0.5 -0.87 0.75 -0.66 1 0' endCap='false' solid='true' 
+          spine='0 0 -1, 0 0 -2, 0 0 0'/>
+      </Shape>
+  </Scene>
+</X3D>
