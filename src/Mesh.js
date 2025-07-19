@@ -276,12 +276,10 @@ x3dom.Mesh.prototype.calcNormals = function ( creaseAngle, ccw )
 
             for ( j = 0; j < num; ++j )
             {
-                {
-                    n = n.add( arr[ j ] );
-                }
+                n = n.add( arr[ j ] );
             }
-
             n = n.normalize();
+
             vertNormals[ i ] = n.x;
             vertNormals[ i + 1 ] = n.y;
             vertNormals[ i + 2 ] = n.z;
