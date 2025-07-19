@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+		<!-- Pathological examples -->
+		<Transform translation="0 0 0">
+			<Shape><Appearance DEF="Teal"><Material diffuseColor="0 0.5 0.5"/></Appearance></Shape>
+
+			<!-- Bicylinder; two coincident points in the middle of the spine.
+			Defined under the standard but generalizations aren't. -->
+			<Transform translation="-15 -5 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" scale="1 1 1 1 2 2 2 2" spine="0 2 0 0 3 0 0 3 0 0 4 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Two conincident points" "in the middle of the spine." "Defined under the standard,"  "but generalizations aren&apos;t."'/>
+                </Shape>
+			</Transform>
+			
+			<!-- Hat: 2nd and 3rd spine points coincide.
+			Undefined under the standard, since Y reuse is not mentioned. -->
+			<Transform translation="0 -5 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" scale="1 1 1 1 2 2" spine="0 2 0 0 3 0 0 3 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Top hat: 2nd and 3rd spine points coincide." "Undefined under the standard," "since Y reuse is not mentioned."'/>
+                </Shape>
+			</Transform>
+
+			<!-- Inverse hat: 1st and 2nd spine points coincide.
+			Undefined under the standard, since Y look-ahead is not mentioned. -->
+			<Transform translation="15 -5 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" scale="2 2 1 1 1 1" spine="0 2 0 0 2 0 0 3 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Inverse hat: 1st and 2nd" "spine points coincide." "Undefined under the standard," "since Y look-ahead is not mentioned"'/>
+                </Shape>
+			</Transform>
+
+			<!-- Three coincident points in the middle.
+			Badly undefined under the standard (null CSP Y), may crash a viewer. -->
+			<Transform translation="-15 5 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" scale="1 1 1 1 2 2 3 3 3 3" spine="0 2 0 0 3 0 0 3 0 0 3 0 0 4 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Three coincident points in the middle." "Badly undefined under the standard" "(null CSP Y), may crash a viewer."'/>
+                </Shape>
+			</Transform>
+
+			<!-- Coincident points with a bent spine.
+			Undefined under the standard - rules are contradictory. -->
+			<Transform translation="0 5 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" spine="0 2 0 0 6 0 0 6 0 0 6 4"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Coincident points with a bent spine." "Undefined under the standard -" "rules are contradictory."'/>
+                </Shape>
+			</Transform>
+
+		</Transform>
+	</Scene>
+</X3D>

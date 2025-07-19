@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+		<!-- Various directions - not as simple as it seems! -->
+		<Transform translation="0 0 0">
+			<Shape><Appearance DEF="Teal"><Material diffuseColor="0 0.5 0.5"/></Appearance></Shape>
+                        <Shape><Appearance DEF="R"><Material diffuseColor="1 0 0"/></Appearance></Shape>
+			
+		    <!-- Straight spine in Y direction -->
+			<Transform  translation="-10 -10 0">
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Straight spine in Y direction"'/>
+                </Shape>
+                
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 0 5 0"/>
+				</Shape>
+			</Transform>
+
+			<!-- Straight spine in Z direction -->
+			<Transform  translation="-10 0 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 0 0 5"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Straight spine in Z direction"'/>
+                </Shape>
+			</Transform>
+
+			<!-- Straight spine in X direction -->
+			<Transform  translation="-10 10 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 5 0 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Straight spine in X direction"'/>
+                </Shape>
+			</Transform>
+
+			<!-- Straight spine in -Y direction
+			Undefined under the standard!!! -->
+			<Transform  translation="10 -10 0">
+				<Shape>
+					<Appearance USE="R"/>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 0 -5 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Straight spine in -Y direction"'/>
+                </Shape>
+			</Transform>
+
+			<!-- Straight spine in -Z direction -->
+			<Transform  translation="10 0 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 0 0 -5"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Straight spine in -Z direction"'/>
+                </Shape>
+			</Transform>
+
+			<!-- Straight spine in -X direction -->
+			<Transform  translation="10 10 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" crossSection="0 1 1 -0.5 -1 -0.5 0 1" spine="0 0 0 -5 0 0"/>
+				</Shape>
+                
+                <Shape>
+                    <Appearance><Material diffuseColor="0 0 0"/></Appearance>
+                    <Text string='"Straight spine in -X direction"'/>
+                </Shape>
+			</Transform>
+
+		</Transform>
+		<Viewpoint position="10 15 50"/>
+	</Scene>
+</X3D>

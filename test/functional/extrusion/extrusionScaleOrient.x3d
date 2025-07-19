@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+		<!-- Scale and rotate -->
+		<Transform translation="0 0 0">
+			<Shape><Appearance DEF="Teal"><Material diffuseColor="0 0.5 0.5"/></Appearance></Shape>
+			<!-- Basic scale in the midpoint -->
+			<Transform translation="0 0 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" scale="1 1 1.3 0.8 1 1" spine="0 0 0 0 2 0 0 4 0"/>
+				</Shape>
+			</Transform>
+
+			<!-- Rotation clockwise along the spine-->
+			<Transform translation="10 0 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" orientation="0 1 0 0 0 1 0 0.3 0 1 0 0.6" spine="0 0 0 0 2 0 0 4 0"/>
+				</Shape>
+			</Transform>
+
+			<!-- Rotation around Z in the midpoint along the spine-->
+			<Transform translation="20 0 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false" orientation="0 1 0 0 0 0 1 0.6 0 1 0 0" spine="0 0 0 0 2 0 0 4 0"/>
+				</Shape>
+			</Transform>
+
+			<!-- Rotation around Z and scale in the midpoint
+			expands in the X direction, contracts in the Z direction
+			-->
+			<Transform translation="30 0 0">
+				<Shape>
+					<Appearance USE="Teal"/>
+					<Extrusion solid="false"  scale="1 1 1.5 0.5 1 1" orientation="0 1 0 0 0 0 1 0.6 0 1 0 0" spine="0 0 0 0 2 0 0 4 0"/>
+				</Shape>
+			</Transform>
+		</Transform>
+	</Scene>
+</X3D>

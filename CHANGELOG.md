@@ -15,6 +15,7 @@
     * MSFT_texture_dds
   * field values from metadata for non-standard nodes
 * Improvements
+  * Extrusion: fix for two point spines, smooth closed spine and xs 
   * hooks for HAnim in grouping node traversal
   * defaults for outputOnly fields (in Protos)
   * improve IS field name processing in Protos
