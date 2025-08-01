@@ -935,17 +935,22 @@ x3dom.gfx_webgl = ( function ()
 
                 bgnd._webgl.primType = gl.TRIANGLES;
 
+                var _bgnd      = null, //### separate variables to ease debugging
+                    scale      = true,
+                    genMipMaps = false,
+                    flipY      = false; // relevant for DDS only
+
                 if ( url[ 0 ].indexOf( ".dds" ) != -1 )
                 {
                     bgnd._webgl.shader = this.cache.getShader( gl, x3dom.shader.BACKGROUND_CUBETEXTURE_DDS );
-                    bgnd._webgl.texture = x3dom.Utils.createTextureCube( gl, bgnd._nameSpace.doc, [ url[ 0 ] ],
-                        false, bgnd._vf.crossOrigin, true, false, false );
+                    //bgnd._webgl.texture = x3dom.Utils.createTextureCube( gl, bgnd._nameSpace.doc, [ url[ 0 ] ], false, bgnd._vf.crossOrigin, true,  false,      false );
+                    bgnd._webgl.texture   = x3dom.Utils.createTextureCube( gl, bgnd._nameSpace.doc, [ url[ 0 ] ], _bgnd, bgnd._vf.crossOrigin, scale, genMipMaps, flipY );
                 }
                 else
                 {
-                    bgnd._webgl.shader = this.cache.getShader( gl, x3dom.shader.BACKGROUND_CUBETEXTURE_DDS );
-                    bgnd._webgl.texture = x3dom.Utils.createTextureCube( gl, bgnd._nameSpace.doc, url,
-                        false, bgnd._vf.crossOrigin, true, false );
+                    bgnd._webgl.shader = this.cache.getShader( gl, x3dom.shader.BACKGROUND_CUBETEXTURE ); //### This is the essential part of the correction
+                    //bgnd._webgl.texture = x3dom.Utils.createTextureCube( gl, bgnd._nameSpace.doc, url,          false, bgnd._vf.crossOrigin, true,  false             ); //### flipY is missing
+                    bgnd._webgl.texture   = x3dom.Utils.createTextureCube( gl, bgnd._nameSpace.doc, url,          _bgnd, bgnd._vf.crossOrigin, scale, genMipMaps, flipY );
                 }
             }
             else
