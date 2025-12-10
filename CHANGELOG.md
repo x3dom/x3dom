@@ -30,6 +30,7 @@
   * more accurate startTime update
   * tune PhysicalMaterial for compatible light intensity
 * Bugfixes
+  * fix for key buffer reuse in glTF animation (#1349)
   * fix Rectangle2D size updates
   * fix fitAll for OrthoViewpoint
   * fix nav. type field updates
