@@ -1793,7 +1793,7 @@ x3dom.BinaryContainerLoader.setupBufferInterpolator = function ( interpolator )
         var data = x3dom.BinaryContainerLoader.getArrayBufferFromType( componentType,
             arraybuffer,
             byteOffset,
-            byteLength );
+            byteLength ).slice();
 
         for ( var i = 0, n = data.length; i < n; i++ )
         {
