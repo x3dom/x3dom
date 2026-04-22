@@ -36,6 +36,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool( ctx, "enabled", true );
+
+            /**
+             * Description of the sensor node
+             * @var {x3dom.fields.SFString} description
+             * @memberof x3dom.nodeTypes.X3DSensorNode
+             * @initvalue ""
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFString( ctx, "description", "" );
         }
     )
 );
