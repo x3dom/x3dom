@@ -184,6 +184,7 @@ x3dom.registerNodeType(
             {
                 this._updateCycleStopTime();
             }
+            this.TIME_EPSILON = 0.01;//allowable catchup delay in seconds
 
             this._backupStartTime = this._vf.startTime;
             this._backupStopTime = this._vf.stopTime;
@@ -290,7 +291,12 @@ x3dom.registerNodeType(
                         this._vf.startTime = this._backupStartTime;
                         return;
                     }
-                    this._vf.startTime = Date.now() / 1000; //needs to be refreshed since it can be slow to get here
+
+                    const now = Date.now() / 1000;
+                    if ( now - this._vf.startTime < this.TIME_EPSILON ) // if slightly delayed
+                    {
+                        this._vf.startTime = now; //needs to be refreshed since it can be slow to get here
+                    }
 
                     this._backupStartTime = this._vf.startTime;
                     this._updateCycleStopTime();
