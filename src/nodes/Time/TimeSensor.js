@@ -180,7 +180,7 @@ x3dom.registerNodeType(
             this._cycleStopTime = 0;
             this._activatedTime = 0;
 
-            if ( this._vf.startTime > 0 )
+            if ( this._vf.startTime > 0 && this._vf.startTime < this._vf.stopTime )
             {
                 this._updateCycleStopTime();
             }
