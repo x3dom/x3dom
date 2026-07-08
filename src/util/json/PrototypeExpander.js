@@ -1468,7 +1468,7 @@ x3dom.PROTOS.prototype = {
                             catch ( e )
                             {
                                 var filename = url;
-                                if ( filename.endsWith( ".json" ) )
+                                if ( filename.endsWith( ".json" ) || filename.endsWith( ".x3dj" ) )
                                 {
                                     filename = filename.substring( 0, filename.lastIndexOf( "." ) ) + ".x3d";
                                     // console.error("converting possible X3D to JSON", filename);
