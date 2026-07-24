@@ -229,6 +229,18 @@ x3dom.isa = function ( object, clazz )
 };
 
 /**
+ * Utility function for testing a node type.
+ *
+ * @param object the object to test
+ * @param classes An array of classes
+ * @returns true or false
+ */
+x3dom.isOneOf = function ( object, classes )
+{
+    return classes.find( cls=>object instanceof cls ) ? true : false;
+};
+
+/**
  * Get Global Helper
  *
  * @returns {*}

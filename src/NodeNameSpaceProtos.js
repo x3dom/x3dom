@@ -214,7 +214,7 @@ x3dom.NodeNameSpace.prototype.loadExternProtoAsync = function ( protoDeclaration
                             for ( var fieldName in parentNode._cf )
                             {
                                 var field = parentNode._cf[ fieldName ];
-                                if ( x3dom.isa( instanceNode, field.type ) )
+                                if ( x3dom.isOneOf( instanceNode, field.types ) )
                                 {
                                     children = field;
                                     break;

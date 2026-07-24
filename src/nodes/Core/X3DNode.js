@@ -113,7 +113,7 @@ x3dom.registerNodeType(
                             if ( this._cf.hasOwnProperty( fieldName ) )
                             {
                                 var testField = this._cf[ fieldName ];
-                                if ( x3dom.isa( node, testField.type ) )
+                                if ( x3dom.isOneOf( node, testField.types ) )
                                 {
                                     field = testField;
                                     break;
@@ -984,14 +984,14 @@ x3dom.registerNodeType(
             },
 
             // child node fields
-            addField_SFNode : function ( name, type )
+            addField_SFNode : function ( name, types )
             {
-                this._cf[ name ] = new x3dom.fields.SFNode( type );
+                this._cf[ name ] = new x3dom.fields.SFNode( types );
                 this._cfFieldTypes[ name ] = "SFNode";
             },
-            addField_MFNode : function ( name, type )
+            addField_MFNode : function ( name, types )
             {
-                this._cf[ name ] = new x3dom.fields.MFNode( type );
+                this._cf[ name ] = new x3dom.fields.MFNode( types );
                 this._cfFieldTypes[ name ] = "MFNode";
             }
         }
