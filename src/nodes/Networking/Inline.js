@@ -250,6 +250,7 @@ x3dom.registerNodeType(
                             case ".gltf" :  return this.ContentType.GLTF;
                             case ".glb"  :  return this.ContentType.GLB;
                             case ".json" :  return this.ContentType.X3DJ;
+                            case ".x3dj" :  return this.ContentType.X3DJ;
                         }
                     }
                 }

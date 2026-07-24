@@ -1183,7 +1183,6 @@ x3dom.Utils.generateProperties = function ( viewarea, shape )
                                     ( property.PBR_MATERIAL && material.hasTextures() ) ) ? 1 : 0;
         property.CUBEMAP          = ( texture && x3dom.isa( texture, x3dom.nodeTypes.X3DEnvironmentTextureNode ) ) ||
                                     ( property.CSSHADER && appearance._shader.getEnvironmentMap() ) ? 1 : 0;
-        property.PIXELTEX         = ( texture && x3dom.isa( texture, x3dom.nodeTypes.PixelTexture ) ) ? 1 : 0;
         property.TEXTRAFO         = ( appearance && appearance._cf.textureTransform.node ) ? 1 : 0;
         property.DIFFUSEMAP       = ( texture && !x3dom.isa( texture, x3dom.nodeTypes.X3DEnvironmentTextureNode ) ) ||
                                     ( property.CSSHADER && appearance._shader.getDiffuseMap() ) ||

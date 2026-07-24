@@ -87,6 +87,17 @@ x3dom.registerNodeType(
                 if ( this._vf.enabled )
                 {
                     this.postMessage( "isOver", true );
+                    const ns = this._nameSpace;
+                    const inline = ns.superInlineNode;
+                    const nameSpaceID =
+                        inline && inline._DEF ? inline._DEF :
+                            inline ? inline._vf.url[ 0 ] :
+                                ns.name || "name scope";
+                    x3dom.debug.logInfo(
+                        "Pointer sensed by " +
+                        nameSpaceID + "/" +
+                        this._DEF + ": " +
+                        this._vf.description );
                 }
             },
 

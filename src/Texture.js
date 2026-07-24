@@ -382,6 +382,8 @@ x3dom.Texture.prototype.updateTexture = function ()
 
         pixels.set( pixelArr );
 
+        //Flip Y axis. (Ref. https://registry.khronos.org/webgl/specs/latest/1.0/#texImage2D and https://www.web3d.org/documents/specifications/19775-1/V4.0/Part01/fieldTypes.html#SFImageAndMFImage)
+        gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
         gl.bindTexture( this.type, this.texture );
         gl.pixelStorei( gl.UNPACK_ALIGNMENT, 1 );
         gl.texImage2D( this.type, 0, this.format,
@@ -392,6 +394,7 @@ x3dom.Texture.prototype.updateTexture = function ()
             gl.generateMipmap( this.type );
         }
         gl.bindTexture( this.type, null );
+        gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false );
     }
     else if ( x3dom.isa( tex, x3dom.nodeTypes.MovieTexture ) || childTex )
     {

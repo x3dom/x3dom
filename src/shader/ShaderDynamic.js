@@ -468,6 +468,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
         else if ( properties.TEXTRAFO )
         {
             shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
+            if ( properties.MULTITEXCOORD )
+            {
+                shader += " fragTexcoord2 = (texTrafoMatrix * vec4(vertTexCoord2, 1.0, 1.0)).xy;\n";
+            }
         }
         else
         {
@@ -975,6 +979,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                     if ( !properties.TANGENTDATA && ( x3dom.caps.STD_DERIVATIVES || x3dom.caps.WEBGL_VERSION == 2 ) )
                     {
                         shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(texcoord.x, 1.0 - texcoord.y), _normalBias);\n";
+                        if ( properties.NORMALMAPCHANNEL )
+                        {
+                            shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(texcoord2.x, 1.0 - texcoord2.y), _normalBias);\n";
+                        }
+                        else
+                        {
+                            shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(texcoord.x, 1.0 - texcoord.y), _normalBias);\n";
+                        }
                     }
                     else
                     {
@@ -982,15 +994,28 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                         shader += "vec3 b = normalize( fragBinormal );\n";
                         shader += "mat3 tangentToWorld = mat3(t, b, n);\n";
 
-                        shader += "normal = texture2D( normalMap, vec2(texcoord.x, 1.0-texcoord.y) ).rgb;\n";
+                        if ( properties.NORMALMAPCHANNEL )
+                        {
+                            shader += "normal = texture2D( normalMap, vec2(texcoord2.x, 1.0-texcoord2.y) ).rgb;\n";
+                        }
+                        else
+                        {
+                            shader += "normal = texture2D( normalMap, vec2(texcoord.x, 1.0-texcoord.y) ).rgb;\n";
+                        }
                         shader += "normal = 2.0 * normal - 1.0;\n";
                         shader += "normal = normalize( normal * tangentToWorld );\n";
                     }
                 }
                 else if ( properties.NORMALSPACE == "OBJECT" )
                 {
-                    shader += "normal = texture2D( normalMap, vec2(texcoord.x, 1.0-texcoord.y) ).rgb;\n";
-
+                    if ( properties.NORMALMAPCHANNEL )
+                    {
+                        shader += "normal = texture2D( normalMap, vec2(texcoord2.x, 1.0-texcoord2.y) ).rgb;\n";
+                    }
+                    else
+                    {
+                        shader += "normal = texture2D( normalMap, vec2(texcoord.x, 1.0-texcoord.y) ).rgb;\n";
+                    }
                     shader += "normal = 2.0 * normal - 1.0;\n";
                     shader += "normal = (mat_n * vec4(normal, 0.0)).xyz;\n";
                     shader += "normal = normalize(normal);\n";
@@ -1010,27 +1035,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             }
             else if ( properties.DIFFUSEMAP || properties.TEXT )
             {
-                if ( properties.PIXELTEX )
+                if ( properties.DIFFUSEMAPCHANNEL )
                 {
-                    if ( properties.DIFFUSEMAPCHANNEL )
-                    {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, texcoord2)" ) + ";\n";
-                    }
-                    else
-                    {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, texcoord)" ) + ";\n";
-                    }
+                    shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord2.x, 1.0 - texcoord2.y))" ) + ";\n";
                 }
                 else
                 {
-                    if ( properties.DIFFUSEMAPCHANNEL )
-                    {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord2.x, 1.0 - texcoord2.y))" ) + ";\n";
-                    }
-                    else
-                    {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord.x, 1.0 - texcoord.y))" ) + ";\n";
-                    }
+                    shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord.x, 1.0 - texcoord.y))" ) + ";\n";
                 }
             }
 
@@ -1243,30 +1254,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
 
         if ( properties.TEXTURED && ( properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP || properties.TEXT ) )
         {
-            if ( properties.PIXELTEX )
+            if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
             {
-                if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
-                {
-                    shader += "vec2 texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
-                }
-                else
-                {
-                    shader += "vec2 texCoord = fragTexcoord;\n";
-                }
+                shader += "vec2 texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
             }
             else
             {
-                if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
-                {
-                    shader += "vec2 texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
-                    shader += "texCoord.y = 1.0 - texCoord.y;\n";
-                }
-                else
-                {
-                    shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
-                }
+                shader += "vec2 texCoord = fragTexcoord;\n";
             }
-            shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, texCoord)" ) + ";\n";
+            shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texCoord.x, 1.0-texCoord.y))" ) + ";\n";
             shader += "color.a = texColor.a;\n";
 
             if ( properties.BLENDING || properties.IS_PARTICLE || properties.POINTPROPERTIES )
