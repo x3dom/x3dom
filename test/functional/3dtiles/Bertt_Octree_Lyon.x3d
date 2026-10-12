@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+            <GeoViewpoint headlight="true" 
+                orientation='-1 0 0 1.57'
+                centerOfRotation="45.748429, 4.831859 40"
+                position="45.748429 4.831859 4000" zFar='100000'>
+                <GeoOrigin DEF='GO' geoCoords="45.748429 4.831859 0" rotateYUp="true">
+                </GeoOrigin>
+            </GeoViewpoint>
+        <!-- <Transform _rotation='1 0 0 1.5708'>     -->
+		    <GeoTileset
+            maximumScreenSpaceError='2'
+            url='"https://bertt.github.io/cesium_3dtiles_samples/samples/octree_lyon/tileset.json"'>
+                <GeoOrigin USE='GO' />
+            </GeoTileset>
+        <!-- </Transform> -->
+    </Scene>
+</X3D>
+
+	

@@ -783,12 +783,12 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
 
     if ( texture.extensions )
     {
-        if ( texture.extensions.EXT_texture_webp && texture.extensions.EXT_texture_webp.source )
+        if ( texture.extensions.EXT_texture_webp && "source" in texture.extensions.EXT_texture_webp )
         {
             var extImage = this._gltf.images[ texture.extensions.EXT_texture_webp.source ];
             extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
         }
-        else if ( texture.extensions.MSFT_texture_dds && texture.extensions.MSFT_texture_dds.source )
+        else if ( texture.extensions.MSFT_texture_dds && "source" in texture.extensions.MSFT_texture_dds )
         {
             var extImage = this._gltf.images[ texture.extensions.MSFT_texture_dds.source ];
             extImageUrl = x3dom.Utils.dataURIToObjectURL( extImage.uri || "" );
@@ -809,10 +809,10 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function ( texture, conta
         imagetexture.setAttribute( "containerField", containerField );
     }
 
-    if ( image.uri != undefined || extImageUrl.length > 0 )
+    if ( image && "uri" in image || extImageUrl.length > 0 )
     {
         var MFUrl = extImageUrl.length ? [ "\"" + extImageUrl + "\"" ] : [];
-        if ( image.uri )
+        if ( image && "uri" in image )
         {
             MFUrl.push( "\"" + x3dom.Utils.dataURIToObjectURL( image.uri ) + "\"" );
         }

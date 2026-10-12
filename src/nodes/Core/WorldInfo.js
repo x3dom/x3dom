@@ -50,8 +50,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFString( ctx, "title", "" );
 
-            x3dom.debug.logInfo( this._vf.info );
-            x3dom.debug.logInfo( this._vf.title );
+            x3dom.debug.logInfo( this._vf.info, this._vf.info.join( "" ).length > 0 );
+            x3dom.debug.logInfo( this._vf.title, this._vf.title.length > 0 );
         }
     )
 );

@@ -634,6 +634,40 @@ x3dom.registerNodeType(
                 return gc;
             },
 
+            X3DtoGC : function ( geoSystem, geoOrigin, coords )
+            {
+                // needs geoSystem since GC can have different ellipsoids
+                var gc = coords;
+                // transform by origin
+                if ( geoOrigin.node )
+                {
+                    // transform points by origin
+                    var origin = this.OriginToGC( geoOrigin );
+                    //avoid expensive matrix inversion by just adding origin
+                    var matrix = x3dom.fields.SFMatrix4f.translation( origin );
+
+                    //also rotate Y up if requested
+                    if ( geoOrigin.node._vf.rotateYUp )
+                    {
+                        //rotation is GeoLocation rotation, eg. Up to Y and N to -Z
+                        var rotmat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat( geoSystem, origin );
+                        //first translate, then rotate
+                        matrix = matrix.mult( rotmat );//rotmat.mult( matrix );
+                    }
+
+                    for ( var i = 0; i < coords.length; ++i )
+                    {gc[ i ] = matrix.multMatrixPnt( coords[ i ] );}
+                }
+
+                return gc;
+            },
+
+            X3DtoGD : function ( geoSystem, geoOrigin, coords )
+            {
+                const gc = this.X3DtoGC( geoSystem, geoOrigin, coords );
+                return this.GCtoGD( geoSystem, gc );
+            },
+
             GEOtoX3D : function ( geoSystem, geoOrigin, coords )
             {
                 // transform points to GeoCentric

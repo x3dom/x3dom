@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+       <Shape id="basemap">
+            <Appearance>
+                <Material diffuseColor='0.4 1.0 0.0'></Material>
+                <ImageTexture url='"./basemap.jpg" "https://github.com/user-attachments/assets/cdea43dd-8128-4b5e-ad24-a97317194d63"'>
+                </ImageTexture>
+            </Appearance>
+            <GeoElevationGrid ccw='true' colorPerVertex='true' creaseAngle='0.0' 
+                geoGridOrigin='40.029665 -75.644785 0' 
+                geoSystem='"GD" "WE"' 
+                height='0 0 0 0' 
+                solid='false' 
+                xDimension='2' xSpacing='0.063852' 
+                zDimension='2' zSpacing='0.025897'
+                yScale='1'>
+                <GeoOrigin DEF='GO' geoCoords="40.029 -75.6148 0" rotateYUp="true"/>
+            </GeoElevationGrid>
+        </Shape> 
+        <GeoLocation geoCoords="40.029 -75.6148 0">
+            <GeoOrigin USE='GO'/>
+            <Transform scale='100 100 100' translation='0 200 -2000'>
+                <Transform translation='0 0 -5'>
+                    <Inline url='"https://www.web3d.org/x3d/content/examples/Basic/Web3dOutreach/Web3dX3dLogoAnimated.x3d"'></Inline>
+                </Transform>
+            </Transform>
+        </GeoLocation>  
+    </Scene>
+</X3D>
+
+	

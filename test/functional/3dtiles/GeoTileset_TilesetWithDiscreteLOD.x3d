@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+            <GeoViewpoint headlight="true" centerOfRotation="40.041665 -75.61785 0" position="40.029 -75.6148 20">
+                <GeoOrigin DEF='GO' geoCoords="40.029 -75.6148 0" rotateYUp="true">
+                </GeoOrigin>
+            </GeoViewpoint>
+            <Inline url='"basemap.x3d"'/>    
+        <!-- <Transform _rotation='1 0 0 1.5708'>     -->
+		    <GeoTileset 
+            maximumScreenSpaceError='2'
+            url='"https://andreasplesch.github.io/3d-tiles-examples/migration/output_from_1.0/TilesetWithDiscreteLOD/tileset.json"'> 
+                <GeoOrigin DEF='GO' geoCoords="40.029 -75.6148 0" rotateYUp="true"/>
+            </GeoTileset>
+        <!-- </Transform> -->
+    </Scene>
+</X3D>

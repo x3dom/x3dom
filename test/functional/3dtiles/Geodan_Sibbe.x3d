@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+            <GeoViewpoint headlight="true" 
+                orientation='-1 0 0 1.57'
+                centerOfRotation="50.8245 5.82145 100"
+                position="50.8245 5.82145 4000">
+                <GeoOrigin DEF='GO' geoCoords="50.8245 5.82145 0 0" rotateYUp="true">
+                </GeoOrigin>
+            </GeoViewpoint>
+            <DirectionalLight direction="0, -1, 1" intensity="10"></DirectionalLight>
+        <!-- <Transform _rotation='1 0 0 1.5708'>     -->
+		    <GeoTileset maximumScreenSpaceError='2' url='"https://geodan.github.io/pg2b3dm/sample_data/3dbag/sibbe/1.1/tileset.json"'>
+                <GeoOrigin USE='GO' />
+            </GeoTileset>
+        <!-- </Transform> -->
+    </Scene>
+</X3D>
+
+	

@@ -5871,7 +5871,7 @@ x3dom.fields.MFString.prototype.toString = function ()
     var str = "";
     for ( var i = 0, n = this.length; i < n; i++ )
     {
-        str = str + this[ i ] + " ";
+        str = str + "\"" + this[ i ] + "\"" + " ";
     }
     return str;
 };

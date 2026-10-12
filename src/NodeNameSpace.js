@@ -124,12 +124,12 @@ x3dom.NodeNameSpace.prototype.removeSpace = function ( space )
  *
  * @param url
  */
-x3dom.NodeNameSpace.prototype.setBaseURL = function ( url )
+x3dom.NodeNameSpace.prototype.setBaseURL = function ( url, options = { log: true } )
 {
     var i = url.lastIndexOf( "/" );
     this.baseURL = ( i >= 0 ) ? url.substr( 0, i + 1 ) : "";
-
-    x3dom.debug.logInfo( "setBaseURL: " + this.baseURL );
+    const log = this.baseURL > 0 ? options?.log : false;
+    x3dom.debug.logInfo( "setBaseURL: " + this.baseURL, log );
 };
 
 /**

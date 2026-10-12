@@ -265,7 +265,7 @@ x3dom.registerNodeType(
                     this._bboxNode = this._nameSpace.setupTree( bbDom, this._xmlNode.parentElement );
                 }
                 var bbox = this._graph.volume;
-                bboxNode = this._bboxNode;
+                const bboxNode = this._bboxNode;
                 bboxNode._vf.translation = bbox.center;
                 var size = bbox.max.subtract( bbox.min );
                 var margin = bbox.diameter * this._vf.bboxMargin;

@@ -894,6 +894,10 @@ x3dom.Viewarea.prototype.showAll = function ( axis, updateCenterOfRotation )
     var min = x3dom.fields.SFVec3f.copy( scene._lastMin );
     var max = x3dom.fields.SFVec3f.copy( scene._lastMax );
 
+    var dia = max.subtract( min );
+    var dia2 = dia.multiply( 0.5 );
+    var center = min.add( dia2 );
+
     var x = "x",
         y = "y",
         z = "z";
@@ -931,10 +935,6 @@ x3dom.Viewarea.prototype.showAll = function ( axis, updateCenterOfRotation )
     var fov = viewpoint.getFieldOfView();
 
     var isOrtho = x3dom.isa( viewpoint, x3dom.nodeTypes.OrthoViewpoint );
-
-    var dia = max.subtract( min );
-    var dia2 = dia.multiply( 0.5 );
-    var center = min.add( dia2 );
 
     if ( updateCenterOfRotation )
     {
@@ -1093,13 +1093,14 @@ x3dom.Viewarea.prototype.resetNavHelpers = function ()
  * Upright View
  *
  */
-x3dom.Viewarea.prototype.uprightView = function ()
+x3dom.Viewarea.prototype.uprightView = function ( up = new x3dom.fields.SFVec3f( 0, 1, 0 ) )
 {
+    up = up?.normalize() || new x3dom.fields.SFVec3f( 0, 1, 0 );
     var mat = this.getViewMatrix().inverse();
 
     var from = mat.e3();
     var at = from.subtract( mat.e2() );
-    var up = new x3dom.fields.SFVec3f( 0, 1, 0 );
+    //var up = new x3dom.fields.SFVec3f( 0, 1, 0 );
 
     var s = mat.e2().cross( up ).normalize();
     var v = s.cross( up ).normalize();

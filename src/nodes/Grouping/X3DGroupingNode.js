@@ -101,13 +101,13 @@ x3dom.registerNodeType(
                 }
 
                 //hook for HAnim nodes (and others)
-                this.onBeforeCollectChildNodes( childTransform );
+                this.onBeforeCollectChildNodes( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
 
                 //HAnimHumanoid overwrites this method
                 this.collectChildNodes( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
             },
 
-            onBeforeCollectChildNodes : function ( childTransform )//, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
+            onBeforeCollectChildNodes : function ( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
                 //implemented by derived nodes
             },

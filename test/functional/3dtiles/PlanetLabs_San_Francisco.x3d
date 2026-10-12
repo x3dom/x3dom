@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+            <GeoViewpoint headlight="true" 
+                orientation='-1 0 0 1.57'
+                centerOfRotation="37.7944 -122.4519 0"
+                position="37.7944 -122.4519 14000">
+                <GeoOrigin DEF='GO' geoCoords="37.7944 -122.4519 0" rotateYUp="true">
+                </GeoOrigin>
+            </GeoViewpoint>
+            <DirectionalLight direction="0, -1, 1" intensity="5"></DirectionalLight>
+        <!-- <Transform _rotation='1 0 0 1.5708'>     -->
+		    <GeoTileset url='"https://storage.googleapis.com/open-cogs/planet-stac/san-francisco-usa/3d-geofox.ai/3DTiles/tileset.json"'>
+                <GeoOrigin USE='GO' />
+            </GeoTileset>
+        <!-- </Transform> -->
+    </Scene>
+</X3D>
+
+	

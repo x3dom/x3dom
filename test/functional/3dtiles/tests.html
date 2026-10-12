@@ -1,0 +1,129 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Inline tiles test</title>
+    <script type="text/javascript" src="../../x3dom-include.js?full"></script>
+    <style>
+        label {margin: 5px;}
+        select {
+            padding: 5px;
+            border-width: thick;
+            borderr-radius: 5px;
+        }
+        option {
+            font-style: italic;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="false" width="800px" height="600px">
+        <Scene>
+            <Environment description='""' enableARC='false' 
+            frustumCulling='true'
+            gammaCorrectionDefault="none"
+            lowPriorityCulling='false' lowPriorityFactor='-1'
+            lowPriorityThreshold='1.0' maxFrameRate='62.5' minFrameRate='1.0' 
+            occlusionCulling='false' occlusionVisibilityFactor='-1' 
+            occlusionVisibilityThreshold='0.0' shadowExcludeTransparentObjects='false' 
+            smallFeatureCulling='true' smallFeatureFactor='-1' smallFeatureThreshold='1.0' 
+            sortTrans='true' SSAO="false" SSAOamount="1.0" SSAOblurDepthTreshold="5" 
+            SSAOradius="4" SSAOrandomTextureSize="4" tessellationDetailCulling='false' 
+            tessellationErrorFactor='-1' tessellationErrorThreshold='0.0' 
+            tonemapping="none" userDataFactor='-1' >
+            </Environment>
+            <!-- <NavigationInfo headlight="true"></NavigationInfo> -->
+            <DirectionalLight direction="0, -1, -1" ambientIntensity="0.2"></DirectionalLight>
+            <Background skyColor='"0 0 0.2"'></Background>
+            <!--Shape id="basemap">
+                <Appearance>
+                    <Material diffuseColor='0.4 1.0 0.0'></Material>
+                    <ImageTexture url='"./basemap.jpg" "https://github.com/user-attachments/assets/cdea43dd-8128-4b5e-ad24-a97317194d63"'>
+                    </ImageTexture>
+                </Appearance>
+                <GeoElevationGrid ccw='true' colorPerVertex='true' creaseAngle='0.0' 
+                    geoGridOrigin='40.029665 -75.644785 0' 
+                    geoSystem='"GD" "WE"' 
+                    height='0 0 0 0' 
+                    solid='false' 
+                    xDimension='2' xSpacing='0.063852' 
+                    zDimension='2' zSpacing='0.025897'
+                    yScale='1'>
+                    <GeoOrigin USE="GO"></GeoOrigin>
+                </GeoElevationGrid>
+            </Shape-->
+            <!-- <GeoTransform globalGeoOrigin="true"> -->
+                <!-- <GeoOrigin USE="GO"></GeoOrigin> -->
+                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="tiles" url="GeoTileset_Tileset.x3d" ></Inline>
+            <!-- </GeoTransform> -->
+        </Scene>
+    </X3D>
+    <label _style='margin: 5px;' for="x3d-select">Choose an example:</label>
+    <select _style='padding: 5px;
+            border-width: thick;
+            _border-radius: 5px;'
+            id="x3d-select" onchange='handleChange(event)'>
+        <option>glbContentInline</option>
+        <option _disabled skipShowAll needsKey>Google_3DTiles</option>
+        <option selected >GeoTileset_Tileset</option>
+        <option>GeoTileset_withTransforms</option>
+        <option>GeoTileset_emptyRoot</option>
+        <option>GeoTileset_TilesetOfTilesets</option>
+        <option>GeoTileset_withExternalResources</option>
+        <option>GeoTileset_PointCloudWithTransform</option>
+        <option>GeoTileset_PointCloudRGBA</option>
+        <option>GeoTileset_TilesetWithDiscreteLOD</option>
+        <option>GeoTileset_ImplicitTileset</option>
+        <option disabled >GeoTileset_ImplicitTilesetWithJsonSubtree</option>
+        <option>PlanetLabs_Angkor_Wat</option>
+        <option>PlanetLabs_Cocabamba</option>
+        <option>PlanetLabs_San_Francisco</option>
+        <option>PlanetLabs_SP_Crater</option>
+        <option>PlanetLabs_SP_Crater_globalGC</option>
+        <option>Bertt_3dcitydb_Ingolstadt</option>
+        <option>Bertt_Octree_Lyon</option>
+        <option>Geodan_Sibbe</option>
+        <option skipShowAll needsKey>Geodan_Sibbe_Google3D</option>
+        <option>Bertt_Delaware</option>
+        <option disabled >GeoTileset_multipleContents</option>
+        <option value="none" >--Please choose a x3d scene--</option>
+    </select>
+    <label>Google Key:
+        <input id="googleKey" type="'text" size="40" value="BIzaSyBMcau8Z4U50eULAjWSmPUyz6P2_mDgGKQ first B to A" >
+    </label>
+</body>
+<script>
+    const inline = document.querySelector('#Inline');
+    const ext = '.x3d';
+    const selectEl = document.querySelector('#x3d-select');
+    const skipShowAll = 'skipShowAll';
+    const needsKeyName = 'needsKey';
+    const googleKeyEl = document.querySelector('#googleKey');
+    function handleChange(event) {
+        let option = event.target.options[event.target.selectedIndex].value;
+        inline.setAttribute('url', option + ext);
+    }
+    function handleLoad(event) {
+        const googleKey = googleKeyEl.value;
+        const selectedAttributes = selectEl.options[selectEl.selectedIndex].attributes
+        const needsKey = selectedAttributes[needsKeyName];
+        const skip = selectedAttributes[skipShowAll];
+        setTimeout( () => {
+            const googleTileEl = inline.querySelector('GeoTileset[url*="googleapis"]');
+            if ( googleTileEl )
+                {
+                    const googleURL = googleTileEl.getAttribute('url');
+                    if ( ! googleURL.includes('key') )
+                    {
+                        googleTileEl.setAttribute('url', googleURL.replace('root.json', 'root.json?key=' + googleKey));
+                    }
+                }
+        }, 100 );
+        setTimeout( () => {
+            if ( skip ) { return }
+            document.querySelector('X3D').runtime.showAll("negY");
+        }, 3000 );
+    }
+</script>
+</html>

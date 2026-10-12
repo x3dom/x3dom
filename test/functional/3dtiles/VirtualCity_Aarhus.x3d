@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+            <GeoViewpoint headlight="true" 
+                orientation='-1 0 0 1.57'
+                centerOfRotation="56.156704 10.210131 0"
+                position="56.156704 10.210131 14000">
+                <GeoOrigin DEF='GO' geoCoords="56.156704 10.210131 0" rotateYUp="true">
+                </GeoOrigin>
+            </GeoViewpoint>
+        <!-- <Transform _rotation='1 0 0 1.5708'>     -->
+		    <GeoTileset url='"https://sdfe-hosting.virtualcitymap.de/Aarhus/datasource-data/Aarhus_Mesh/tileset.json"'>
+                <GeoOrigin USE='GO' />
+            </GeoTileset>
+        <!-- </Transform> -->
+    </Scene>
+</X3D>
+
+	
