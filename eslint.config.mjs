@@ -4,8 +4,8 @@ export default [
     {
         ignores: [
             "src/util/glTF/draco-1.5.5.js",
-            "src/util/loaders.gl/*.min.js",
-            "src/util/loaders.gl/*.dev.js",  
+            "src/util/loaders.gl/*.min.*",
+            "src/util/loaders.gl/*.dev.*",  
         ],
     },
     {

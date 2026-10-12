@@ -546,11 +546,11 @@ x3dom.registerNodeType(
 
                 if ( ( url[ 0 ] === "/" ) || ( url.indexOf( ":" ) >= 0 ) )
                 {
-                    nameSpace.setBaseURL( url, { log : this._vf.log } );
+                    nameSpace.setBaseURL( url, { log: this._vf.log } );
                 }
                 else
                 {
-                    nameSpace.setBaseURL( this._nameSpace.baseURL + url, { log : this._vf.log } );
+                    nameSpace.setBaseURL( this._nameSpace.baseURL + url, { log: this._vf.log } );
                 }
 
                 this._nameSpace.addSpace( nameSpace );

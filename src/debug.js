@@ -102,7 +102,7 @@ x3dom.debug = {
      * @param msg the log message
      * @param logType the type of the log message. One of INFO, WARNING, ERROR or EXCEPTION.
      */
-    doLog : function ( msg, logType, out=true )
+    doLog : function ( msg, logType, out = true )
     {
         // If logging is deactivated do nothing and simply return
         if ( !x3dom.debug.isActive || !out )
@@ -192,7 +192,7 @@ x3dom.debug = {
      *
      * @param msg
      */
-    logInfo : function ( msg, out=true )
+    logInfo : function ( msg, out = true )
     {
         x3dom.debug.doLog( msg, x3dom.debug.INFO, out );
     },

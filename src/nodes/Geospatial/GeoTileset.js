@@ -124,8 +124,8 @@ x3dom.registerNodeType(
                         console.log( tilesetJson );
                         that._loaded.set( that._vf.url[ 0 ], "loaded" );
 
-                        that._xmlNode.querySelector('GeoTiles')?.remove();
-                    
+                        that._xmlNode.querySelector( "GeoTiles" )?.remove();
+
                         const tilesetDOM = document.createElement( "GeoTiles" );
                         tilesetDOM.setAttribute( "containerField", "tileset" );
                         tilesetDOM.setAttribute( "geometricError", tilesetJson.geometricError );

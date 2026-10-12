@@ -259,7 +259,7 @@ x3dom.registerNodeType(
                         //patch asset property
                         if ( ! ( "asset" in tilesetJson ) )
                         {
-                            tilesetJson.asset = { "version" : "1.1" };
+                            tilesetJson.asset = { "version": "1.1" };
                         }
                         console.log( tilesetJson );
                         const tileset3d = new that._Tileset3D( tilesetJson,
@@ -352,14 +352,14 @@ x3dom.registerNodeType(
             {
                 visible = !!visible;
                 const x3d_tileTransform = this._loaded.get( tile );
-                if ( !x3d_tileTransform ) return;
-                if ( x3d_tileTransform._vf.visible == visible ) 
+                if ( !x3d_tileTransform ) {return;}
+                if ( x3d_tileTransform._vf.visible == visible )
                 {
                     return;
                 }
                 tile.tileDrawn = visible;
                 x3d_tileTransform._vf.visible = visible;
-                x3d_tileTransform.fieldChanged( 'render' );
+                x3d_tileTransform.fieldChanged( "render" );
                 console.log( "tile", visible, tile );
             },
 
@@ -368,24 +368,24 @@ x3dom.registerNodeType(
                 //called when loader decides there is not enough memory and tiles need to be disposed
                 // this._unselectedTiles.forEach ( ( tile ) =>
                 // {
-                    console.log( "unloaded:", tile.screenSpaceError, tile.id );
-                    const x3d_tileTransform = this._loaded.get( tile );
-                    //setTimeout( () => // should wait until after all tiles loaded from current traveral
-                    //{
-                        console.log( "removing Inline: ", x3d_tileTransform );
-                        this._geoOriginTransform.removeChild( x3d_tileTransform );
-                        if ( "objectUrl" in tile )
-                        {
-                            URL.revokeObjectURL( tile.objectUrl );
-                        }
-                        //this._geoOriginTransform.nodeChanged();
-                        this._geoOriginTransform.invalidateVolume();
-                    //}, 0 );
-                    this._loaded.delete( tile );
-                    this._inlined.delete( tile );
-                    this._unselectedTiles.delete( tile );
-                    tile.tileset.gpuMemoryUsageInBytes -= tile.gpuMemoryUsageInBytes;
-                    //tile.destroy();
+                console.log( "unloaded:", tile.screenSpaceError, tile.id );
+                const x3d_tileTransform = this._loaded.get( tile );
+                //setTimeout( () => // should wait until after all tiles loaded from current traveral
+                //{
+                console.log( "removing Inline: ", x3d_tileTransform );
+                this._geoOriginTransform.removeChild( x3d_tileTransform );
+                if ( "objectUrl" in tile )
+                {
+                    URL.revokeObjectURL( tile.objectUrl );
+                }
+                //this._geoOriginTransform.nodeChanged();
+                this._geoOriginTransform.invalidateVolume();
+                //}, 0 );
+                this._loaded.delete( tile );
+                this._inlined.delete( tile );
+                this._unselectedTiles.delete( tile );
+                tile.tileset.gpuMemoryUsageInBytes -= tile.gpuMemoryUsageInBytes;
+                //tile.destroy();
                 // } );
                 return;
             },
@@ -396,8 +396,8 @@ x3dom.registerNodeType(
                 console.log( tile.screenSpaceError, tile );
                 if ( this._inlined.has( tile ) )
                 {
-                    console.log (' tile already loaded and added: should not happen ', tile);
-                    return
+                    console.log( " tile already loaded and added: should not happen ", tile );
+                    return;
                 }
                 if ( tile.hasTilesetContent ) // needs another update to continue to traverse
                 {
