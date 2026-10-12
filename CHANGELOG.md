@@ -3,6 +3,7 @@
 ## Version 1.8.4-dev
 
 * Features
+  * new GeoTileset node to add OGC 3D Tiles v.1.1 content
   * draft X3D 4.1 FontLibrary support for custom fonts
   * full support for HAnimDisplacer
   * ImageTexture colorSpaceConversion field

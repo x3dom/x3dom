@@ -4,7 +4,7 @@
  * http://www.x3dom.org
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
- * (C)2025 Andreas Plesch, Waltham, MA, U.S.A
+ * (C)2026 Andreas Plesch, Waltham, MA, U.S.A
  * Dual licensed under the MIT and GPL
  */
 

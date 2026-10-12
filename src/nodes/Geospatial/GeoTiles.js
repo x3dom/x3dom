@@ -4,7 +4,7 @@
  * http://www.x3dom.org
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
- * (C)2025 Andreas Plesch, Waltham, MA, U.S.A
+ * (C)2026 Andreas Plesch, Waltham, MA, U.S.A
  * Dual licensed under the MIT and GPL
  */
 
@@ -129,7 +129,7 @@ x3dom.registerNodeType(
                 //transform eye point to the LOD node's local coordinate system
                 // if ( transform.det() == 0 )
                 // {
-                //     x3dom.debug.logWarning( "no inverse of tranform matrix: singular matrix, " +
+                //     x3dom.debug.logWarning( "no inverse of transform matrix: singular matrix, " +
                 //                 "skip tiles update" );
                 //     return
                 // }
@@ -266,7 +266,7 @@ x3dom.registerNodeType(
                             {
                                 throttleRequests               : false,
                                 onTileLoad                     : that._onTileLoad.bind( that ),
-                                __onTileLoad                   : that._updateX3DTiles.bind( that ),
+                                //__onTileLoad                   : that._updateX3DTiles.bind( that ),
                                 onTileUnload                   : that._onTileUnload.bind( that ),
                                 onTraversalComplete            : that._onTraversalComplete.bind( that ),
                                 maximumMemoryUsage             : 256, // 32 MBytes, The maximum amount of memory in MB that can be used by the tileset.
@@ -310,13 +310,13 @@ x3dom.registerNodeType(
                 this.invalidateVolume();
             },
 
-            _updateX3DTiles : function ( tile )
-            {
-                // this._onTraversalComplete( tile.tileset.tiles.filter(
-                //     ( tile ) => tile.selected
-                // ) );
-                return;
-            },
+            // _updateX3DTiles : function ( tile )
+            // {
+            //     // this._onTraversalComplete( tile.tileset.tiles.filter(
+            //     //     ( tile ) => tile.selected
+            //     // ) );
+            //     return;
+            // },
 
             _onTraversalComplete : function ( selectedTiles )
             {
