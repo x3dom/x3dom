@@ -323,13 +323,13 @@
         "src/util/loaders.gl/":
         [
             "setup.js",
-            "deckgl.core@9.3.2.dev.js",
+            "deckgl.core@9.4.0.dev.js",
             "attach_deckgl.core.js",
-            "loadersgl.core@4.4.1.dev.js",
+            "loadersgl.core@4.5.4.dev.js",
             "attach_loadersgl.core.js",
-            "loadersgl.3d-tiles@4.4.1.dev.js",
+            "loadersgl.3d-tiles@4.5.4.dev.js",
             "attach_loadersgl.3d-tiles.js",
-            "loadersgl.tiles@4.4.1.dev.js",
+            "loadersgl.tiles@4.5.4.dev.js",
             "attach_loadersgl.tiles.js"
         ],
         "src/nodes/Geospatial/":

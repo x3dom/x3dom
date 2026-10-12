@@ -1,6 +1,6 @@
 // sets up for use of the loaders.gl npm libraries
 // needs to be executed before libraries are added with packages.json
-// establish a summy exports object
+// establish a dummy exports object
 exports = {};
 // establish an x3dom object as name space
 x3dom.loaders = {};
