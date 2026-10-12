@@ -10,11 +10,11 @@
                 </GeoOrigin>
             </GeoViewpoint>
         <!-- <Transform _rotation='1 0 0 1.5708'>     -->
-		    <GeoOGC3DTiles
+		    <GeoTileset
             maximumScreenSpaceError='2'
             url='"https://bertt.github.io/cesium_3dtiles_samples/samples/octree_lyon/tileset.json"'>
                 <GeoOrigin USE='GO' />
-            </GeoOGC3DTiles>
+            </GeoTileset>
         <!-- </Transform> -->
     </Scene>
 </X3D>

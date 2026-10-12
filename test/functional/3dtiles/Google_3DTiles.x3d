@@ -14,9 +14,9 @@
             </GeoViewpoint>
             <DirectionalLight direction="0, -1, 1" intensity="3"></DirectionalLight>
             <!-- my revenc key from Cesium ION:  UUtHZ0RtXzJQNnp5VVBtU1dqQUxVZTA1VTRaOHVhY01CeVNheklBCg==  -->
-            <GeoOGC3DTiles url='"https://tile.googleapis.com/v1/3dtiles/root.json"' >
+            <GeoTileset url='"https://tile.googleapis.com/v1/3dtiles/root.json"' >
                 <GeoOrigin USE='GO' />
-            </GeoOGC3DTiles>
+            </GeoTileset>
             <GeoLocation geoCoords="37.7944 -122.4519 0">
                 <GeoOrigin USE='GO'/>
                 <Transform scale='300 300 300' translation='0 1000 0'>

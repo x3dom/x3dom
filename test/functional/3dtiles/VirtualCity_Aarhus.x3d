@@ -10,9 +10,9 @@
                 </GeoOrigin>
             </GeoViewpoint>
         <!-- <Transform _rotation='1 0 0 1.5708'>     -->
-		    <GeoOGC3DTiles url='"https://sdfe-hosting.virtualcitymap.de/Aarhus/datasource-data/Aarhus_Mesh/tileset.json"'>
+		    <GeoTileset url='"https://sdfe-hosting.virtualcitymap.de/Aarhus/datasource-data/Aarhus_Mesh/tileset.json"'>
                 <GeoOrigin USE='GO' />
-            </GeoOGC3DTiles>
+            </GeoTileset>
         <!-- </Transform> -->
     </Scene>
 </X3D>

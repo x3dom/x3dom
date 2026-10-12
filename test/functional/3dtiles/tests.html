@@ -110,7 +110,7 @@
         const needsKey = selectedAttributes[needsKeyName];
         const skip = selectedAttributes[skipShowAll];
         setTimeout( () => {
-            const googleTileEl = inline.querySelector('GeoOGC3DTiles[url*="googleapis"]');
+            const googleTileEl = inline.querySelector('GeoTileset[url*="googleapis"]');
             if ( googleTileEl )
                 {
                     const googleURL = googleTileEl.getAttribute('url');

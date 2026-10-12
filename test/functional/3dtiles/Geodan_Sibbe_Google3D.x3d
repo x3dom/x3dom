@@ -13,12 +13,12 @@
             </GeoViewpoint>
             <DirectionalLight direction="0, -1, 1" intensity="10"></DirectionalLight>
         <!-- <Transform _rotation='1 0 0 1.5708'>     -->
-		    <GeoOGC3DTiles maximumScreenSpaceError='2' url='"https://geodan.github.io/pg2b3dm/sample_data/3dbag/sibbe/1.1/tileset.json"'>
+		    <GeoTileset maximumScreenSpaceError='2' url='"https://geodan.github.io/pg2b3dm/sample_data/3dbag/sibbe/1.1/tileset.json"'>
                 <GeoOrigin USE='GO' />
-            </GeoOGC3DTiles>
-            <GeoOGC3DTiles url='"https://tile.googleapis.com/v1/3dtiles/root.json"'>
+            </GeoTileset>
+            <GeoTileset url='"https://tile.googleapis.com/v1/3dtiles/root.json"'>
                 <GeoOrigin USE='GO' />
-            </GeoOGC3DTiles>
+            </GeoTileset>
         <!-- </Transform> -->
     </Scene>
 </X3D>

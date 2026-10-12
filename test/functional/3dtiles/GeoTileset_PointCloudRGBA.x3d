@@ -8,9 +8,9 @@
             </GeoViewpoint>
             <Inline url='"basemap.x3d"'/>
         <!-- <Transform _rotation='1 0 0 1.5708'>     -->
-		    <GeoOGC3DTiles url='"https://andreasplesch.github.io/3d-tiles-examples/migration/output_from_1.0/PointCloud/PointCloudRGBA/tileset.json"'>
+		    <GeoTileset url='"https://andreasplesch.github.io/3d-tiles-examples/migration/output_from_1.0/PointCloud/PointCloudRGBA/tileset.json"'>
                 <GeoOrigin DEF='GO' geoCoords="40.029 -75.6148 0" rotateYUp="true" />
-            </GeoOGC3DTiles>
+            </GeoTileset>
         <!-- </Transform> -->
     </Scene>
 </X3D>

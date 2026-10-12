@@ -11,9 +11,9 @@
             </GeoViewpoint>
             <DirectionalLight direction="0, -1, 1" intensity="5"></DirectionalLight>
         <!-- <Transform _rotation='1 0 0 1.5708'>     -->
-		    <GeoOGC3DTiles url='"https://storage.googleapis.com/open-cogs/planet-stac/cocabamba-peru/3d-geofox.ai/3DTiles/tileset.json"'>
+		    <GeoTileset url='"https://storage.googleapis.com/open-cogs/planet-stac/cocabamba-peru/3d-geofox.ai/3DTiles/tileset.json"'>
                 <GeoOrigin USE='GO' />
-            </GeoOGC3DTiles>
+            </GeoTileset>
         <!-- </Transform> -->
     </Scene>
 </X3D>
