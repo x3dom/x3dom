@@ -5885,9 +5885,9 @@ x3dom.fields.MFString.prototype.toString = function ()
  *
  * @class Represents a SFNode
  */
-x3dom.fields.SFNode = function ( type )
+x3dom.fields.SFNode = function SFNode ( types )
 {
-    this.type = type;
+    this.types = types instanceof Array ? types : [ ...arguments ];
     this.node = null;
 };
 
@@ -5947,9 +5947,9 @@ x3dom.fields.SFNode.prototype.rmLink = function ( node )
  *
  * @class Represents a MFNode
  */
-x3dom.fields.MFNode = function ( type )
+x3dom.fields.MFNode = function MFNode ( types )
 {
-    this.type = type;
+    this.types = types instanceof Array ? types : [ ...arguments ];
     this.nodes = [];
 };
 
