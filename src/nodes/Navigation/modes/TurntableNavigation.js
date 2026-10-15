@@ -368,7 +368,7 @@ x3dom.TurntableNavigation.prototype.animateTo = function ( view, target, prev, d
 
     if ( view._mixer._isVPtarget )
     {
-        targetMat = x3dom.fields.SFMatrix4f.lookAt( target._vf.position, target.getCenterOfRotation(), new x3dom.fields.SFVec3f( 0, 1, 0 ) );
+        targetMat = x3dom.fields.SFMatrix4f.lookAt( target._vf.position, target.getCenterOfRotation(), new x3dom.fields.SFVec3f( 0, 1, 0 ) ).inverse();
     }
     else
     {targetMat = target;}
