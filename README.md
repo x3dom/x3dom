@@ -34,7 +34,7 @@ and the first address for help or questions.
 
 ## Chat 
 
-There is a [gitter chat room](https://gitter.im/x3dom/LOBBY) for realtime, ephemeral interaction if preferred.
+There is a gitter chat room for realtime, ephemeral interaction if preferred.
 
 ## Issue Tracker
 
