@@ -32,9 +32,9 @@ Please use the mailing lists as much as you can.
 The [x3dom-users][] list is the one you are most likely interested in 
 and the first address for help or questions.
 
-## Chat [![](https://badges.gitter.im/x3dom/LOBBY.svg)](https://gitter.im/x3dom/LOBBY?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+## Chat 
 
-There is a [gitter chat room](https://gitter.im/x3dom/LOBBY) for realtime, ephemeral interaction if preferred.
+There is a gitter chat room for realtime, ephemeral interaction if preferred.
 
 ## Issue Tracker
 
